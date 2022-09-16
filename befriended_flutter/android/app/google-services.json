@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "356654918297",
+    "project_id": "befriended-97276",
+    "storage_bucket": "befriended-97276.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356654918297:android:3391ab77c94ff7b53ba608",
+        "android_client_info": {
+          "package_name": "com.befriended.org.befriended_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356654918297-lcrhitljb4b9718l4kbpm9radu7k92gl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.befriended.org.befriended_flutter",
+            "certificate_hash": "0f11a620954991f53c8051b2db5c2bce957f3bf8"
+          }
+        },
+        {
+          "client_id": "356654918297-mpa6b5rl98ks4fqqvf6r38c882h55518.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.befriended.org.befriended_flutter",
+            "certificate_hash": "8adb06e3b73a68e021080f64b52928de2a19a6cc"
+          }
+        },
+        {
+          "client_id": "356654918297-ragcieengrpqhbbe4u2dcs4rubv369g2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCxHciZ2RTuK3UsmZvhwtkFHaNfM9RJAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356654918297-ragcieengrpqhbbe4u2dcs4rubv369g2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
