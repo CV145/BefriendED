@@ -218,7 +218,7 @@ class FirebaseProvider with ChangeNotifier {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        singleLineSnackBar(context, 'Please contact our support'),
+        singleLineSnackBar(context, 'Error code: ${e.code}'),
       );
     }
   }
