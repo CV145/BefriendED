@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:befriended_flutter/app/affirmations/view/affirmations.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/chat/view/chat.dart';
 import 'package:befriended_flutter/app/home/view/bottom_navigator.dart';
 import 'package:befriended_flutter/app/hometab/view/hometab.dart';
+import 'package:befriended_flutter/app/resources/view/resources.dart';
 import 'package:befriended_flutter/app/setting/view/setting.dart';
 import 'package:befriended_flutter/app/support/support.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';
@@ -14,17 +16,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-enum HomePageStatus { home, chat, blog, setting }
+enum HomePageStatus { home, chat, blog, setting, resources, affirmationSettings }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+  print('Handling a background message: ${message.messageId}');
 }
 
 Map<HomePageStatus, Function> homePages = {
   HomePageStatus.home: () => const HomeTabPage(key: ValueKey(1)),
   HomePageStatus.chat: () => const ChatPage(key: ValueKey(2)),
   HomePageStatus.blog: () => const SupportPage(key: ValueKey(3)),
-  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(4)),
+  HomePageStatus.resources: () => const ResourcesPage(key: ValueKey(4)),
+  HomePageStatus.affirmationSettings: () => const AffirmationsPage(key: ValueKey(5)),
+  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(6)),
 };
 
 // class HomePage extends StatelessWidget {
