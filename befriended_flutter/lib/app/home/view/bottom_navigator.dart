@@ -151,20 +151,8 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
           ),
           IconButton(
             icon: Icon(
-              HomePageStatus.resources == widget.selectedPage
-                  ? Icons.accessibility_new
-                  : Icons.accessibility_new_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 30,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.resources, 4);
-            },
-          ),
-          IconButton(
-            icon: Icon(
               HomePageStatus.affirmationSettings == widget.selectedPage
-                  ? Icons.access_alarm
+                  ? Icons.access_alarm_rounded
                   : Icons.access_alarm_outlined,
               color: Theme.of(context).colorScheme.onPrimary,
               size: 30,
@@ -173,6 +161,19 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               widget.onTapped(HomePageStatus.affirmationSettings, 5);
             },
           ),
+          IconButton(
+            icon: Icon(
+              HomePageStatus.resources == widget.selectedPage
+                  ? Icons.accessibility_rounded
+                  : Icons.accessibility_outlined,
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 30,
+            ),
+            onPressed: () {
+              widget.onTapped(HomePageStatus.resources, 4);
+            },
+          ),
+
           IconButton(
             icon: Icon(
               HomePageStatus.setting == widget.selectedPage
