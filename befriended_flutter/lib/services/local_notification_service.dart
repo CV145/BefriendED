@@ -13,13 +13,15 @@ class LocalNotificationService
 
   Future<void> initialize() async
   {
-    const AndroidInitializationSettings androidInitializationSettings =
+    tz.initializeTimeZones();
+
+    const androidInitializationSettings =
         AndroidInitializationSettings('@drawable/ic_stat_favorite');
 
     //const IOSInitializationSettings iosInitializationSettings =
       //IOSInitializationSettings();
 
-    final InitializationSettings settings = InitializationSettings(
+    const settings = InitializationSettings(
       android: androidInitializationSettings
     );
 
@@ -44,8 +46,8 @@ class LocalNotificationService
     return NotificationDetails(android: androidNotificationDetails);
   }
 
-  Future<void> showNotification(
-  {
+  Future<void> showNotification
+  ({
     required int id,
     required String title,
     required String body,
@@ -53,6 +55,24 @@ class LocalNotificationService
   {
     final details = await _notificationDetails();
     await _localNotificationService.show(id, title, body, details);
+  }
+
+  Future<void> showScheduledNotification
+  ({
+    required int id,
+    required String title,
+    required String body,
+    required int seconds,
+  }) async
+  {
+    final details = await _notificationDetails();
+    await _localNotificationService.zonedSchedule
+      ( id, title, body,
+        tz.TZDateTime.from(DateTime.now().add(Duration(seconds: seconds)), tz.local),
+        details,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
   }
 
   void onSelectNotification(String? payload) {

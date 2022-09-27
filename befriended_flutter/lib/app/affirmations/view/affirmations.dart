@@ -31,13 +31,26 @@ class _AffirmationsState extends State<AffirmationsPage>
         [
           ElevatedButton
           (
-            onPressed: () async
+              onPressed: () async
               {
                 await service.showNotification(id: 0,
                     title: 'Notification Title',
                     body: 'Affirmation quote goes here');
               },
             child: const Text("Show quote notification"),
+          ),
+          ElevatedButton
+          (
+            onPressed: () async
+            {
+              await service.showScheduledNotification
+              (   id: 0,
+                  title: 'Notification Title',
+                  body: 'Affirmation quote goes here',
+                  seconds: 4,
+              );
+            },
+            child: const Text("Show delayed notification"),
           ),
         ],
     );
