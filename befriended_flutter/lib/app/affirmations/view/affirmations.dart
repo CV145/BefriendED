@@ -23,9 +23,9 @@ class _AffirmationsState extends State<AffirmationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Scheduled Affirmations", style: TextStyle(fontSize: 15)),
+        title: Text('Scheduled Affirmations', style: TextStyle(fontSize: 15)),
       ),
-      body: Column(
+      body: ListView(
         children: [
           ElevatedButton(
             onPressed: () async {
@@ -49,6 +49,11 @@ class _AffirmationsState extends State<AffirmationsPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          elevation: 10.0,
+          child: Icon(Icons.add),
+          onPressed: () => {print('I am a Floating button')}),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
