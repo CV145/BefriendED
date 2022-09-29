@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,6 +13,7 @@ class AffirmationsPage extends StatefulWidget {
 
 class _AffirmationsState extends State<AffirmationsPage> {
   late final LocalNotificationService service;
+  List<Widget> _cardList = [];
 
   @override
   void initState() {
@@ -19,40 +22,46 @@ class _AffirmationsState extends State<AffirmationsPage> {
     super.initState();
   }
 
+  void _addCardWidget() {
+    setState(() => {_cardList.add(_card())});
+  }
+
+  //Custom card widget
+  Widget _card() {
+    return SizedBox(
+      height: 80,
+      child: ElevatedButton(
+        onPressed: () async {
+          await service.showNotification(
+              id: 0,
+              title: 'Notification Title',
+              body: 'Affirmation quote goes here');
+        },
+        child: const Text('Show quote notification'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scheduled Affirmations', style: TextStyle(fontSize: 15)),
+        title: const Text(
+          'Scheduled Affirmations',
+          style: TextStyle(fontSize: 15),
+        ),
       ),
-      body: ListView(
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              await service.showNotification(
-                  id: 0,
-                  title: 'Notification Title',
-                  body: 'Affirmation quote goes here');
-            },
-            child: const Text("Show quote notification"),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await service.showScheduledNotification(
-                id: 0,
-                title: 'Notification Title',
-                body: 'Affirmation quote goes here',
-                seconds: 4,
-              );
-            },
-            child: const Text("Show delayed notification"),
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: _cardList.length,
+        itemBuilder: (context, index) {
+          return _cardList[index];
+        },
       ),
       floatingActionButton: FloatingActionButton(
-          elevation: 10.0,
-          child: Icon(Icons.add),
-          onPressed: () => {print('I am a Floating button')}),
+        elevation: 10,
+        onPressed: _addCardWidget,
+        child: const Icon(Icons.add),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

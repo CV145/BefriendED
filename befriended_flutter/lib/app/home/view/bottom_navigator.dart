@@ -55,11 +55,12 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
         // borderRadius: BorderRadius.all(Radius.circular(10)),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-              color: Colors.grey, //New
-              blurRadius: 2.0,
-              offset: Offset(0, -1))
+            color: Colors.grey, //New
+            blurRadius: 2,
+            offset: Offset(0, -1),
+          )
         ],
       ),
       // shape: const CircularNotchedRectangle(),
@@ -89,6 +90,18 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               widget.onTapped(HomePageStatus.chat, 2);
             },
           ),
+          IconButton(
+            icon: Icon(
+              HomePageStatus.blog == widget.selectedPage
+                  ? Icons.groups_rounded
+                  : Icons.groups_outlined,
+              color: Theme.of(context).colorScheme.onPrimary,
+              size: 30,
+            ),
+            onPressed: () {
+              widget.onTapped(HomePageStatus.blog, 3);
+            },
+          ),
           Container(
             width: 40,
             height: 40,
@@ -102,7 +115,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                       Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
                   blurRadius: 5,
                   spreadRadius: 1,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -119,9 +132,9 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) {
-                          return CommonMenu();
+                          return const CommonMenu();
                         },
-                        shadow: BoxShadow(
+                        shadow: const BoxShadow(
                           color: Colors.transparent,
                           blurRadius: 0,
                           spreadRadius: 0,
@@ -136,18 +149,6 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                 );
               },
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              HomePageStatus.blog == widget.selectedPage
-                  ? Icons.groups_rounded
-                  : Icons.groups_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 30,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.blog, 3);
-            },
           ),
           IconButton(
             icon: Icon(
@@ -173,7 +174,6 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               widget.onTapped(HomePageStatus.resources, 4);
             },
           ),
-
           IconButton(
             icon: Icon(
               HomePageStatus.setting == widget.selectedPage
