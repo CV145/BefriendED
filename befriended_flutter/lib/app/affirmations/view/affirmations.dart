@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AffirmationsPage extends StatefulWidget {
   const AffirmationsPage({Key? key}) : super(key: key);
@@ -61,24 +62,56 @@ class AffirmationsState extends State<AffirmationsPage> {
           child: Column(
             //Children are mapped from list of cards
             children: cards.map((cardEntry) {
-              return Container(
-                child: Card(
-                  child: ListTile(
-                    title: Text(cardEntry.notificationTime),
-                    trailing: ElevatedButton(
-                      child: const Icon(Icons.delete),
-                      onPressed: () {
-                        /*delete action for this button
-                          remove the element from list whose id matches this
-                          card's id*/
-                        cards.removeWhere((element) {
-                          return element.id == cardEntry.id;
-                        });
-                        setState(() {
-                          //refreshes the UI - making it match card list
-                        });
-                      },
-                    ),
+              return Card(
+                child: ListTile(
+                  title: ElevatedButton(
+                    child: Text(cardEntry.notificationTime),
+                    onPressed:
+                        () //anonymous/no-named function syntax that's async
+                        async {
+                      //final variables are not re-assigned
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+                      //Update card time
+                      cardEntry.notificationTime =
+                          '${selectedTime?.hour}:${selectedTime?.minute}';
+                      //Update UI
+                      setState(() {});
+                    },
+                  ),
+                  subtitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: (() {}),
+                        child: const Text(
+                          'Sun, Mon, Tue, Wed, Thu, Fri, Sat',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ),
+                      Switch(
+                          value: cardEntry.isEnabled,
+                          onChanged: (value) {
+                            cardEntry.isEnabled = value;
+                            setState(() {});
+                          }),
+                      ElevatedButton(
+                        child: const Icon(Icons.delete),
+                        onPressed: () {
+                          /*delete action for this button
+                        remove the element from list whose id matches this
+                        card's id*/
+                          cards.removeWhere((element) {
+                            return element.id == cardEntry.id;
+                          });
+                          setState(() {
+                            //refreshes the UI - making it match card list
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -87,6 +120,7 @@ class AffirmationsState extends State<AffirmationsPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        elevation: 25,
         child: const Icon(Icons.add),
         onPressed: () {
           cards.add(
@@ -102,13 +136,15 @@ class AffirmationsState extends State<AffirmationsPage> {
           });
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
 //Modal class for NotificationCard object "model"
 //required keyword means variable must be initialized through constructor
+//This just contains the information ... which is stored in a list
+//A ListTile or some other widget then REPRESENTS this information
 class NotificationCard {
   NotificationCard({
     required this.id,
