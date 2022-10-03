@@ -76,8 +76,10 @@ class AffirmationsState extends State<AffirmationsPage> {
                         initialTime: TimeOfDay.now(),
                       );
                       //Update card time
-                      cardEntry.notificationTime =
-                          '${selectedTime?.hour}:${selectedTime?.minute}';
+                      selectedTime == null
+                          ? cardEntry.notificationTime = '12:00'
+                          : cardEntry.notificationTime =
+                              '${selectedTime?.hour}:${selectedTime?.minute}';
                       //Update UI
                       setState(() {});
                     },

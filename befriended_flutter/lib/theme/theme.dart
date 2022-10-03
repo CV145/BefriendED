@@ -16,7 +16,8 @@ class AppTheme {
       //   behavior: SnackBarBehavior.floating,
       // ),
       // toggleableActiveColor: Color(0xFF13B9FF),
-      textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black87),
+      textSelectionTheme:
+          const TextSelectionThemeData(cursorColor: Colors.black87),
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary: primary,
