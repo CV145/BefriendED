@@ -85,34 +85,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ToggleButtons(
-                        onPressed: (int index) {
-                          // All buttons are selectable.
-                          setState(() {
-                            cardEntry._chosenDays[index] =
-                                !cardEntry._chosenDays[index];
-                          });
-                        },
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8)),
-                        /*selectedBorderColor: Colors.green[700],
-                        selectedColor: Colors.white,
-                        fillColor: Colors.green[200],
-                        ,*/
-                        color: Colors.blue[400],
-                        constraints: const BoxConstraints(
-                          minHeight: 30,
-                          minWidth: 30,
-                        ),
-                        isSelected: cardEntry._chosenDays,
-                        children: weekdays,
-                      ),
-                      Switch(
-                          value: cardEntry.isEnabled,
-                          onChanged: (value) {
-                            cardEntry.isEnabled = value;
-                            setState(() {});
-                          }),
                       ElevatedButton(
                         child: const Icon(Icons.delete),
                         onPressed: () {
@@ -125,6 +97,35 @@ class AffirmationsState extends State<AffirmationsPage> {
                           setState(() {
                             //refreshes the UI - making it match card list
                           });
+                        },
+                      ),
+                      ToggleButtons(
+                        onPressed: (int index) {
+                          // All buttons are selectable.
+                          setState(() {
+                            cardEntry._chosenDays[index] =
+                                !cardEntry._chosenDays[index];
+                          });
+                        },
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        /*selectedBorderColor: Colors.green[700],
+                        fillColor: Colors.green[200],
+                        ,*/
+                        selectedColor: Colors.blue[400],
+                        color: Colors.white,
+                        constraints: const BoxConstraints(
+                          minHeight: 30,
+                          minWidth: 30,
+                        ),
+                        isSelected: cardEntry._chosenDays,
+                        children: weekdays,
+                      ),
+                      Switch(
+                        value: cardEntry.isEnabled,
+                        onChanged: (value) {
+                          cardEntry.isEnabled = value;
+                          setState(() {});
                         },
                       ),
                     ],
@@ -171,9 +172,9 @@ class NotificationCard {
   String id, notificationTime;
   bool isEnabled;
   final List<bool> _chosenDays = <bool>[
-    false,
     true,
-    false,
+    true,
+    true,
     true,
     true,
     true,
