@@ -43,6 +43,7 @@ dependencies:
   flutter_local_notifications: ^9.6.0
   timezone:
   rxdart: ^0.27.4
+  weekday_selector: ^1.1.0
 
 dev_dependencies:
   bloc_test: ^9.0.3

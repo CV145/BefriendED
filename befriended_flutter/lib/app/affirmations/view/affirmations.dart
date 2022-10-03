@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:weekday_selector/weekday_selector.dart';
 
 class AffirmationsPage extends StatefulWidget {
   const AffirmationsPage({Key? key}) : super(key: key);
@@ -84,12 +85,27 @@ class AffirmationsState extends State<AffirmationsPage> {
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton(
-                        onPressed: (() {}),
-                        child: const Text(
-                          'Sun, Mon, Tue, Wed, Thu, Fri, Sat',
-                          style: TextStyle(fontSize: 10),
+                      ToggleButtons(
+                        onPressed: (int index) {
+                          // All buttons are selectable.
+                          setState(() {
+                            cardEntry._chosenDays[index] =
+                                !cardEntry._chosenDays[index];
+                          });
+                        },
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        /*selectedBorderColor: Colors.green[700],
+                        selectedColor: Colors.white,
+                        fillColor: Colors.green[200],
+                        ,*/
+                        color: Colors.blue[400],
+                        constraints: const BoxConstraints(
+                          minHeight: 30,
+                          minWidth: 30,
                         ),
+                        isSelected: cardEntry._chosenDays,
+                        children: weekdays,
                       ),
                       Switch(
                           value: cardEntry.isEnabled,
@@ -154,4 +170,46 @@ class NotificationCard {
 
   String id, notificationTime;
   bool isEnabled;
+  final List<bool> _chosenDays = <bool>[
+    false,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+  ];
 }
+
+//Global list of days of the week
+//Allows quick use anywhere
+const List<Widget> weekdays = <Widget>[
+  Text(
+    'Sun',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Mon',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Tue',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Wed',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Thu',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Fri',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Sat',
+    style: TextStyle(fontSize: 10),
+  ),
+];
