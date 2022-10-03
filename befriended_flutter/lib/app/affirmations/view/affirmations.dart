@@ -1,45 +1,49 @@
-// ignore_for_file: lines_longer_than_80_chars
-
-import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AffirmationsPage extends StatefulWidget {
   const AffirmationsPage({Key? key}) : super(key: key);
 
   @override
-  State<AffirmationsPage> createState() => _AffirmationsState();
+  AffirmationsState createState() => AffirmationsState();
 }
 
-class _AffirmationsState extends State<AffirmationsPage> {
-  late final LocalNotificationService service;
-  List<Widget> _cardList = [];
+class AffirmationsState extends State<AffirmationsPage> {
+  List<NotificationCard> cards = [];
 
   @override
   void initState() {
-    service = LocalNotificationService();
-    service.initialize();
+    //adding item to list, you can add using json from network
+    cards
+      ..add(
+        NotificationCard(
+          id: '1',
+          notificationTime: '11:33',
+          isEnabled: false,
+        ),
+      )
+      ..add(
+        NotificationCard(
+          id: '2',
+          notificationTime: '19:04',
+          isEnabled: false,
+        ),
+      )
+      ..add(
+        NotificationCard(
+          id: '3',
+          notificationTime: '03:55',
+          isEnabled: false,
+        ),
+      )
+      ..add(
+        NotificationCard(
+          id: '4',
+          notificationTime: '12:00',
+          isEnabled: true,
+        ),
+      );
+
     super.initState();
-  }
-
-  void _addCardWidget() {
-    setState(() => {_cardList.add(_card())});
-  }
-
-  //Custom card widget
-  Widget _card() {
-    return SizedBox(
-      height: 80,
-      child: ElevatedButton(
-        onPressed: () async {
-          await service.showNotification(
-              id: 0,
-              title: 'Notification Title',
-              body: 'Affirmation quote goes here');
-        },
-        child: const Text('Show quote notification'),
-      ),
-    );
   }
 
   @override
@@ -47,22 +51,71 @@ class _AffirmationsState extends State<AffirmationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Scheduled Affirmations',
+          'Set Affirmation Reminders',
           style: TextStyle(fontSize: 15),
         ),
       ),
-      body: ListView.builder(
-        itemCount: _cardList.length,
-        itemBuilder: (context, index) {
-          return _cardList[index];
-        },
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            //Children are mapped from list of cards
+            children: cards.map((cardEntry) {
+              return Container(
+                child: Card(
+                  child: ListTile(
+                    title: Text(cardEntry.notificationTime),
+                    trailing: ElevatedButton(
+                      child: const Icon(Icons.delete),
+                      onPressed: () {
+                        /*delete action for this button
+                          remove the element from list whose id matches this
+                          card's id*/
+                        cards.removeWhere((element) {
+                          return element.id == cardEntry.id;
+                        });
+                        setState(() {
+                          //refreshes the UI - making it match card list
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        elevation: 10,
-        onPressed: _addCardWidget,
         child: const Icon(Icons.add),
+        onPressed: () {
+          cards.add(
+            NotificationCard(
+              id: '${cards.length + 1}',
+              notificationTime: '00:00',
+              isEnabled: true,
+            ),
+          );
+          setState(() {
+            //UI refresh
+            //Because the list may exist in code but won't show unless updated
+          });
+        },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
+}
+
+//Modal class for NotificationCard object "model"
+//required keyword means variable must be initialized through constructor
+class NotificationCard {
+  NotificationCard({
+    required this.id,
+    required this.notificationTime,
+    required this.isEnabled,
+  });
+
+  String id, notificationTime;
+  bool isEnabled;
 }

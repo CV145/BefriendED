@@ -13,6 +13,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_slidable: ^0.6.0
   diffutil_dart: ^3.0.0
   equatable: ^2.0.3
   flutter_chat_types: ^3.3.4
