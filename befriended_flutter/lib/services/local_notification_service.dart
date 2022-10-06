@@ -5,37 +5,33 @@ import 'package:timezone/data/latest.dart' as tz;
 
 //need to add IOS notification services
 //only Android services implemented
-class LocalNotificationService
-{
+class LocalNotificationService {
   LocalNotificationService();
 
   final _localNotificationService = FlutterLocalNotificationsPlugin();
 
-  Future<void> initialize() async
-  {
+  Future<void> initialize() async {
     tz.initializeTimeZones();
 
     const androidInitializationSettings =
         AndroidInitializationSettings('@drawable/ic_stat_favorite');
 
     //const IOSInitializationSettings iosInitializationSettings =
-      //IOSInitializationSettings();
+    //IOSInitializationSettings();
 
-    const settings = InitializationSettings(
-      android: androidInitializationSettings
-    );
+    const settings =
+        InitializationSettings(android: androidInitializationSettings);
 
     await _localNotificationService.initialize(
-        settings, 
-        onSelectNotification: onSelectNotification);
+      settings,
+      onSelectNotification: onSelectNotification,
+    );
   }
 
   //Return NotificationDetails in the 'future'
-  Future<NotificationDetails> _notificationDetails() async
-  {
+  Future<NotificationDetails> _getNotificationDetails() async {
     //Widget for android notification details
-    const androidNotificationDetails =
-    AndroidNotificationDetails(
+    const androidNotificationDetails = AndroidNotificationDetails(
       'channel_id',
       'channel_name',
       channelDescription: 'description',
@@ -43,36 +39,70 @@ class LocalNotificationService
       priority: Priority.max,
     );
 
-    return NotificationDetails(android: androidNotificationDetails);
+    return const NotificationDetails(android: androidNotificationDetails);
   }
 
-  Future<void> showNotification
-  ({
+  //Show an instant notification
+  Future<void> showNotification({
     required int id,
     required String title,
     required String body,
-  }) async
-  {
-    final details = await _notificationDetails();
+  }) async {
+    final details = await _getNotificationDetails();
     await _localNotificationService.show(id, title, body, details);
   }
 
-  Future<void> showScheduledNotification
-  ({
+  //Show a notification after the given seconds pass (delayed)
+  Future<void> showDelayedNotification({
     required int id,
     required String title,
     required String body,
     required int seconds,
-  }) async
-  {
-    final details = await _notificationDetails();
-    await _localNotificationService.zonedSchedule
-      ( id, title, body,
-        tz.TZDateTime.from(DateTime.now().add(Duration(seconds: seconds)), tz.local),
-        details,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      );
+  }) async {
+    final details = await _getNotificationDetails();
+    await _localNotificationService.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(
+        DateTime.now().add(Duration(seconds: seconds)),
+        tz.local,
+      ),
+      details,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  //Show a notification at the given DateTime (an object that contains info on a
+  //date: day, hour, minute) - this means a new DateTime needs to be made if
+  //we're making recurring notifications
+  Future<void> setupScheduledNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime time,
+  }) async {
+    try {
+      await _localNotificationService.zonedSchedule(
+          id,
+          title,
+          body,
+          tz.TZDateTime.from(time, tz.local),
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your channel id',
+              'your channel name',
+              channelDescription: 'your channel description',
+            ),
+          ),
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime);
+    } catch (e) {
+      //add toast message here to notify user of error
+    }
   }
 
   void onSelectNotification(String? payload) {

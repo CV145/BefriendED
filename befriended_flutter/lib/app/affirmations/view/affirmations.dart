@@ -1,6 +1,5 @@
+import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:weekday_selector/weekday_selector.dart';
 
 class AffirmationsPage extends StatefulWidget {
   const AffirmationsPage({Key? key}) : super(key: key);
@@ -11,39 +10,25 @@ class AffirmationsPage extends StatefulWidget {
 
 class AffirmationsState extends State<AffirmationsPage> {
   List<NotificationCard> cards = [];
+  late final LocalNotificationService service;
 
   @override
   void initState() {
+    //initialize the service
+    service = LocalNotificationService();
+    service.initialize();
+
     //adding item to list, you can add using json from network
-    cards
-      ..add(
-        NotificationCard(
-          id: '1',
-          notificationTime: '11:33',
-          isEnabled: false,
+    cards.add(
+      NotificationCard(
+        id: 1,
+        notificationTime: const TimeOfDay(
+          hour: 12,
+          minute: 30,
         ),
-      )
-      ..add(
-        NotificationCard(
-          id: '2',
-          notificationTime: '19:04',
-          isEnabled: false,
-        ),
-      )
-      ..add(
-        NotificationCard(
-          id: '3',
-          notificationTime: '03:55',
-          isEnabled: false,
-        ),
-      )
-      ..add(
-        NotificationCard(
-          id: '4',
-          notificationTime: '12:00',
-          isEnabled: true,
-        ),
-      );
+        isEnabled: false,
+      ),
+    );
 
     super.initState();
   }
@@ -65,29 +50,58 @@ class AffirmationsState extends State<AffirmationsPage> {
             children: cards.map((cardEntry) {
               return Card(
                 child: ListTile(
-                  title: ElevatedButton(
-                    child: Text(cardEntry.notificationTime),
-                    onPressed:
-                        () //anonymous/no-named function syntax that's async
-                        async {
-                      //final variables are not re-assigned
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      //Update card time
-                      selectedTime == null
-                          ? cardEntry.notificationTime = '12:00'
-                          : cardEntry.notificationTime =
-                              '${selectedTime?.hour}:${selectedTime?.minute}';
-                      //Update UI
-                      setState(() {});
-                    },
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        //Time Picker button
+                        child: Text(
+                          cardEntry.notificationTime.minute < 10
+                              ? '${cardEntry.notificationTime.hour}:0${cardEntry.notificationTime.minute}'
+                              : '${cardEntry.notificationTime.hour}:${cardEntry.notificationTime.minute}',
+                        ),
+                        onPressed:
+                            () //anonymous/no-named function syntax that's async
+                            async {
+                          //final variables are not re-assigned
+                          final selectedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          //Update card time
+                          selectedTime == null
+                              ? cardEntry.notificationTime =
+                                  const TimeOfDay(hour: 12, minute: 0)
+                              : cardEntry.notificationTime = selectedTime;
+
+                          final nextDate = cardEntry.getNextDateTime();
+
+                          //Update the next notification's DateTime
+                          if (nextDate != null) {
+                            await cardEntry.setupNotification(
+                              service,
+                              nextDate,
+                            );
+                          }
+                          //Update UI
+                          setState(() {});
+                        },
+                      ),
+                      Switch(
+                        //Enable button
+                        value: cardEntry.isEnabled,
+                        onChanged: (value) {
+                          cardEntry.isEnabled = value;
+                          setState(() {});
+                        },
+                      ),
+                    ],
                   ),
                   subtitle: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
+                        //Delete button
                         child: const Icon(Icons.delete),
                         onPressed: () {
                           /*delete action for this button
@@ -97,17 +111,25 @@ class AffirmationsState extends State<AffirmationsPage> {
                             return element.id == cardEntry.id;
                           });
                           setState(() {
-                            //refreshes the UI - making it match card list
+                            //refreshes the UI - making it match the card list
                           });
                         },
                       ),
                       ToggleButtons(
+                        //Weekday buttons
                         onPressed: (int index) {
                           // All buttons are selectable.
                           setState(() {
                             cardEntry._chosenDays[index] =
                                 !cardEntry._chosenDays[index];
                           });
+
+                          final nextDate = cardEntry.getNextDateTime();
+
+                          //Update the next notification's DateTime
+                          if (nextDate != null) {
+                            cardEntry.setupNotification(service, nextDate);
+                          }
                         },
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8)),
@@ -123,13 +145,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                         isSelected: cardEntry._chosenDays,
                         children: weekdays,
                       ),
-                      Switch(
-                        value: cardEntry.isEnabled,
-                        onChanged: (value) {
-                          cardEntry.isEnabled = value;
-                          setState(() {});
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -139,16 +154,31 @@ class AffirmationsState extends State<AffirmationsPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        //Add button
         elevation: 25,
         child: const Icon(Icons.add),
-        onPressed: () {
-          cards.add(
-            NotificationCard(
-              id: '${cards.length + 1}',
-              notificationTime: '00:00',
-              isEnabled: true,
-            ),
+        onPressed: () async {
+          final selectedTime = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.now(),
           );
+          final newID = cards.length + 1;
+          final newCard = NotificationCard(
+            id: newID,
+            notificationTime: const TimeOfDay(hour: 12, minute: 0),
+            isEnabled: true,
+          );
+          cards.add(newCard);
+          selectedTime == null
+              ? newCard.notificationTime = const TimeOfDay(hour: 12, minute: 0)
+              : newCard.notificationTime = selectedTime;
+
+          final nextDate = newCard.getNextDateTime();
+
+          //Update the next notification's DateTime
+          if (nextDate != null) {
+            await newCard.setupNotification(service, nextDate);
+          }
           setState(() {
             //UI refresh
             //Because the list may exist in code but won't show unless updated
@@ -171,8 +201,13 @@ class NotificationCard {
     required this.isEnabled,
   });
 
-  String id, notificationTime;
+  int id;
+  TimeOfDay notificationTime;
   bool isEnabled;
+
+  /*
+    There are 7 days. Index 0 = Monday. Index 6 = Sunday
+  */
   final List<bool> _chosenDays = <bool>[
     true,
     true,
@@ -182,15 +217,91 @@ class NotificationCard {
     true,
     true
   ];
+
+  //Calling this method starts the notifications for this card
+  Future<void> setupNotification(
+    LocalNotificationService service,
+    DateTime time,
+  ) async {
+    await service.setupScheduledNotification(
+      id: id,
+      title: 'Affirmation Test',
+      body: 'Affirmation Quote',
+      time: time,
+    );
+  }
+
+  //The DateTime says the exact date and time of the next
+  //notification
+  /*
+    There are 2 pieces of information we have: the daily time
+    of the notification and the next day it will check relative
+    to the current day. 
+
+    What time is it? Is the current time before or after
+    the card's notification time?
+
+    If it's before, what day is it? Is today a valid day on the
+    card? If so, the next DateTime will be today at the requested
+    time.
+
+    If it's after, when's the next valid day? Is it tomorrow? 
+    The day after tomorrow? Once the next valid day is found,
+    it will be stored in the next DateTime with the requested
+    time. 
+
+    If there are no valid days, return null
+  */
+  DateTime? getNextDateTime() {
+    final currentTime = TimeOfDay.now();
+    final currentDate = DateTime.now();
+    final currentDayIndex = currentDate.weekday - 1;
+
+    //Consider the hour first, then the minute, then check if today is a good
+    //day to notify the user
+    if (currentTime.hour < notificationTime.hour &&
+        currentTime.minute < notificationTime.minute &&
+        _chosenDays[currentDayIndex]) {
+      return DateTime(
+        currentDate.year,
+        currentDate.month,
+        currentDate.day,
+        notificationTime.hour,
+        notificationTime.minute,
+      );
+    } else if (currentTime.hour > notificationTime.hour) {
+      //Get next active day
+      if (_chosenDays.contains(true)) {
+        var nextDayIndex = currentDayIndex;
+
+        //Need to check if there's a new year/new month
+        var nextDay = currentDate;
+
+        do {
+          //Search day by day to find the next date
+          nextDayIndex++ > 6 ? nextDayIndex = 0 : nextDayIndex = nextDayIndex;
+          nextDay = nextDay.add(const Duration(days: 1));
+
+          if (_chosenDays[nextDayIndex]) {
+            return DateTime(
+              nextDay.year,
+              nextDay.month,
+              nextDay.day,
+              notificationTime.hour,
+              notificationTime.minute,
+            );
+          }
+        } while (nextDayIndex != currentDayIndex);
+      }
+    }
+
+    return null;
+  }
 }
 
 //Global list of days of the week
 //Allows quick use anywhere
 const List<Widget> weekdays = <Widget>[
-  Text(
-    'Sun',
-    style: TextStyle(fontSize: 10),
-  ),
   Text(
     'Mon',
     style: TextStyle(fontSize: 10),
@@ -213,6 +324,10 @@ const List<Widget> weekdays = <Widget>[
   ),
   Text(
     'Sat',
+    style: TextStyle(fontSize: 10),
+  ),
+  Text(
+    'Sun',
     style: TextStyle(fontSize: 10),
   ),
 ];
