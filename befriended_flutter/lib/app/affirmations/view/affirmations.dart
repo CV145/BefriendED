@@ -1,6 +1,42 @@
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
 
+/*
+Notes on State Management:
+In Flutter, you construct a new widget every time its contents change.
+
+/ BAD: DO NOT DO THIS
+Widget build(BuildContext context) {
+  return SomeWidget(
+    // The initial state of the cart.
+  );
+}
+
+void updateWith(Item item) {
+  // Somehow you need to change the UI from here.
+}
+
+------------------
+
+// GOOD
+Widget build(BuildContext context) {
+  var cartModel = somehowGetMyCartModel(context);
+  return SomeWidget(
+    // Just construct the UI once, using the current state of the cart.
+    // ···
+  );
+}
+
+// GOOD
+void myTapHandler(BuildContext context) {
+  var cartModel = somehowGetMyCartModel(context);
+  cartModel.add(item);
+}
+
+Widget build method
+ */
+
+
 class AffirmationsPage extends StatefulWidget {
   const AffirmationsPage({Key? key}) : super(key: key);
 
@@ -8,6 +44,7 @@ class AffirmationsPage extends StatefulWidget {
   AffirmationsState createState() => AffirmationsState();
 }
 
+//Issue - old state object isn't being retrieved
 class AffirmationsState extends State<AffirmationsPage> {
   List<NotificationCard> cards = [];
   late final LocalNotificationService service;
@@ -47,107 +84,108 @@ class AffirmationsState extends State<AffirmationsPage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             //Children are mapped from list of cards
-            children: cards.map((cardEntry) {
+            children:
+            cards.map((cardEntry) {
               return Card(
-                child: ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        //Time Picker button
-                        child: Text(
-                          cardEntry.notificationTime.minute < 10
-                              ? '${cardEntry.notificationTime.hour}:0${cardEntry.notificationTime.minute}'
-                              : '${cardEntry.notificationTime.hour}:${cardEntry.notificationTime.minute}',
-                        ),
-                        onPressed:
-                            () //anonymous/no-named function syntax that's async
-                            async {
-                          //final variables are not re-assigned
-                          final selectedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          //Update card time
-                          selectedTime == null
-                              ? cardEntry.notificationTime =
-                                  const TimeOfDay(hour: 12, minute: 0)
-                              : cardEntry.notificationTime = selectedTime;
+              child: ListTile(
+              title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+              ElevatedButton(
+              //Time Picker button
+              child: Text(
+              cardEntry.notificationTime.minute < 10
+              ? '${cardEntry.notificationTime.hour}:0${cardEntry.notificationTime.minute}'
+                  : '${cardEntry.notificationTime.hour}:${cardEntry.notificationTime.minute}',
+              ),
+              onPressed:
+              () //anonymous/no-named function syntax that's async
+              async {
+              //final variables are not re-assigned
+              final selectedTime = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+              );
+              //Update card time
+              selectedTime == null
+              ? cardEntry.notificationTime =
+              const TimeOfDay(hour: 12, minute: 0)
+                  : cardEntry.notificationTime = selectedTime;
 
-                          final nextDate = cardEntry.getNextDateTime();
+              final nextDate = cardEntry.getNextDateTime();
 
-                          //Update the next notification's DateTime
-                          if (nextDate != null) {
-                            await cardEntry.setupNotification(
-                              service,
-                              nextDate,
-                            );
-                          }
-                          //Update UI
-                          setState(() {});
-                        },
-                      ),
-                      Switch(
-                        //Enable button
-                        value: cardEntry.isEnabled,
-                        onChanged: (value) {
-                          cardEntry.isEnabled = value;
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                  subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        //Delete button
-                        child: const Icon(Icons.delete),
-                        onPressed: () {
-                          /*delete action for this button
-                        remove the element from list whose id matches this
-                        card's id*/
-                          cards.removeWhere((element) {
-                            return element.id == cardEntry.id;
-                          });
-                          setState(() {
-                            //refreshes the UI - making it match the card list
-                          });
-                        },
-                      ),
-                      ToggleButtons(
-                        //Weekday buttons
-                        onPressed: (int index) {
-                          // All buttons are selectable.
-                          setState(() {
-                            cardEntry._chosenDays[index] =
-                                !cardEntry._chosenDays[index];
-                          });
+              //Update the next notification's DateTime
+              if (nextDate != null) {
+              await cardEntry.setupNotification(
+              service,
+              nextDate,
+              );
+              }
+              //Update UI
+              setState(() {});
+              },
+              ),
+              Switch(
+              //Enable button
+              value: cardEntry.isEnabled,
+              onChanged: (value) {
+              cardEntry.isEnabled = value;
+              setState(() {});
+              },
+              ),
+              ],
+              ),
+              subtitle: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              ElevatedButton(
+              //Delete button
+              child: const Icon(Icons.delete),
+              onPressed: () {
+              /*delete action for this button
+                                  remove the element from list whose id matches this
+                                  card's id*/
+              cards.removeWhere((element) {
+              return element.id == cardEntry.id;
+              });
+              setState(() {
+              //refreshes the UI - making it match the card list
+              });
+              },
+              ),
+              ToggleButtons(
+              //Weekday buttons
+              onPressed: (int index) {
+              // All buttons are selectable.
+              setState(() {
+              cardEntry._chosenDays[index] =
+              !cardEntry._chosenDays[index];
+              });
 
-                          final nextDate = cardEntry.getNextDateTime();
+              final nextDate = cardEntry.getNextDateTime();
 
-                          //Update the next notification's DateTime
-                          if (nextDate != null) {
-                            cardEntry.setupNotification(service, nextDate);
-                          }
-                        },
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8)),
-                        /*selectedBorderColor: Colors.green[700],
-                        fillColor: Colors.green[200],
-                        ,*/
-                        selectedColor: Colors.blue[400],
-                        color: Colors.white,
-                        constraints: const BoxConstraints(
-                          minHeight: 30,
-                          minWidth: 30,
-                        ),
-                        isSelected: cardEntry._chosenDays,
-                        children: weekdays,
-                      ),
-                    ],
-                  ),
-                ),
+              //Update the next notification's DateTime
+              if (nextDate != null) {
+              cardEntry.setupNotification(service, nextDate);
+              }
+              },
+              borderRadius:
+              const BorderRadius.all(Radius.circular(8)),
+              /*selectedBorderColor: Colors.green[700],
+                                  fillColor: Colors.green[200],
+                                  ,*/
+              selectedColor: Colors.blue[400],
+              color: Colors.white,
+              constraints: const BoxConstraints(
+              minHeight: 30,
+              minWidth: 30,
+              ),
+              isSelected: cardEntry._chosenDays,
+              children: weekdays,
+              ),
+              ],
+              ),
+              ),
               );
             }).toList(),
           ),
@@ -182,6 +220,9 @@ class AffirmationsState extends State<AffirmationsPage> {
           setState(() {
             //UI refresh
             //Because the list may exist in code but won't show unless updated
+
+            //The built ListView keeps being deleted when I move tabs
+            //Notifications appear to be showing at scheduled times
           });
         },
       ),
@@ -218,7 +259,7 @@ class NotificationCard {
     true
   ];
 
-  //Calling this method starts the notifications for this card
+  //Calling this method starts the scheduled notifications for this card
   Future<void> setupNotification(
     LocalNotificationService service,
     DateTime time,
@@ -229,6 +270,8 @@ class NotificationCard {
       body: 'Affirmation Quote',
       time: time,
     );
+
+    await service.showNotification(id: 1, title: 'Notification set!', body: '');
   }
 
   //The DateTime says the exact date and time of the next
@@ -331,3 +374,24 @@ const List<Widget> weekdays = <Widget>[
     style: TextStyle(fontSize: 10),
   ),
 ];
+
+/*
+-Notes on Flutter lifecycle-
+
+The lifecycle of the Flutter App is the show of how the application will
+ change its State. Stateful widgets change and deal with lifecycle
+
+Every time a widget updates, it is re-created/replaced with a new widget
+
+State lifecycle stages:
+createState() -when creating new Stateful widget
+initState() - called once per State object, executes before widget
+didChangeDependencies() - for API and variable re-initializations
+build() - called each time we render UI widgets on screen
+didUpdateWidget()
+setState()
+deactivate()
+dispose()
+
+Widget <- Element -> State object
+ */

@@ -86,22 +86,34 @@ class LocalNotificationService {
   }) async {
     try {
       await _localNotificationService.zonedSchedule(
-          id,
-          title,
-          body,
-          tz.TZDateTime.from(time, tz.local),
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              'your channel id',
-              'your channel name',
-              channelDescription: 'your channel description',
-            ),
+        id,
+        title,
+        body,
+        tz.TZDateTime.from(time, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'your channel id',
+            'your channel name',
+            channelDescription: 'your channel description',
           ),
-          androidAllowWhileIdle: true,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime);
+        ),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+
+      await showNotification(
+        id: 0,
+        title: 'Notification Set!',
+        body: 'Next notification at: $time',
+      );
     } catch (e) {
       //add toast message here to notify user of error
+      await showNotification(
+        id: 0,
+        title: 'Scheduled notification error',
+        body: e.toString(),
+      );
     }
   }
 
