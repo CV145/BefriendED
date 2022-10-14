@@ -150,14 +150,11 @@ class AffirmationsState extends State<AffirmationsPage> {
                       ToggleButtons(
                         //Weekday buttons
                         onPressed: (int index) {
-                          // All buttons are selectable.
+                          // Switch at the given index
                           cardEntry.chosenDays[index] =
                           !cardEntry.chosenDays[index];
-                          setState(() {
 
-                          });
-
-                          final cardKey = 'card${cardEntry.id}';
+                          print(cardEntry.chosenDays);
 
                           final nextDate = cardEntry.getNextDateTime();
 
@@ -169,6 +166,10 @@ class AffirmationsState extends State<AffirmationsPage> {
 
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
+
+                          setState(() {
+
+                          });
                         },
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8)),

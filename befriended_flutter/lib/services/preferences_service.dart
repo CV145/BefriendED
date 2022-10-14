@@ -1,6 +1,7 @@
 import 'package:befriended_flutter/app/affirmations/NotificationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_validator/string_validator.dart';
 
 /*
 SharedPreferences are used to save data between sessions
@@ -8,6 +9,9 @@ SharedPreferences are used to save data between sessions
 class PreferencesService {
   /*
   Saving data for all notification cards and the info stored in them
+
+  ...The more cards added the slower the app will get unless this algorithm
+  is changed
    */
   Future<void> saveAffirmationsData(List<NotificationCard> cards) async {
     final prefs = await SharedPreferences.getInstance();
@@ -23,27 +27,16 @@ class PreferencesService {
       await prefs.setInt('${cardKey}hour', card.notificationTime.hour);
       await prefs.setInt('${cardKey}minute', card.notificationTime.minute);
       await prefs.setBool('${cardKey}isEnabled', card.isEnabled);
-      final activeDays = <String>[
-        't',
-        't',
-        't',
-        't',
-        't',
-        't',
-        't',
-      ];
+      final activeDays = <String>[];
       /*
       For each string in the days list, cross reference with chosenDays
        */
-      var i = 0;
-      for (var day in activeDays) {
-        if (card.chosenDays[i]) {
-          day = 't';
-        } else {
-          day = 'f';
+      for (var i=0; i<7;i++) {
+        if (card.chosenDays[i] == true) {
+          activeDays.add('t');
+        } else if (card.chosenDays[i] == false) {
+          activeDays.add('f');
         }
-
-        i++;
       }
       await prefs.setStringList('${cardKey}chosenDays', activeDays);
     }
@@ -54,10 +47,10 @@ class PreferencesService {
   Future<List<NotificationCard>> loadAffirmationsData()
   async {
     final prefs = await SharedPreferences.getInstance();
-    var cards = <NotificationCard>[];
+    final cards = <NotificationCard>[];
     final numOfCards = prefs.getInt('numOfCards') ?? 0;
 
-    for (var i=1; i <= numOfCards; i++)
+    for (var i=1; i <= numOfCards; i++) //O(n)
     {
       final cardKey = 'card$i';
       final hour = prefs.getInt('${cardKey}hour') ?? 12;
@@ -67,6 +60,22 @@ class PreferencesService {
 
       final newCard = NotificationCard(id: i,
           notificationTime: TimeOfDay(hour: hour,minute: minute), isEnabled: isEnabled);
+
+      var dayIndex = 0;
+      //Load the days of the week using activeDays string list ... O(1) time
+      for(final day in activeDays!)
+      {
+        if (contains(day, 't'))
+          {
+            newCard.chosenDays[dayIndex] = true;
+          }
+        else if (contains(day,'f'))
+          {
+            newCard.chosenDays[dayIndex] = false;
+          }
+
+        dayIndex++;
+      }
 
       cards.add(newCard);
     }
