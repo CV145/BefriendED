@@ -132,18 +132,29 @@ class AffirmationsState extends State<AffirmationsPage> {
                             cards.removeWhere((element) {
                               return element.id == cardEntry.id;
                             });
-                            //Save all our updated card data
-                            _preferencesService.saveAffirmationsData(cards);
+
+                            var i = 1;
+
+                            //The ID of each subsequent card must change
+                            for(NotificationCard card in cards)
+                            {
+                                card.id = i;
+                                i++;
+                            }
+
                           });
+                          //Save all our updated card data
+                          _preferencesService.saveAffirmationsData(cards);
                         },
                       ),
                       ToggleButtons(
                         //Weekday buttons
                         onPressed: (int index) {
                           // All buttons are selectable.
+                          cardEntry.chosenDays[index] =
+                          !cardEntry.chosenDays[index];
                           setState(() {
-                            cardEntry.chosenDays[index] =
-                                !cardEntry.chosenDays[index];
+
                           });
 
                           final cardKey = 'card${cardEntry.id}';
