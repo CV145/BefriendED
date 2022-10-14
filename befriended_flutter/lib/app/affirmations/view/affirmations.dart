@@ -24,8 +24,8 @@ class AffirmationsState extends State<AffirmationsPage> {
     _notificationsService = LocalNotificationService();
     _notificationsService.initialize();
 
-    super.initState();
     _rebuildCards();
+    super.initState();
     }
 
     void _rebuildCards() async
@@ -93,11 +93,13 @@ class AffirmationsState extends State<AffirmationsPage> {
                             );
                           }
 
-                          //Save all our updated card data
-                          await _preferencesService.saveAffirmationsData(cards);
+
 
                           //Update UI
                           setState(() {});
+
+                          //Save all our updated card data
+                          await _preferencesService.saveAffirmationsData(cards);
                         },
                       ),
                       Switch(
@@ -105,9 +107,10 @@ class AffirmationsState extends State<AffirmationsPage> {
                         value: cardEntry.isEnabled,
                         onChanged: (value) {
                           cardEntry.isEnabled = value;
+
+                          setState(() {});
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
-                          setState(() {});
                         },
                       ),
                     ],
@@ -122,13 +125,15 @@ class AffirmationsState extends State<AffirmationsPage> {
                           /*delete action for this button
                           remove the element from list whose id matches this
                           card's id*/
-                          cards.removeWhere((element) {
-                            return element.id == cardEntry.id;
-                          });
-                          //Save all our updated card data
-                          _preferencesService.saveAffirmationsData(cards);
+
+
                           setState(() {
                             //refreshes the UI - making it match the card list
+                            cards.removeWhere((element) {
+                              return element.id == cardEntry.id;
+                            });
+                            //Save all our updated card data
+                            _preferencesService.saveAffirmationsData(cards);
                           });
                         },
                       ),
@@ -203,8 +208,7 @@ class AffirmationsState extends State<AffirmationsPage> {
             await newCard.setupNotification(_notificationsService, nextDate);
           }
 
-          //Save all our updated card data
-          await _preferencesService.saveAffirmationsData(cards);
+
 
           setState(() {
             //UI refresh
@@ -213,6 +217,9 @@ class AffirmationsState extends State<AffirmationsPage> {
             //The built ListView keeps being deleted when I move tabs
             //Notifications appear to be showing at scheduled times
           });
+
+          //Save all our updated card data
+          await _preferencesService.saveAffirmationsData(cards);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

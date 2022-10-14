@@ -57,7 +57,7 @@ class PreferencesService {
     var cards = <NotificationCard>[];
     final numOfCards = prefs.getInt('numOfCards') ?? 0;
 
-    for (var i=0; i < numOfCards; i++)
+    for (var i=1; i <= numOfCards; i++)
     {
       final cardKey = 'card$i';
       final hour = prefs.getInt('${cardKey}hour') ?? 12;
