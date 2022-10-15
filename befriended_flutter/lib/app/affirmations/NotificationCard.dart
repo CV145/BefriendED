@@ -36,7 +36,7 @@ class NotificationCard {
       DateTime time,
       ) async {
     await service.setupScheduledNotification(
-      id: id,
+      id: id, //Card ID = Notification ID
       title: 'Affirmation Test',
       body: 'Affirmation Quote',
       time: time,
@@ -73,8 +73,8 @@ class NotificationCard {
 
     //Consider the hour first, then the minute, then check if today is a good
     //day to notify the user
-    if (currentTime.hour < notificationTime.hour &&
-        currentTime.minute < notificationTime.minute &&
+    if (currentTime.hour <= notificationTime.hour &&
+        currentTime.minute <= notificationTime.minute &&
         chosenDays[currentDayIndex]) {
       return DateTime(
         currentDate.year,

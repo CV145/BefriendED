@@ -76,8 +76,7 @@ class LocalNotificationService {
   }
 
   //Show a notification at the given DateTime (an object that contains info on a
-  //date: day, hour, minute) - this means a new DateTime needs to be made if
-  //we're making recurring notifications
+  //date: day, hour, minute) - repeat at the same day of the week and time
   Future<void> setupScheduledNotification({
     required int id,
     required String title,
@@ -100,7 +99,11 @@ class LocalNotificationService {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
+
+      print('notification set!');
+      print('Next notification at: $time');
 
       await showNotification(
         id: 0,

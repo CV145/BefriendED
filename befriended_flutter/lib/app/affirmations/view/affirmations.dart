@@ -126,6 +126,8 @@ class AffirmationsState extends State<AffirmationsPage> {
                           remove the element from list whose id matches this
                           card's id*/
 
+                          //Cancel the notification set for this time
+                          //There is only 1 notification per card
 
                           setState(() {
                             //refreshes the UI - making it match the card list
@@ -134,9 +136,8 @@ class AffirmationsState extends State<AffirmationsPage> {
                             });
 
                             var i = 1;
-
                             //The ID of each subsequent card must change
-                            for(NotificationCard card in cards)
+                            for(final card in cards)
                             {
                                 card.id = i;
                                 i++;
@@ -154,7 +155,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                           cardEntry.chosenDays[index] =
                           !cardEntry.chosenDays[index];
 
-                          print(cardEntry.chosenDays);
 
                           final nextDate = cardEntry.getNextDateTime();
 
