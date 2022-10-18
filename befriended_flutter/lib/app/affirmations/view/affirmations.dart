@@ -145,6 +145,8 @@ class AffirmationsState extends State<AffirmationsPage> {
 
                           //Cancel the notification set for this time
                           //There is only 1 notification per card
+                          cardEntry.toggleNotification(cancelThisCard: true,
+                              service: _notificationsService,);
 
                           setState(() {
                             //refreshes the UI - making it match the card list
