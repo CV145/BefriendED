@@ -12,24 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-// class HomePage extends StatelessWidget {
-//   const HomePage({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiBlocProvider(
-//       providers: [
-//         BlocProvider<LoginCubit>(
-//           create: (context) =>
-//               LoginCubit(localStorage: context.read<LocalStorage>()),
-//         ),
-//       ],
-//       child: const HomePageView(),
-//     );
-//   }
-// }
 
 class MyBottomNavigator extends StatefulWidget {
+
+  //Stateful widget class constructor - specifies widget parameters needed
   const MyBottomNavigator({
     Key? key,
     required this.selectedPage,
@@ -54,7 +40,6 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
-        // borderRadius: BorderRadius.all(Radius.circular(10)),
         boxShadow: const [
           BoxShadow(
             color: Colors.grey, //New
@@ -63,33 +48,9 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
           )
         ],
       ),
-      // shape: const CircularNotchedRectangle(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          IconButton(
-            icon: Icon(
-              HomePageStatus.home == widget.selectedPage
-                  ? Icons.home_rounded
-                  : Icons.home_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 25,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.home, 1);
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              HomePageStatus.chat == widget.selectedPage
-                  ? Icons.question_answer_rounded
-                  : Icons.question_answer_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.chat, 2);
-            },
-          ),
           IconButton(
             icon: Icon(
               HomePageStatus.blog == widget.selectedPage
@@ -123,7 +84,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               builder: (context, state) {
                 return IconButton(
                   icon: Icon(
-                    state.isLoggedIn ? Icons.add_rounded : Icons.login_rounded,
+                    Icons.accessibility,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
@@ -136,11 +97,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                         },
                         shadow: const BoxShadow(
                           color: Colors.transparent,
-                          blurRadius: 0,
-                          spreadRadius: 0,
-                          offset: Offset(0, 0),
                         ),
-                        // duration: Duration(milliseconds: 500),
                       );
                     } else {
                       Navigator.push<dynamic>(context, _createRoute());
@@ -149,30 +106,6 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                 );
               },
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              HomePageStatus.affirmationSettings == widget.selectedPage
-                  ? Icons.access_alarm_rounded
-                  : Icons.access_alarm_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 30,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.affirmationSettings, 5);
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              HomePageStatus.resources == widget.selectedPage
-                  ? Icons.accessibility_rounded
-                  : Icons.accessibility_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
-              size: 30,
-            ),
-            onPressed: () {
-              widget.onTapped(HomePageStatus.resources, 4);
-            },
           ),
           IconButton(
             icon: Icon(

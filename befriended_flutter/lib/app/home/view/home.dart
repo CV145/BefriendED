@@ -22,31 +22,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message: ${message.messageId}');
 }
 
+//Dictionary: Key - Enum value, Value - Widget constructor function
 Map<HomePageStatus, Function> homePages = {
   HomePageStatus.home: () => const HomeTabPage(key: ValueKey(1)),
   HomePageStatus.chat: () => const ChatPage(key: ValueKey(2)),
   HomePageStatus.blog: () => const SupportPage(key: ValueKey(3)),
-  HomePageStatus.resources: () => const ResourcesPage(key: ValueKey(5)),
-  HomePageStatus.affirmationSettings: () => const AffirmationsPage(key: ValueKey(4)),
-  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(6)),
+  HomePageStatus.resources: () => const ResourcesPage(key: ValueKey(4)),
+  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(5)),
+  //HomePageStatus.affirmationSettings: () => const AffirmationsPage(key: ValueKey(6)),
 };
 
-// class HomePage extends StatelessWidget {
-//   const HomePage({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiBlocProvider(
-//       providers: [
-//         BlocProvider<LoginCubit>(
-//           create: (context) =>
-//               LoginCubit(localStorage: context.read<LocalStorage>()),
-//         ),
-//       ],
-//       child: const HomePageView(),
-//     );
-//   }
-// }
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -155,9 +140,6 @@ class _HomeState extends State<HomePage> with WidgetsBindingObserver {
                         child: child,
                       );
                     },
-                    // layoutBuilder: (currentChild, _) {
-                    //   return currentChild;
-                    // },
                     child: homePages[_selectedPage]?.call() as Widget,
                   ),
                 ),
@@ -176,7 +158,6 @@ class _HomeState extends State<HomePage> with WidgetsBindingObserver {
   void onTapped(HomePageStatus page, int index) {
     setState(() {
       _selectedPage = page;
-      // _selectedPageWidget = homePages[page]?.call() as Widget;
       _previousIndex = _selectedIndex;
       _selectedIndex = index;
     });
@@ -294,23 +275,3 @@ class NotificationBadge extends StatelessWidget {
   }
 }
 
-// floatingActionButton: SizedBox(
-        //   width: 50,
-        //   height: 50,
-        //   child: FittedBox(
-        //     child: FloatingActionButton(
-        //       backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        //       //Floating action button on Scaffold
-        //       onPressed: () {
-        //         //code to execute on button press
-        //       },
-        //       child: Icon(
-        //         Icons.add_rounded,
-        //         color: Theme.of(context).colorScheme.primary,
-        //         size: 35,
-        //       ), //icon inside button
-        //     ),
-        //   ),
-        // ),
-        // floatingActionButtonLocation: 
-        // FloatingActionButtonLocation.centerDocked,
