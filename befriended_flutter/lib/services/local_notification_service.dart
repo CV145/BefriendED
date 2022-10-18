@@ -102,9 +102,6 @@ class LocalNotificationService {
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
 
-      print('notification set!');
-      print('Next notification at: $time');
-
       await showNotification(
         id: 0,
         title: 'Notification Set!',
@@ -118,6 +115,18 @@ class LocalNotificationService {
         body: e.toString(),
       );
     }
+  }
+
+  //Cancel the given notification
+  Future<void> cancelNotification(int givenID)
+  async {
+    await _localNotificationService.cancel(givenID);
+    await showNotification(
+        id: 0,
+        title: 'Notification $givenID cancelled', body: '',
+    );
+
+    print('Notification $givenID cancelled');
   }
 
   void onSelectNotification(String? payload) {

@@ -10,15 +10,19 @@ class NotificationCard {
     required this.id,
     required this.notificationTime,
     required this.isEnabled,
-  });
+  })
+  {
+    storedDateTime = getNextDateTime();
+  }
 
   int id;
   TimeOfDay notificationTime;
   bool isEnabled;
+  late DateTime storedDateTime;
 
   /*
     There are 7 days. Index 0 = Monday. Index 6 = Sunday
-    Note: The pointer is final, but the contents pointed to can change
+    Note: The pointer address is final, but the contents pointed to can change
   */
   final List<bool> chosenDays = <bool>[
     true,
@@ -29,6 +33,25 @@ class NotificationCard {
     true,
     true
   ];
+
+  //Cancel this card's notification
+  void toggleNotification({required bool cancelThisCard,
+    required LocalNotificationService service,})
+  {
+    /*
+    A card notification's ID is the same as the card ID
+     */
+    if (cancelThisCard)
+    {
+      service.cancelNotification(id);
+      print('Notification cancelled');
+    }
+    else
+    {
+     setupNotification(service, storedDateTime);
+    }
+
+  }
 
   //Calling this method starts the scheduled notifications for this card
   Future<void> setupNotification(
@@ -45,28 +68,8 @@ class NotificationCard {
     await service.showNotification(id: 1, title: 'Notification set!', body: '');
   }
 
-  //The DateTime says the exact date and time of the next
-  //notification
-  /*
-    There are 2 pieces of information we have: the daily time
-    of the notification and the next day it will check relative
-    to the current day.
-
-    What time is it? Is the current time before or after
-    the card's notification time?
-
-    If it's before, what day is it? Is today a valid day on the
-    card? If so, the next DateTime will be today at the requested
-    time.
-
-    If it's after, when's the next valid day? Is it tomorrow?
-    The day after tomorrow? Once the next valid day is found,
-    it will be stored in the next DateTime with the requested
-    time.
-
-    If there are no valid days, return null
-  */
-  DateTime? getNextDateTime() {
+  //The DateTime says the exact date and time of the next notification
+  DateTime getNextDateTime() {
     final currentTime = TimeOfDay.now();
     final currentDate = DateTime.now();
     final currentDayIndex = currentDate.weekday - 1;
@@ -109,7 +112,9 @@ class NotificationCard {
       }
     }
 
-    return null;
+    final Error error =
+    ArgumentError('Error grabbing next DateTime for notification card: $id');
+    throw error;
   }
 }
 

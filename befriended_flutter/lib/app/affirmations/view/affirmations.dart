@@ -94,12 +94,10 @@ class AffirmationsState extends State<AffirmationsPage> {
                           final nextDate = cardEntry.getNextDateTime();
 
                           //Update the next notification's DateTime
-                          if (nextDate != null) {
-                            await cardEntry.setupNotification(
-                              _notificationsService,
-                              nextDate,
-                            );
-                          }
+                          await cardEntry.setupNotification(
+                            _notificationsService,
+                            nextDate,
+                          );
 
                           //Update UI
                           setState(() {});
@@ -112,9 +110,22 @@ class AffirmationsState extends State<AffirmationsPage> {
                         //Enable button
                         value: cardEntry.isEnabled,
                         onChanged: (value) {
-                          cardEntry.isEnabled = value;
+                          setState(() {cardEntry.isEnabled = value;});
 
-                          setState(() {});
+                          if (value == false)
+                          {
+                            cardEntry.toggleNotification(
+                                service: _notificationsService,
+                                cancelThisCard: true,);
+                          }
+                          else
+                          {
+                            cardEntry.toggleNotification(
+                              service: _notificationsService,
+                              cancelThisCard: false,);
+                          }
+
+
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
                         },
@@ -162,12 +173,10 @@ class AffirmationsState extends State<AffirmationsPage> {
                           final nextDate = cardEntry.getNextDateTime();
 
                           //Update the next notification's DateTime
-                          if (nextDate != null) {
-                            cardEntry.setupNotification(
-                              _notificationsService,
-                              nextDate,
-                            );
-                          }
+                          cardEntry.setupNotification(
+                            _notificationsService,
+                            nextDate,
+                          );
 
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
@@ -219,16 +228,11 @@ class AffirmationsState extends State<AffirmationsPage> {
           final nextDate = newCard.getNextDateTime();
 
           //Update the next notification's DateTime
-          if (nextDate != null) {
-            await newCard.setupNotification(_notificationsService, nextDate);
-          }
+          await newCard.setupNotification(_notificationsService, nextDate);
+
 
           setState(() {
             //UI refresh
-            //Because the list may exist in code but won't show unless updated
-
-            //The built ListView keeps being deleted when I move tabs
-            //Notifications appear to be showing at scheduled times
           });
 
           //Save all our updated card data
