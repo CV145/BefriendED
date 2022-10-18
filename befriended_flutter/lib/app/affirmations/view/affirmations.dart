@@ -4,7 +4,10 @@ import 'package:befriended_flutter/services/preferences_service.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationsPage extends StatefulWidget {
-  const AffirmationsPage({Key? key}) : super(key: key);
+  const AffirmationsPage({Key? key, required this.closeAffirmationsOnTap})
+      : super(key: key);
+
+  final Function() closeAffirmationsOnTap;
 
   @override
   AffirmationsState createState() => AffirmationsState();
@@ -39,6 +42,18 @@ class AffirmationsState extends State<AffirmationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.close,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+          onPressed: () {
+            //Close this widget
+            widget.closeAffirmationsOnTap();
+            //Update UI
+            setState(() {});
+          },
+        ),
         title: const Text(
           'Set Affirmation Reminders',
           style: TextStyle(fontSize: 15),

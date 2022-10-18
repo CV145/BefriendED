@@ -14,7 +14,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({Key? key})
+      : super(key: key);
 
   @override
   SettingsState createState() => SettingsState();
@@ -32,12 +33,21 @@ class SettingsState extends State<SettingsPage> {
             _getSettingsPage(context, state),
             Visibility(
               visible: _affirmationsVisibility,
-              child: const AffirmationsPage(),
+              child: AffirmationsPage(closeAffirmationsOnTap:
+              _closeAffirmationsOnTap,),
             ),
           ],
         );
       },
     );
+  }
+
+  void _closeAffirmationsOnTap()
+  {
+    _affirmationsVisibility = false;
+    setState(() {
+      // Update UI
+    });
   }
 
   Widget _getSettingsPage(BuildContext context, AppState state) {

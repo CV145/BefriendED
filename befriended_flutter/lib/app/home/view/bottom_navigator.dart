@@ -84,7 +84,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               builder: (context, state) {
                 return IconButton(
                   icon: Icon(
-                    Icons.accessibility,
+                    Icons.account_circle_outlined,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
