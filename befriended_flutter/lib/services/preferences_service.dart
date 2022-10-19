@@ -24,8 +24,8 @@ class PreferencesService {
 
     for (final card in cards) {
       final cardKey = 'card${card.id.toString()}';
-      await prefs.setInt('${cardKey}hour', card.notificationTime.hour);
-      await prefs.setInt('${cardKey}minute', card.notificationTime.minute);
+      await prefs.setInt('${cardKey}hour', card.affirmationTime.hour);
+      await prefs.setInt('${cardKey}minute', card.affirmationTime.minute);
       await prefs.setBool('${cardKey}isEnabled', card.isEnabled);
       final activeDays = <String>[];
       /*
@@ -59,7 +59,7 @@ class PreferencesService {
       final activeDays = prefs.getStringList('${cardKey}chosenDays');
 
       final newCard = NotificationCard(id: i,
-          notificationTime: TimeOfDay(hour: hour,minute: minute), isEnabled: isEnabled);
+          affirmationTime: TimeOfDay(hour: hour,minute: minute), isEnabled: isEnabled);
 
       var dayIndex = 0;
       //Load the days of the week using activeDays string list ... O(1) time

@@ -73,9 +73,9 @@ class AffirmationsState extends State<AffirmationsPage> {
                       ElevatedButton(
                         //Time Picker button
                         child: Text(
-                          cardEntry.notificationTime.minute < 10
-                              ? '${cardEntry.notificationTime.hour}:0${cardEntry.notificationTime.minute}'
-                              : '${cardEntry.notificationTime.hour}:${cardEntry.notificationTime.minute}',
+                          cardEntry.affirmationTime.minute < 10
+                              ? '${cardEntry.affirmationTime.hour}:0${cardEntry.affirmationTime.minute}'
+                              : '${cardEntry.affirmationTime.hour}:${cardEntry.affirmationTime.minute}',
                         ),
                         onPressed:
                             () //anonymous/no-named function syntax that's async
@@ -87,16 +87,13 @@ class AffirmationsState extends State<AffirmationsPage> {
                           );
                           //Update card time
                           selectedTime == null
-                              ? cardEntry.notificationTime =
+                              ? cardEntry.affirmationTime =
                                   const TimeOfDay(hour: 12, minute: 0)
-                              : cardEntry.notificationTime = selectedTime;
+                              : cardEntry.affirmationTime = selectedTime;
 
-                          final nextDate = cardEntry.getNextDateTime();
-
-                          //Update the next notification's DateTime
-                          await cardEntry.setupNotification(
+                          //Schedule the notification
+                          await cardEntry.scheduleNotification(
                             _notificationsService,
-                            nextDate,
                           );
 
                           //Update UI
@@ -110,22 +107,17 @@ class AffirmationsState extends State<AffirmationsPage> {
                         //Enable button
                         value: cardEntry.isEnabled,
                         onChanged: (value) {
-                          setState(() {cardEntry.isEnabled = value;});
+                          setState(() {
+                            cardEntry.isEnabled = value;
+                          });
 
-                          if (value == false)
-                          {
-                            cardEntry.toggleNotification(
-                                service: _notificationsService,
-                                cancelThisCard: true,);
+                          if (value == false) {
+                            cardEntry.cancelNotification(
+                              _notificationsService,
+                            );
+                          } else {
+                            cardEntry.scheduleNotification(_notificationsService);
                           }
-                          else
-                          {
-                            cardEntry.toggleNotification(
-                              service: _notificationsService,
-                              cancelThisCard: false,);
-                          }
-
-
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
                         },
@@ -145,8 +137,7 @@ class AffirmationsState extends State<AffirmationsPage> {
 
                           //Cancel the notification set for this time
                           //There is only 1 notification per card
-                          cardEntry.toggleNotification(cancelThisCard: true,
-                              service: _notificationsService,);
+                          cardEntry.cancelNotification(_notificationsService);
 
                           setState(() {
                             //refreshes the UI - making it match the card list
@@ -155,7 +146,7 @@ class AffirmationsState extends State<AffirmationsPage> {
                             });
 
                             var i = 1;
-                            //The ID of each subsequent card must change
+                            //Reset the IDs of the cards
                             for (final card in cards) {
                               card.id = i;
                               i++;
@@ -172,24 +163,27 @@ class AffirmationsState extends State<AffirmationsPage> {
                           cardEntry.chosenDays[index] =
                               !cardEntry.chosenDays[index];
 
-                          final nextDate = cardEntry.getNextDateTime();
 
-                          //Update the next notification's DateTime
-                          cardEntry.setupNotification(
-                            _notificationsService,
-                            nextDate,
-                          );
+
+                          //Update UI
+                          setState(() {});
+
+
+                          print(
+                              'Day pressed: $index for card #${cardEntry.id}');
+                          print('Chosen days: ${cardEntry.chosenDays}');
+
 
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
 
-                          setState(() {});
+                          //Update the card's notification
+                            cardEntry.scheduleNotification(
+                              _notificationsService,
+                            );
                         },
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8)),
-                        /*selectedBorderColor: Colors.green[700],
-                                  fillColor: Colors.green[200],
-                                  ,*/
                         selectedColor: Colors.blue[400],
                         color: Colors.white,
                         constraints: const BoxConstraints(
@@ -219,23 +213,20 @@ class AffirmationsState extends State<AffirmationsPage> {
           final newID = cards.length + 1;
           final newCard = NotificationCard(
             id: newID,
-            notificationTime: const TimeOfDay(hour: 12, minute: 0),
+            affirmationTime: const TimeOfDay(hour: 12, minute: 0),
             isEnabled: true,
           );
           cards.add(newCard);
           selectedTime == null
-              ? newCard.notificationTime = const TimeOfDay(hour: 12, minute: 0)
-              : newCard.notificationTime = selectedTime;
-
-          final nextDate = newCard.getNextDateTime();
-
-          //Update the next notification's DateTime
-          await newCard.setupNotification(_notificationsService, nextDate);
-
+              ? newCard.affirmationTime = const TimeOfDay(hour: 12, minute: 0)
+              : newCard.affirmationTime = selectedTime;
 
           setState(() {
             //UI refresh
           });
+
+          //Schedule a notification using the new DateTime
+          await newCard.scheduleNotification(_notificationsService);
 
           //Save all our updated card data
           await _preferencesService.saveAffirmationsData(cards);

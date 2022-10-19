@@ -4,21 +4,19 @@
 //A ListTile or some other widget then REPRESENTS this information
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationCard {
   NotificationCard({
     required this.id,
-    required this.notificationTime,
+    required this.affirmationTime,
     required this.isEnabled,
-  })
-  {
-    storedDateTime = getNextDateTime();
-  }
+  });
 
   int id;
-  TimeOfDay notificationTime;
+  TimeOfDay affirmationTime = const TimeOfDay(hour: 12, minute: 0);
   bool isEnabled;
-  late DateTime storedDateTime;
+  late DateTime nextNotificationTime;
 
   /*
     There are 7 days. Index 0 = Monday. Index 6 = Sunday
@@ -34,86 +32,100 @@ class NotificationCard {
     true
   ];
 
-  //Cancel this card's notification
-  void toggleNotification({required bool cancelThisCard,
-    required LocalNotificationService service,})
-  {
-    /*
-    A card notification's ID is the same as the card ID
-     */
-    if (cancelThisCard)
-    {
-      service.cancelNotification(id);
-      print('Notification cancelled');
-    }
-    else
-    {
-     setupNotification(service, storedDateTime);
-    }
-
+  //Simply disable the notification
+  void cancelNotification(LocalNotificationService service) {
+    service.cancelNotification(id);
   }
 
-  //Calling this method starts the scheduled notifications for this card
-  Future<void> setupNotification(
-      LocalNotificationService service,
-      DateTime time,
-      ) async {
+  //Update the notification with this card's ID
+  Future<void> scheduleNotification(
+    LocalNotificationService service,
+  ) async {
+    getNextNotificationTime();
     await service.setupScheduledNotification(
       id: id, //Card ID = Notification ID
       title: 'Affirmation Test',
       body: 'Affirmation Quote',
-      time: time,
+      time: nextNotificationTime,
     );
-
     await service.showNotification(id: 1, title: 'Notification set!', body: '');
+    print('Notification set');
   }
 
   //The DateTime says the exact date and time of the next notification
-  DateTime getNextDateTime() {
+  void getNextNotificationTime() {
     final currentTime = TimeOfDay.now();
     final currentDate = DateTime.now();
     final currentDayIndex = currentDate.weekday - 1;
 
-    //Consider the hour first, then the minute, then check if today is a good
-    //day to notify the user
-    if (currentTime.hour <= notificationTime.hour &&
-        currentTime.minute <= notificationTime.minute &&
-        chosenDays[currentDayIndex]) {
-      return DateTime(
+    print('Time: $affirmationTime for card #$id');
+    print('Current day index: $currentDayIndex');
+
+    /* check if today is a good day to notify the user if one of these
+    conditions are true:
+    - current hour is before affirmation hour and today is valid
+    - current hour matches affirmation hour and minute is before affirmation
+    minute and today is valid
+     */
+    if ((currentTime.hour < affirmationTime.hour &&
+            chosenDays[currentDayIndex]) ||
+        (currentTime.hour == affirmationTime.hour &&
+            currentTime.minute < affirmationTime.minute &&
+            chosenDays[currentDayIndex])) {
+      nextNotificationTime = DateTime(
         currentDate.year,
         currentDate.month,
         currentDate.day,
-        notificationTime.hour,
-        notificationTime.minute,
+        affirmationTime.hour,
+        affirmationTime.minute,
       );
-    } else if (currentTime.hour > notificationTime.hour) {
-      //Get next active day
+      return;
+    } else
+    {
       if (chosenDays.contains(true)) {
+        //Get next active day
         var nextDayIndex = currentDayIndex;
 
         //Need to check if there's a new year/new month
-        var nextDay = currentDate;
+        var nextDate = currentDate;
 
         do {
           //Search day by day to find the next date
-          nextDayIndex++ > 6 ? nextDayIndex = 0 : nextDayIndex = nextDayIndex;
-          nextDay = nextDay.add(const Duration(days: 1));
+          nextDayIndex++;
+          if (nextDayIndex > 6)
+          {
+            nextDayIndex = 0;
+          }
 
+          print('Date before adding 1 day: $nextDate');
+          //Add 1 day to the date
+          nextDate = nextDate.add(const Duration(days: 1));
+          print('Date after adding 1 day: $nextDate');
+
+          print('Considering day: $nextDayIndex');
+          print('Considering date: $nextDate');
+
+          //If the next day is valid, set the notification time on it
           if (chosenDays[nextDayIndex]) {
-            return DateTime(
-              nextDay.year,
-              nextDay.month,
-              nextDay.day,
-              notificationTime.hour,
-              notificationTime.minute,
+            nextNotificationTime = DateTime(
+              nextDate.year,
+              nextDate.month,
+              nextDate.day,
+              affirmationTime.hour,
+              affirmationTime.minute,
             );
+            return;
+          }
+          else
+          {
+            print('Day invalid');
           }
         } while (nextDayIndex != currentDayIndex);
       }
     }
 
-    final Error error =
-    ArgumentError('Error grabbing next DateTime for notification card: $id');
+    final Error error = ArgumentError(
+        'Error grabbing next DateTime for notification card: $id');
     throw error;
   }
 }

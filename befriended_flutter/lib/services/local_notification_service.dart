@@ -101,11 +101,13 @@ class LocalNotificationService {
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
+      
+      print('Next notification at: $time on ${time.weekday}');
 
       await showNotification(
         id: 0,
-        title: 'Notification Set!',
-        body: 'Next notification at: $time',
+        title: 'Notification Set! Where Mon = 1',
+        body: 'Next notification at: $time on ${time.weekday}',
       );
     } catch (e) {
       //add toast message here to notify user of error
@@ -125,8 +127,6 @@ class LocalNotificationService {
         id: 0,
         title: 'Notification $givenID cancelled', body: '',
     );
-
-    print('Notification $givenID cancelled');
   }
 
   void onSelectNotification(String? payload) {
