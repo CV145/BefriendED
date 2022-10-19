@@ -91,10 +91,13 @@ class AffirmationsState extends State<AffirmationsPage> {
                                   const TimeOfDay(hour: 12, minute: 0)
                               : cardEntry.affirmationTime = selectedTime;
 
-                          //Schedule the notification
-                          await cardEntry.scheduleNotification(
-                            _notificationsService,
-                          );
+                          if (cardEntry.isEnabled)
+                          {
+                            //Schedule the notification
+                            await cardEntry.scheduleNotification(
+                              _notificationsService,
+                            );
+                          }
 
                           //Update UI
                           setState(() {});
@@ -177,10 +180,13 @@ class AffirmationsState extends State<AffirmationsPage> {
                           //Save all our updated card data
                           _preferencesService.saveAffirmationsData(cards);
 
-                          //Update the card's notification
-                            cardEntry.scheduleNotification(
+                          if (cardEntry.isEnabled)
+                          {
+                            //Schedule the notification
+                             cardEntry.scheduleNotification(
                               _notificationsService,
                             );
+                          }
                         },
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8)),
