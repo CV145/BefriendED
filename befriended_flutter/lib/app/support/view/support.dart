@@ -22,39 +22,6 @@ class SupportPage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (context) => SupportCubit(),
-//       child: SupportPageWidget(),
-//     );
-//   }
-// }
-
-// class SupportPageWidget extends StatelessWidget {
-//   const SupportPageWidget({Key? key}) : super(key: key);
-
-//   @override
-//   State<SupportPage> createState() => _SupportPageState();
-// }
-
-// class _SupportPageState extends State<SupportPage>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController _controller;
-
-//   @override
-//   initState() {
-//     super.initState();
-//     _controller = BottomSheet.createAnimationController(this);
-//     _controller.duration = Duration(seconds: 1);
-//   }
-
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SupportCubit, SupportState>(

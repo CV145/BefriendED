@@ -4,7 +4,6 @@
 //A ListTile or some other widget then REPRESENTS this information
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationCard {
   NotificationCard({
@@ -125,7 +124,7 @@ class NotificationCard {
     }
 
     final Error error = ArgumentError(
-        'Error grabbing next DateTime for notification card: $id');
+        'Error grabbing next DateTime for notification card: $id',);
     throw error;
   }
 }
