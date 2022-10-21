@@ -7,6 +7,7 @@ import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/home/view/common_menu.dart';
 import 'package:befriended_flutter/app/hometab/view/hometab.dart';
 import 'package:befriended_flutter/app/login/login.dart';
+import 'package:befriended_flutter/app/user_profile/user_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,20 +89,22 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
-                    if (state.isLoggedIn) {
+                    //Commented out logging in for debug purposes
+                    //if (state.isLoggedIn) {
                       CupertinoScaffold.showCupertinoModalBottomSheet<String>(
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) {
-                          return const CommonMenu();
+                         // return const CommonMenu();
+                          return const UserProfilePage();
                         },
                         shadow: const BoxShadow(
                           color: Colors.transparent,
                         ),
                       );
-                    } else {
+                   /* } else {
                       Navigator.push<dynamic>(context, _createRoute());
-                    }
+                    }*/
                   },
                 );
               },
@@ -124,7 +127,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
   }
 
   Route _createRoute() {
-    return PageRouteBuilder<Null>(
+    return PageRouteBuilder<void>(
       settings: const RouteSettings(name: RouteConstants.login),
       pageBuilder: (context, animation, secondaryAnimation) =>
           const LoginScreen(isBackAllowed: true),

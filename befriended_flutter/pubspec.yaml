@@ -45,6 +45,7 @@ dependencies:
   rxdart: ^0.27.4
   weekday_selector: ^1.1.0
   string_validator: ^0.3.0
+  flutter_tags: ^1.0.0-nullsafety.1
 
 dev_dependencies:
   bloc_test: ^9.0.3
