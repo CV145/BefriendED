@@ -95,8 +95,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) {
-                         // return const CommonMenu();
-                          return const UserProfilePage();
+                          return UserProfilePage();
                         },
                         shadow: const BoxShadow(
                           color: Colors.transparent,

@@ -52,7 +52,7 @@ class LaunchPage extends StatelessWidget {
                 delay: 900,
                 child: Align(
                   child: Text(
-                    'we are always here for you!!',
+                    'We are always here for you!',
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                 ),

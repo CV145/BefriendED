@@ -12,8 +12,9 @@ class Tags
 {
   Tags()
   {
-    chipsList = eatingDisorderTopics.map((topic) => Chip(
+    chipsList = eatingDisorderTopics.map((topic) => FilterChip(
       label: Text(topic),
+      onSelected: (bool value) {  },
     ),).toList();
   }
 
@@ -26,6 +27,6 @@ class Tags
   ];
 
   //Build a list of Chip Items by instantiating
-  late List<Chip> chipsList = [];
+  late List<FilterChip> chipsList = [];
 }
 

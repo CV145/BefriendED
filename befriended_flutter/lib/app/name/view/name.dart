@@ -81,7 +81,7 @@ class NamePage extends StatelessWidget {
               FadeUpAnimation(
                 delay: 500,
                 child: Text(
-                  'Nice to meet you! what should i call you?',
+                  'Nice to meet you! What should we call you?',
                   style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
