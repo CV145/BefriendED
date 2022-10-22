@@ -16,7 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-enum HomePageStatus { home, chat, blog, affirmationSettings, resources, setting}
+enum HomePageStatus {support, setting}
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message: ${message.messageId}');
@@ -24,11 +24,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 //Dictionary: Key - Enum value, Value - Widget constructor function
 Map<HomePageStatus, Function> homePages = {
-  HomePageStatus.home: () => const HomeTabPage(key: ValueKey(1)),
-  HomePageStatus.chat: () => const ChatPage(key: ValueKey(2)),
-  HomePageStatus.blog: () => const SupportPage(key: ValueKey(3)),
-  HomePageStatus.resources: () => const ResourcesPage(key: ValueKey(4)),
-  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(5)),
+  HomePageStatus.support: () => const SupportPage(key: ValueKey(1)),
+  HomePageStatus.setting: () => const SettingsPage(key: ValueKey(2)),
 };
 
 
@@ -40,7 +37,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> with WidgetsBindingObserver {
-  HomePageStatus _selectedPage = HomePageStatus.home;
+  HomePageStatus _selectedPage = HomePageStatus.support;
   int _selectedIndex = 1;
   int _previousIndex = 0;
 

@@ -37,18 +37,17 @@ class UserProfilePageState extends State<UserProfilePage> {
                 //Horizontal Alignment
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 //Vertical ("main") axis
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   widget.user.getUserCardWidget(context),
                   const SizedBox(
                     height: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Wrap(
-                      spacing: 10,
-                      children: tagPool.chipsList,
-                    ),
+                  Column(
+                    children: [
+                      const Text('Choose your interests from the list below:'),
+                      Wrap(children: tagPool.chipsList),
+                    ],
                   ),
                 ],
               ),
@@ -64,30 +63,31 @@ class UserProfilePageState extends State<UserProfilePage> {
 User model object, represents a profile, uploaded to Firebase
  */
 class User {
-  User(String givenName) {name = givenName;}
-  String name = 'Carlos';
+  User(String givenName) {
+    name = givenName;
+  }
+
+  String name = 'User';
   List<FilterChip> tags = [];
 
   //Return widget displaying user info on a card
-  Widget getUserCardWidget(BuildContext context)
-  {
-      return Card(
-        child: Container(
-            //width: 80,
-            //height: 80,
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(top: 50),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius:
-              const BorderRadius.all(Radius.circular(100)),
-            ),
-            child: Text(
-              name,
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-          ),
-      );
+  Widget getUserCardWidget(BuildContext context) {
+    return Card(
+      child: Container(
+        //width: 80,
+        //height: 80,
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(top: 50),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: const BorderRadius.all(Radius.circular(100)),
+        ),
+        child: Text(
+          name,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }

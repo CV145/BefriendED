@@ -54,14 +54,14 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
         children: <Widget>[
           IconButton(
             icon: Icon(
-              HomePageStatus.blog == widget.selectedPage
+              HomePageStatus.support == widget.selectedPage
                   ? Icons.groups_rounded
                   : Icons.groups_outlined,
               color: Theme.of(context).colorScheme.onPrimary,
               size: 30,
             ),
             onPressed: () {
-              widget.onTapped(HomePageStatus.blog, 3);
+              widget.onTapped(HomePageStatus.support, 1);
             },
           ),
           Container(
@@ -117,7 +117,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
               color: Theme.of(context).colorScheme.onPrimary,
             ),
             onPressed: () {
-              widget.onTapped(HomePageStatus.setting, 6);
+              widget.onTapped(HomePageStatus.setting, 2);
             },
           ),
         ],

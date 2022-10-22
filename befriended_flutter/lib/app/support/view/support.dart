@@ -26,9 +26,9 @@ class SupportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SupportCubit, SupportState>(
       builder: (context, supportState) {
-        if (supportState.requestData?.isApproved ?? false) {
+       // if (supportState.requestData?.isApproved ?? false) {
           return buildSupportPage(context);
-        }
+        //}
         return buildJoinUs(context, supportState);
       },
     );
@@ -36,7 +36,6 @@ class SupportPage extends StatelessWidget {
 
   Widget buildSupportPage(BuildContext context) {
     return Container(
-      // child: Text('secnd Page'),
       child: DefaultTabController(
         length: 3,
         initialIndex: 0,
@@ -62,15 +61,15 @@ class SupportPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                tabs: [
+                tabs: const [
                   Tab(
-                    child: Text('Online'),
-                  ),
-                  Tab(
-                    child: Text('Befriend'),
+                    child: Text('Requests'),
                   ),
                   Tab(
                     child: Text('Chats'),
+                  ),
+                  Tab(
+                    child: Text('Friends'),
                   ),
                 ],
               ),
@@ -78,9 +77,9 @@ class SupportPage extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  _chatList(onlineList),
-                  _chatList(befriendList),
+                  _chatList(requestsList),
                   _chatList(chatList),
+                  _chatList(friendsList),
                 ],
               ),
             ),
@@ -93,7 +92,6 @@ class SupportPage extends StatelessWidget {
   Widget buildJoinUs(BuildContext context, SupportState supportState) {
     return Container(
       padding: const EdgeInsets.all(50),
-      // child: Text('secnd Page'),
       child: ScrollColumnConstraint(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,11 +148,8 @@ class SupportPage extends StatelessWidget {
                             builder: (context) {
                               return SupportRequest();
                             },
-                            shadow: BoxShadow(
+                            shadow: const BoxShadow(
                               color: Colors.transparent,
-                              blurRadius: 0,
-                              spreadRadius: 0,
-                              offset: Offset(0, 0),
                             ),
                             // duration: Duration(milliseconds: 500),
                           );
@@ -190,13 +185,13 @@ class SupportPage extends StatelessWidget {
     );
   }
 
-  static const onlineList = [
+  static const requestsList = [
     ChatMessage('Vicky', 'Like to take about eating problems'),
     ChatMessage('Bala', 'Having depression thoughts'),
     ChatMessage('John', 'Expecting happy conversations'),
   ];
 
-  static const befriendList = [
+  static const friendsList = [
     ChatMessage('Abbey', "Can't eat"),
     ChatMessage('Jia', 'Depression'),
     ChatMessage('Owen', 'Just to talk'),
@@ -214,7 +209,7 @@ class SupportPage extends StatelessWidget {
       padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
       child: ListView.separated(
         separatorBuilder: (context, index) {
-          return Divider();
+          return const Divider();
         },
         itemBuilder: (context, index) {
           return BouncingButton(
@@ -224,32 +219,21 @@ class SupportPage extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  // BoxShadow(
-                  //   color: Theme.of(context)
-                  //       .colorScheme
-                  //       .onSecondary
-                  //       .withOpacity(0.3),
-                  //   blurRadius: 3,
-                  //   offset: Offset(0, 1),
-                  // ),
-                ],
-                // color:
-                //     Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                boxShadow: const [],
               ),
               child: Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(right: 15),
+                    padding: const EdgeInsets.only(right: 15),
                     child: Container(
                       width: 40,
                       height: 40,
                       alignment: Alignment.center,
-                      margin: EdgeInsets.only(top: 0),
-                      // padding: EdgeInsets.all(2),
+                      margin: EdgeInsets.zero,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(50)),
                       ),
                       child: Text(
                         list[index].name[0],
@@ -267,7 +251,7 @@ class SupportPage extends StatelessWidget {
                           list[index].name,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           list[index].message,
                           style: Theme.of(context).textTheme.displaySmall,
