@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:flutter/material.dart';
 
 
 /*
@@ -9,12 +10,22 @@ pre-defined so users can just choose like 3-5 of them from this pool
 
 class Tags
 {
+  Tags()
+  {
+    chipsList = eatingDisorderTopics.map((topic) => Chip(
+      label: Text(topic),
+    ),).toList();
+  }
+
   //https://breathelifehealingcenters.com/12-types-eating-disorders-explained/
-  final List<String> _eatingDisorderTopics = [
+  final List<String> eatingDisorderTopics = [
     'Anorexia', 'Binge Eating', 'Bulimia', 'Muscle Dysmorphia',
     'General Eating Disorder', 'Compulsive Eating', 'Chronic Fatigue',
     'Diabetes', 'Diabulimia', 'Orthorexia', 'Selective Eating', 'Drunkorexia',
     'Pregorexia'
   ];
+
+  //Build a list of Chip Items by instantiating
+  late List<Chip> chipsList = [];
 }
 
