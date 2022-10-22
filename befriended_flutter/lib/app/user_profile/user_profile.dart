@@ -1,17 +1,16 @@
 import 'dart:core';
 
+import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/user_profile/tags_pool.dart' as pool;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../app_cubit/app_cubit.dart';
 
 class UserProfilePage extends StatefulWidget {
   //All widgets and elements have a unique key
   //Old widgets are replaced with new ones and keys are used to do this
   UserProfilePage({Key? key}) : super(key: key);
 
-  final user = User('Carlos');
+  final user = User('User');
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -30,6 +29,7 @@ class UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
+        widget.user.name = state.name;
         return SafeArea(
           child: Scaffold(
             body: Center(
