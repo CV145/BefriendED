@@ -7,7 +7,7 @@ import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/home/view/common_menu.dart';
 import 'package:befriended_flutter/app/hometab/view/hometab.dart';
 import 'package:befriended_flutter/app/login/login.dart';
-import 'package:befriended_flutter/app/user_profile/user_profile.dart';
+import 'package:befriended_flutter/app/user_profile/user_profile_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

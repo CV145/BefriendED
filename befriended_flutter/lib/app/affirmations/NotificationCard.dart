@@ -5,6 +5,12 @@
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:flutter/material.dart';
 
+/*
+Remove all existing scheduled notifications when the app starts
+Replace them with new ones based off what was retrieved from preferences
+ */
+
+
 class NotificationCard {
   NotificationCard({
     required this.id,
