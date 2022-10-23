@@ -37,12 +37,20 @@ class UserProfilePageState extends State<UserProfilePage> {
               autofocus: true,
               onPressed: ()
               {
-                setState(() {
-                  //Update UI
-                  widget.user.selectedTopics.
-                  add(ChipModel(id: '0', name: topic));
-                  print('was selected');
-                });
+                final numSelected = widget.user.selectedTopics.length;
+
+                if (numSelected < 3)
+                {
+                  setState(() {
+                    //Update UI
+                    widget.user.selectedTopics.
+                    add(ChipModel(
+                      id: (numSelected+1).toString(),
+                      name: topic,),);
+                    print('was selected');
+                  });
+                }
+
               },
             ),).toList();
   }
