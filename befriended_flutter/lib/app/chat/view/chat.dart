@@ -1,3 +1,4 @@
+/*
 import 'package:befriended_flutter/animations/fade_animation.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
@@ -354,3 +355,4 @@ class ChatPage extends StatelessWidget {
   //   );
   // }
 }
+*/

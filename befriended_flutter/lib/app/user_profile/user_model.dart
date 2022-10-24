@@ -1,12 +1,13 @@
+import 'package:befriended_flutter/app/support/friend_model.dart';
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
-import 'package:flutter/material.dart';
 
 /*
 User model object, represents a profile, uploaded to Firebase
  */
 class User {
-  User(String givenName) {
+  User({required String givenName, List<ChipModel>? topics}) {
     name = givenName;
+    selectedTopics = topics ?? [];
   }
 
   String name = 'User';
@@ -19,5 +20,7 @@ class User {
    // ChipModel(id: '3', name: 'topic3',),
   ];
 
+  //Bad O(n) structure, key-value pair might be better
+  List<Friend> friendsList = [];
 
 }

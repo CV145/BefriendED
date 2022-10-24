@@ -32,6 +32,8 @@ class Tags {
     'Orthorexia',
     'Selective Eating',
     'Drunkorexia',
-    'Pregorexia'
+    'Pregorexia',
+    'Depression',
+    'Anxiety',
   ];
 }

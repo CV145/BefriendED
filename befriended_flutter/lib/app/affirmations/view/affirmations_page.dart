@@ -106,6 +106,7 @@ class AffirmationsState extends State<AffirmationsPage> {
                         children:
                         [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                             ElevatedButton(
                               //Time Picker button

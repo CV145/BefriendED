@@ -1,1 +1,1 @@
-export 'view/support.dart';
+export 'view/support_page.dart';

@@ -12,7 +12,7 @@ class UserProfilePage extends StatefulWidget {
   //Old widgets are replaced with new ones and keys are used to do this
   UserProfilePage({Key? key}) : super(key: key);
 
-  final User user = User('User');
+  final User user = User(givenName: 'User');
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -69,7 +69,7 @@ class UserProfilePageState extends State<UserProfilePage> {
                 //Horizontal Alignment
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 //Vertical ("main") axis
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

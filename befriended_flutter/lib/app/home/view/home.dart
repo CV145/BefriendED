@@ -24,7 +24,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 //Dictionary: Key - Enum value, Value - Widget constructor function
 Map<HomePageStatus, Function> homePages = {
-  HomePageStatus.support: () => const SupportPage(key: ValueKey(1)),
+  HomePageStatus.support: () => SupportPage(key: ValueKey(1)),
   HomePageStatus.setting: () => const SettingsPage(key: ValueKey(2)),
 };
 
