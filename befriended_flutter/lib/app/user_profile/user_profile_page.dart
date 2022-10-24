@@ -21,7 +21,7 @@ class UserProfilePage extends StatefulWidget {
 class UserProfilePageState extends State<UserProfilePage> {
   late pool.Tags tagPool;
   //Build a list of Chip Items by instantiating
-  late List<ActionChip> topicChipsList = [];
+  late List<ElevatedButton> topicsList = [];
 
   @override
   void initState() {
@@ -30,16 +30,19 @@ class UserProfilePageState extends State<UserProfilePage> {
 
     //Create a action chip out of each topic
     //Selecting that chip will add it to the user profile
-    topicChipsList =
+    topicsList =
         tagPool.eatingDisorderTopics.map((topic) =>
-            ActionChip(
-              label: Text(topic),
-              autofocus: true,
+            ElevatedButton(
+              child: Text(topic),
               onPressed: ()
               {
                 final numSelected = widget.user.selectedTopics.length;
 
-                if (numSelected < 3)
+                if (numSelected < 3 &&
+                    widget.user.selectedTopics.
+                    singleWhere((model) => model.name == topic,
+                    orElse: () => ChipModel(id: '99', name: 'null'),).name
+                        == 'null')
                 {
                   setState(() {
                     //Update UI
@@ -47,7 +50,6 @@ class UserProfilePageState extends State<UserProfilePage> {
                     add(ChipModel(
                       id: (numSelected+1).toString(),
                       name: topic,),);
-                    print('was selected');
                   });
                 }
 
@@ -76,7 +78,7 @@ class UserProfilePageState extends State<UserProfilePage> {
                   Column(
                     children: [
                       const Text('Choose your interests from the list below:'),
-                      Wrap(children: topicChipsList),
+                      Wrap(children: topicsList),
                     ],
                   ),
                 ],
@@ -102,6 +104,13 @@ class UserProfilePageState extends State<UserProfilePage> {
       child: Column(
         children:
         [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children:const [
+            Icon(Icons.arrow_downward),
+            Icon(Icons.arrow_downward),
+            Icon(Icons.arrow_downward),],
+          ),
           Container(
             //width: 80,
             //height: 80,
@@ -122,7 +131,9 @@ class UserProfilePageState extends State<UserProfilePage> {
                   .titleLarge,
               textAlign: TextAlign.center ,
             ),      ),
-          const Padding(padding: EdgeInsets.all(25)),
+          const Padding(
+              padding: EdgeInsets.all(15),
+              child: Text(' - Your Topics -'),),
           Padding(
             padding: const EdgeInsets.all(5),
             child: Wrap(

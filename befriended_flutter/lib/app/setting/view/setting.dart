@@ -309,6 +309,7 @@ class SettingsState extends State<SettingsPage> {
                 )
               ],
             ),
+            const Padding(padding: EdgeInsets.all(20),),
           ],
         ),
       ),
