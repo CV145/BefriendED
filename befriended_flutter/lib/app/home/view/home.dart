@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:befriended_flutter/app/affirmations/view/affirmations.dart';
+import 'package:befriended_flutter/app/affirmations/view/affirmations_page.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/chat/view/chat.dart';
 import 'package:befriended_flutter/app/home/view/bottom_navigator.dart';

@@ -1,4 +1,4 @@
-import 'package:befriended_flutter/app/affirmations/view/affirmations.dart';
+import 'package:befriended_flutter/app/affirmations/view/affirmations_page.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/availability_schedule/cubit/availability_schedule_cubit.dart';
 import 'package:befriended_flutter/app/availability_schedule/view/availability_schedule.dart';

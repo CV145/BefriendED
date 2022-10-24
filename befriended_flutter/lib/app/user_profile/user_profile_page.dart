@@ -71,6 +71,13 @@ class UserProfilePageState extends State<UserProfilePage> {
                 //Vertical ("main") axis
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children:const [
+                      Icon(Icons.arrow_downward),
+                      Icon(Icons.arrow_downward),
+                      Icon(Icons.arrow_downward),],
+                  ),
                   getUserCardWidget(context),
                   const SizedBox(
                     height: 20,
@@ -104,13 +111,6 @@ class UserProfilePageState extends State<UserProfilePage> {
       child: Column(
         children:
         [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children:const [
-            Icon(Icons.arrow_downward),
-            Icon(Icons.arrow_downward),
-            Icon(Icons.arrow_downward),],
-          ),
           Container(
             //width: 80,
             //height: 80,
