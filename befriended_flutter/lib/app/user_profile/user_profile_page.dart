@@ -4,6 +4,7 @@ import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
 import 'package:befriended_flutter/app/user_profile/tag_pool.dart' as pool;
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
+import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,6 @@ class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key? key}) : super(key: key);
 
   final User user = User(givenName: 'User');
-  final db = FirebaseFirestore.instance;
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -25,10 +25,34 @@ class UserProfilePageState extends State<UserProfilePage> {
   //Build a list of Chip Items by instantiating
   late List<ElevatedButton> topicsList = [];
 
+  //Collection -> Document -> Data
+  FirebaseProvider provider = FirebaseProvider();
+  late final DocumentReference docRef;
+
+  // Key: "quote" , Value: contents of quote
+  late Map? quoteData;
+  String quote = 'Be positive!';
+
   @override
   void initState() {
     super.initState();
     tagPool = pool.Tags(appUser: widget.user);
+
+    //Initialize cloud firestore database reference
+    final db = provider.firebaseFirestore;
+    docRef = db.collection('affirmation_quotes').doc('quote1');
+
+    //Get the quotes stored in the document
+    docRef.get().then(
+          (DocumentSnapshot doc)
+      {
+        quoteData = doc.data() as Map;
+        //print(quoteData!['quote']);
+        quote = quoteData!['quote'] as String;
+        //print(quote);
+      },
+      //onError: () => print('error'),
+    );
 
     //Create a action chip out of each topic
     //Selecting that chip will add it to the user profile
@@ -71,7 +95,6 @@ class UserProfilePageState extends State<UserProfilePage> {
                 //Horizontal Alignment
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 //Vertical ("main") axis
-                //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -80,6 +103,8 @@ class UserProfilePageState extends State<UserProfilePage> {
                       Icon(Icons.arrow_downward),
                       Icon(Icons.arrow_downward),],
                   ),
+                  Text(quote, textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 13),),
                   getUserCardWidget(context),
                   const SizedBox(
                     height: 20,
