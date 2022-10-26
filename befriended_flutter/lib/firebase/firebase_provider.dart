@@ -30,7 +30,7 @@ class FirebaseProvider with ChangeNotifier {
   final _firebaseAuth = FirebaseAuth.instance;
   String? verificationId;
   ConfirmationResult? confirmationResult;
-  final _firebaseFirestore = FirebaseFirestore.instance;
+  final firebaseFirestore = FirebaseFirestore.instance;
   final _realtimeDatabase = FirebaseDatabase.instance;
   final _storage = FirebaseStorage.instance;
 
@@ -148,7 +148,7 @@ class FirebaseProvider with ChangeNotifier {
 
   Future<UserChat> addUser(User user, BuildContext context) async {
     final appState = context.read<AppCubit>().state;
-    final QuerySnapshot result = await _firebaseFirestore
+    final QuerySnapshot result = await firebaseFirestore
         .collection(FirestoreConstants.pathUserCollection)
         .where(FirestoreConstants.id, isEqualTo: user.uid)
         .get();
@@ -164,7 +164,7 @@ class FirebaseProvider with ChangeNotifier {
         'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
         FirestoreConstants.chattingWith: null,
       };
-      await _firebaseFirestore
+      await firebaseFirestore
           .collection(FirestoreConstants.pathUserCollection)
           .doc(user.uid)
           .set(
@@ -192,7 +192,7 @@ class FirebaseProvider with ChangeNotifier {
       // await prefs.setString(FirestoreConstants.nickname, userChat.nickname);
       // await prefs.setString(FirestoreConstants.photoUrl, userChat.photoUrl);
       // await prefs.setString(FirestoreConstants.aboutMe, userChat.aboutMe);
-      final QuerySnapshot result = await _firebaseFirestore
+      final QuerySnapshot result = await firebaseFirestore
           .collection(FirestoreConstants.pathUserCollection)
           .where(FirestoreConstants.id, isEqualTo: user.uid)
           .get();
@@ -239,7 +239,7 @@ class FirebaseProvider with ChangeNotifier {
         FirestoreConstants.timematrix: timeMatrix.toString(),
       };
       // TODO handle error
-      await _firebaseFirestore
+      await firebaseFirestore
           .collection(FirestoreConstants.pathUserCollection)
           .doc(userId)
           .update(
@@ -251,7 +251,7 @@ class FirebaseProvider with ChangeNotifier {
   Future<void> saveToBeBuddyRequest(String requestDesc) async {
     final userId = getCurrentUserId();
     if (userId != null) {
-      final DocumentSnapshot result = await _firebaseFirestore
+      final DocumentSnapshot result = await firebaseFirestore
           .collection(FirestoreConstants.pathToBeBuddyCollection)
           .doc(userId)
           .get();
@@ -262,14 +262,14 @@ class FirebaseProvider with ChangeNotifier {
           FirestoreConstants.isApproved: false,
         };
         // TODO handle error
-        await _firebaseFirestore
+        await firebaseFirestore
             .collection(FirestoreConstants.pathToBeBuddyCollection)
             .doc(userId)
             .set(
               requestData,
             );
       } else {
-        await _firebaseFirestore
+        await firebaseFirestore
             .collection(FirestoreConstants.pathToBeBuddyCollection)
             .doc(userId)
             .update({
@@ -282,7 +282,7 @@ class FirebaseProvider with ChangeNotifier {
   Stream<RequestModel> getRequest() async* {
     final userId = getCurrentUserId();
     if (userId != null) {
-      final stream = _firebaseFirestore
+      final stream = firebaseFirestore
           .collection(FirestoreConstants.pathToBeBuddyCollection)
           .doc(userId)
           .snapshots();
@@ -299,7 +299,7 @@ class FirebaseProvider with ChangeNotifier {
       String requestDesc, EDType requestEdType) async {
     final userId = getCurrentUserId();
     if (userId != null) {
-      final DocumentSnapshot result = await _firebaseFirestore
+      final DocumentSnapshot result = await firebaseFirestore
           .collection(FirestoreConstants.pathRequestBuddyCollection)
           .doc(userId)
           .get();
@@ -311,14 +311,14 @@ class FirebaseProvider with ChangeNotifier {
           FirestoreConstants.eDType: requestEdType.value,
         };
         // TODO handle error
-        await _firebaseFirestore
+        await firebaseFirestore
             .collection(FirestoreConstants.pathRequestBuddyCollection)
             .doc(userId)
             .set(
               requestData,
             );
       } else {
-        await _firebaseFirestore
+        await firebaseFirestore
             .collection(FirestoreConstants.pathRequestBuddyCollection)
             .doc(userId)
             .update({
@@ -332,7 +332,7 @@ class FirebaseProvider with ChangeNotifier {
   Stream<RequestBuddyModel> getBuddyRequest() async* {
     final userId = getCurrentUserId();
     if (userId != null) {
-      final stream = _firebaseFirestore
+      final stream = firebaseFirestore
           .collection(FirestoreConstants.pathRequestBuddyCollection)
           .doc(userId)
           .snapshots();
@@ -350,7 +350,7 @@ class FirebaseProvider with ChangeNotifier {
     if (userId != null) {
       try {
         // TODO handle error
-        final snapshot = await _firebaseFirestore
+        final snapshot = await firebaseFirestore
             .collection(FirestoreConstants.pathUserCollection)
             .doc(userId)
             .get();

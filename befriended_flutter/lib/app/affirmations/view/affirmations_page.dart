@@ -1,10 +1,12 @@
 import 'package:befriended_flutter/app/affirmations/NotificationCard.dart';
+import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:befriended_flutter/services/preferences_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationsPage extends StatefulWidget {
-  const AffirmationsPage({Key? key, required this.closeAffirmationsOnTap})
+   AffirmationsPage({Key? key, required this.closeAffirmationsOnTap})
       : super(key: key);
 
   final Function() closeAffirmationsOnTap;
@@ -18,11 +20,35 @@ class AffirmationsState extends State<AffirmationsPage> {
   late final LocalNotificationService _notificationsService;
   final _preferencesService = PreferencesService();
 
+  //Collection -> Document -> Data
+  FirebaseProvider provider = FirebaseProvider();
+  late final DocumentReference docRef;
+
+
+
+  // Key: "quote" , Value: contents of quote
+  late Map<String, String> quoteData;
+
   @override
   void initState() {
     //initialize the service
     _notificationsService = LocalNotificationService();
     _notificationsService.initialize();
+    final db = provider.firebaseFirestore;
+    docRef = db.collection('affirmation_quotes').doc('quote1');
+
+    docRef.get().then(
+      (DocumentSnapshot doc)
+      {
+        //Having trouble initializing
+        quoteData = doc.data() as Map<String, String>;
+      },
+      //onError: () => print('error'),
+    );
+
+    _notificationsService.
+    showNotification(id: 99, title: 'Quote', body: quoteData['quote1']
+        ?? 'Nothing found',);
 
     _rebuildCards();
     super.initState();

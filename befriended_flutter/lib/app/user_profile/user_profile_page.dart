@@ -4,6 +4,7 @@ import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
 import 'package:befriended_flutter/app/user_profile/tag_pool.dart' as pool;
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,6 +14,7 @@ class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key? key}) : super(key: key);
 
   final User user = User(givenName: 'User');
+  final db = FirebaseFirestore.instance;
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
