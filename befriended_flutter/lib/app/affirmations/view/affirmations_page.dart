@@ -27,7 +27,7 @@ class AffirmationsState extends State<AffirmationsPage> {
 
 
   // Key: "quote" , Value: contents of quote
-  late Map<String, String> quoteData;
+  late final dynamic quoteData;
 
   @override
   void initState() {
@@ -37,18 +37,30 @@ class AffirmationsState extends State<AffirmationsPage> {
     final db = provider.firebaseFirestore;
     docRef = db.collection('affirmation_quotes').doc('quote1');
 
+    /*
+    Security Rules:
+    rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if
+          request.time < timestamp.date(2022, 12, 1);
+    }
+  }
+}
+     */
     docRef.get().then(
       (DocumentSnapshot doc)
       {
-        //Having trouble initializing
-        quoteData = doc.data() as Map<String, String>;
+        quoteData = doc.data() as Map<String, dynamic>;
+        print(quoteData);
       },
       //onError: () => print('error'),
     );
 
-    _notificationsService.
-    showNotification(id: 99, title: 'Quote', body: quoteData['quote1']
-        ?? 'Nothing found',);
+    //_notificationsService.
+    //showNotification(id: 99, title: 'Quote',
+    //  body: (quoteData['quote1'] as String)! ?? 'Nothing found',);
 
     _rebuildCards();
     super.initState();
