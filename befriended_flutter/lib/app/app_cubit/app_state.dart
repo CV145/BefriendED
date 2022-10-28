@@ -12,6 +12,7 @@ class AppState extends Equatable {
     this.countryCode = '',
     this.phoneNumberStatus = PhoneNumberStatus.initial,
     this.isLoggedIn = false,
+    this.userEmail = '',
   });
 
   final String name;
@@ -20,6 +21,7 @@ class AppState extends Equatable {
   final String countryCode;
   final PhoneNumberStatus phoneNumberStatus;
   final bool isLoggedIn;
+  final String userEmail;
 
   AppState copyWith({
     String? name,
@@ -28,6 +30,7 @@ class AppState extends Equatable {
     String? countryCode,
     PhoneNumberStatus? phoneNumberStatus,
     bool? isLoggedIn,
+    String? userEmail,
   }) {
     return AppState(
       name: name ?? this.name,
@@ -36,6 +39,7 @@ class AppState extends Equatable {
       countryCode: countryCode ?? this.countryCode,
       phoneNumberStatus: phoneNumberStatus ?? this.phoneNumberStatus,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      userEmail: userEmail ?? this.userEmail,
     );
   }
 
@@ -47,5 +51,6 @@ class AppState extends Equatable {
         countryCode,
         phoneNumberStatus,
         isLoggedIn,
+        userEmail,
       ];
 }

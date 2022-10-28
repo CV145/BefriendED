@@ -12,6 +12,11 @@ class AppCubit extends Cubit<AppState> {
 
   void nameChanged(String name) => emit(state.copyWith(name: name.trim()));
 
+  //Emit or "update" to new state = to copy of current state with
+  //the new email, trimmed for whitespace
+  void emailChanged(String givenEmail)
+  => emit(state.copyWith(userEmail: givenEmail.trim()));
+
   void saveName() {
     localStorage.setName(state.name);
   }

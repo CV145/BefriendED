@@ -3,9 +3,11 @@ import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/login/login.dart';
+import 'package:befriended_flutter/app/signup/signup_page.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';
+import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,11 +20,21 @@ class SignInPage extends StatefulWidget {
 
 class SignInPageState extends State<SignInPage>{
 
-  void onPress(BuildContext context) {
+  AccountAuthenticationService authService = AccountAuthenticationService();
+
+  String email = '';
+  String password = '';
+
+  //Verify the given email and password
+  Future<void> verifyLogin(BuildContext context, String email, String password)
+  async {
     final name = context.read<AppCubit>().state.name;
-    if (name.trim().isNotEmpty) {
+
+    final isAuthorized = authService.signIn(email, password);
+
+    if (await isAuthorized) {
       context.read<AppCubit>().saveName();
-      Navigator.pushAndRemoveUntil(
+      await Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder<void>(
           settings: const RouteSettings(name: RouteConstants.home),
@@ -47,7 +59,7 @@ class SignInPageState extends State<SignInPage>{
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        singleLineSnackBar(context, 'Please enter your name'),
+        singleLineSnackBar(context, 'Sign-in failed'),
       );
     }
   }
@@ -100,19 +112,19 @@ class SignInPageState extends State<SignInPage>{
                       return Column(
                         children: [
                           MyTextField(
-                            label: 'Username',
-                            value: state.name,
+                            label: 'Email',
+                            //value: state.userEmail, //Store email in state
                             onChanged: (value) {
-                              context.read<AppCubit>().nameChanged(value);
+                              //If email is verified, update state
+                              context.read<AppCubit>().emailChanged(value);
                             },
                           ),
                           const Divider(),
                           MyTextField(
-                            label: 'Email',
-                            value: '', //Store email in state
+                            label: 'Password',
+                            //value: state.name,
                             onChanged: (value) {
-                              //Email authentication goes here
-                              //context.read<AppCubit>().nameChanged(value);
+                              context.read<AppCubit>().nameChanged(value);
                             },
                           ),
                         ],);
@@ -127,7 +139,7 @@ class SignInPageState extends State<SignInPage>{
                   delay: 900,
                   child: BouncingButton(
                     label: 'Continue',
-                    onPress: () => onPress(context),
+                    onPress: () => verifyLogin(context, email, password),
                   ),
                 ),
               ),
@@ -150,7 +162,7 @@ class SignInPageState extends State<SignInPage>{
                   ),
                 ),
               ),
-              const Spacer(flex: 1),
+              const Spacer(),
               const SizedBox(
                 height: 30,
               ),
@@ -162,17 +174,17 @@ class SignInPageState extends State<SignInPage>{
   }
 
   Route _createRoute() {
-    return PageRouteBuilder<Null>(
-      settings: const RouteSettings(name: RouteConstants.home),
+    return PageRouteBuilder<void>(
+      settings: const RouteSettings(name: RouteConstants.signUp),
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const LoginScreen(isBackAllowed: true),
+          const SignUpPage(),
       transitionDuration: const Duration(seconds: 1),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
+        const begin = Offset(0, 1);
         const end = Offset.zero;
         const curve = Curves.ease;
 
-        var tween =
+        final tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(
