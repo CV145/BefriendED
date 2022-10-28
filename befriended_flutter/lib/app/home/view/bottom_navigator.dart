@@ -125,7 +125,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
     );
   }
 
-  Route _createRoute() {
+ /* Route _createRoute() {
     return PageRouteBuilder<void>(
       settings: const RouteSettings(name: RouteConstants.login),
       pageBuilder: (context, animation, secondaryAnimation) =>
@@ -145,5 +145,5 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
         );
       },
     );
-  }
+  } */
 }

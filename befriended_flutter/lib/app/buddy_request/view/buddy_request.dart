@@ -6,7 +6,6 @@ import 'package:befriended_flutter/app/buddy_request/cubit/cubit.dart';
 import 'package:befriended_flutter/app/buddy_request/cubit/request_buddy.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
-import 'package:befriended_flutter/app/name/name.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/delay_sizedbox.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';

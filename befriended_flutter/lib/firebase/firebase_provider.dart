@@ -27,7 +27,7 @@ class FirebaseProvider with ChangeNotifier {
 
   static final FirebaseProvider _singleton = FirebaseProvider._internal();
 
-  final _firebaseAuth = FirebaseAuth.instance;
+  final firebaseAuth = FirebaseAuth.instance;
   String? verificationId;
   ConfirmationResult? confirmationResult;
   final firebaseFirestore = FirebaseFirestore.instance;
@@ -35,11 +35,11 @@ class FirebaseProvider with ChangeNotifier {
   final _storage = FirebaseStorage.instance;
 
   bool isLoggedIn() {
-    return _firebaseAuth.currentUser?.uid != null;
+    return firebaseAuth.currentUser?.uid != null;
   }
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await firebaseAuth.signOut();
   }
 
   Future<void> verifyPhone(
@@ -47,10 +47,10 @@ class FirebaseProvider with ChangeNotifier {
     try {
       if (kIsWeb) {
         confirmationResult =
-            await _firebaseAuth.signInWithPhoneNumber(mobileNumber);
+            await firebaseAuth.signInWithPhoneNumber(mobileNumber);
         callBack();
       } else {
-        await _firebaseAuth.verifyPhoneNumber(
+        await firebaseAuth.verifyPhoneNumber(
           phoneNumber: mobileNumber,
           verificationCompleted: (PhoneAuthCredential credential) {
             log('---------- verified ------------');
@@ -94,7 +94,7 @@ class FirebaseProvider with ChangeNotifier {
         log('+++++++++signedIn++++++++');
         log(userCredential.toString());
         log(userCredential.user?.uid ?? '');
-        log(_firebaseAuth.currentUser?.uid ?? '');
+        log(firebaseAuth.currentUser?.uid ?? '');
         if (userCredential.user != null) {
           await addUser(userCredential.user!, context).then((userChat) {
             callBack(userChat);
@@ -107,12 +107,12 @@ class FirebaseProvider with ChangeNotifier {
           smsCode: otp,
         );
 
-        await _firebaseAuth.signInWithCredential(credential).then(
+        await firebaseAuth.signInWithCredential(credential).then(
           (value) {
             log('+++++++++signedIn++++++++');
             log(value.toString());
             log(value.user?.uid ?? '');
-            log(_firebaseAuth.currentUser?.uid ?? '');
+            log(firebaseAuth.currentUser?.uid ?? '');
             if (value.user != null) {
               addUser(value.user!, context).then((userChat) {
                 callBack(userChat);
@@ -224,7 +224,7 @@ class FirebaseProvider with ChangeNotifier {
   }
 
   String? getCurrentUserId() {
-    final user = _firebaseAuth.currentUser;
+    final user = firebaseAuth.currentUser;
     return user?.uid;
   }
 

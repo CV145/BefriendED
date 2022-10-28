@@ -5,7 +5,6 @@ import 'package:befriended_flutter/app/availability_schedule/cubit/timezone.dart
 import 'package:befriended_flutter/app/availability_schedule/view/schedule_selectoion.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
-import 'package:befriended_flutter/app/name/name.dart';
 import 'package:befriended_flutter/app/widget/delay_expanded.dart';
 import 'package:befriended_flutter/app/widget/delay_sizedbox.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';

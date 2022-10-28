@@ -2,17 +2,21 @@ import 'package:befriended_flutter/animations/fade_up_animation.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
-import 'package:befriended_flutter/app/launch/launch.dart';
 import 'package:befriended_flutter/app/login/login.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';
-import 'package:befriended_flutter/counter/counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class NamePage extends StatelessWidget {
-  const NamePage({Key? key}) : super(key: key);
+class SignInPage extends StatefulWidget {
+  const SignInPage({Key? key}) : super(key: key);
+
+  @override
+  State<SignInPage> createState() => SignInPageState();
+}
+
+class SignInPageState extends State<SignInPage>{
 
   void onPress(BuildContext context) {
     final name = context.read<AppCubit>().state.name;
@@ -20,17 +24,17 @@ class NamePage extends StatelessWidget {
       context.read<AppCubit>().saveName();
       Navigator.pushAndRemoveUntil(
         context,
-        PageRouteBuilder<Null>(
+        PageRouteBuilder<void>(
           settings: const RouteSettings(name: RouteConstants.home),
           pageBuilder: (context, animation, secondaryAnimation) =>
               const HomePage(),
           transitionDuration: const Duration(milliseconds: 1000),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(0.0, 1.0);
+            const begin = Offset(0, 1);
             const end = Offset.zero;
             const curve = Curves.ease;
 
-            var tween =
+            final tween =
                 Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
             return SlideTransition(
@@ -58,13 +62,11 @@ class NamePage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(50),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               const SizedBox(
                 height: 30,
               ),
-              const Spacer(flex: 1),
+              const Spacer(),
               Hero(
                 tag: 'BefriendEDTitle',
                 child: Padding(
@@ -81,34 +83,46 @@ class NamePage extends StatelessWidget {
               FadeUpAnimation(
                 delay: 500,
                 child: Text(
-                  'Nice to meet you! What should we call you?',
+                  'Nice to see you again! Please sign in.',
                   style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
               ),
               const SizedBox(
-                height: 100,
+                height: 65,
               ),
               Container(
-                constraints: BoxConstraints(minWidth: 50, maxWidth: 300),
+                constraints: const BoxConstraints(minWidth: 50, maxWidth: 300),
                 child: FadeUpAnimation(
                   delay: 800,
                   child: BlocBuilder<AppCubit, AppState>(
                     builder: (context, state) {
-                      return MyTextField(
-                        label: 'Your name',
-                        value: state.name,
-                        onChanged: (value) {
-                          context.read<AppCubit>().nameChanged(value);
-                        },
-                      );
+                      return Column(
+                        children: [
+                          MyTextField(
+                            label: 'Username',
+                            value: state.name,
+                            onChanged: (value) {
+                              context.read<AppCubit>().nameChanged(value);
+                            },
+                          ),
+                          const Divider(),
+                          MyTextField(
+                            label: 'Email',
+                            value: '', //Store email in state
+                            onChanged: (value) {
+                              //Email authentication goes here
+                              //context.read<AppCubit>().nameChanged(value);
+                            },
+                          ),
+                        ],);
                     },
+                      ),
                   ),
                 ),
-              ),
               const Spacer(flex: 7),
               Container(
-                constraints: BoxConstraints(minWidth: 50, maxWidth: 300),
+                constraints: const BoxConstraints(minWidth: 50, maxWidth: 300),
                 child: FadeUpAnimation(
                   delay: 900,
                   child: BouncingButton(
@@ -128,7 +142,7 @@ class NamePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
                       child: Text(
-                        'Already have a account? click here',
+                        "Don't have an account? Sign up!",
                         style: Theme.of(context).textTheme.displaySmall,
                         textAlign: TextAlign.center,
                       ),
@@ -149,7 +163,7 @@ class NamePage extends StatelessWidget {
 
   Route _createRoute() {
     return PageRouteBuilder<Null>(
-      settings: const RouteSettings(name: RouteConstants.login),
+      settings: const RouteSettings(name: RouteConstants.home),
       pageBuilder: (context, animation, secondaryAnimation) =>
           const LoginScreen(isBackAllowed: true),
       transitionDuration: const Duration(seconds: 1),

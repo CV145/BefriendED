@@ -22,7 +22,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
   late Animation<Offset> _scaleAnimation;
   late AnimationController _scaleController;
 
@@ -44,11 +43,10 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  void navigateToOTP() {
+ /* void navigateToOTP() {
     _scaleController.forward();
     Navigator.push<dynamic>(
       context,
-      // MySlideTransition(oldScreen: widget, newScreen: const OTPScreen()),
       PageRouteBuilder<Null>(
         settings: const RouteSettings(name: RouteConstants.otp),
         pageBuilder: (
@@ -56,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen>
           Animation<double> animation,
           Animation<double> secondaryAnimation,
         ) {
-          return OTPScreen();
+          return const OTPScreen();
         },
         transitionDuration: const Duration(milliseconds: 500),
         reverseTransitionDuration: const Duration(milliseconds: 500),
@@ -81,14 +79,14 @@ class _LoginScreenState extends State<LoginScreen>
         _scaleController.reverse();
       },
     );
-  }
+  } */
 
-  void generateOtp() {
+  /*void generateOtp() {
     final state = context.read<AppCubit>().state;
     final contact = state.countryCode + state.phoneNumber;
 
     FirebaseProvider().verifyPhone(contact, context, navigateToOTP);
-  }
+  }*/
 
   //build method for UI Representation
   @override
@@ -102,13 +100,11 @@ class _LoginScreenState extends State<LoginScreen>
             padding: const EdgeInsets.all(50),
             color: Theme.of(context).colorScheme.primary,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(flex: 1),
                 if (widget.isBackAllowed)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       IconButton(
                         alignment: Alignment.centerLeft,
@@ -186,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen>
                   child: BouncingButton(
                     label: 'Send OTP',
                     onPress: () {
-                      generateOtp();
+                      //generateOtp();
                     },
                   ),
                 ),

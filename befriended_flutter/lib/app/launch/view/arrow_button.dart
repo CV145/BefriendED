@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
-import 'package:befriended_flutter/app/name/name.dart';
+import 'package:befriended_flutter/app/signin/view/signin.dart';
 import 'package:flutter/material.dart';
 
 class ArrowButton extends StatefulWidget {
@@ -75,8 +75,8 @@ class _ArrowButtonState extends State<ArrowButton>
               });
               Navigator.push(
                 context,
-                PageRouteBuilder<Null>(
-                  settings: const RouteSettings(name: RouteConstants.name),
+                PageRouteBuilder<void>(
+                  settings: const RouteSettings(name: RouteConstants.signIn),
                   pageBuilder: (
                     BuildContext context,
                     Animation<double> animation,
@@ -87,7 +87,7 @@ class _ArrowButtonState extends State<ArrowButton>
                       builder: (BuildContext context, Widget? child) {
                         return Opacity(
                           opacity: animation.value,
-                          child: const NamePage(),
+                          child: const SignInPage(), //Widget being pushed
                         );
                       },
                     );

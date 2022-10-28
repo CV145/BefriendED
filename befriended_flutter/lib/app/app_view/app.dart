@@ -10,7 +10,6 @@ import 'package:befriended_flutter/app/availability_schedule/availability_schedu
 import 'package:befriended_flutter/app/availability_schedule/cubit/availability_schedule_cubit.dart';
 import 'package:befriended_flutter/app/buddy_request/cubit/cubit.dart';
 import 'package:befriended_flutter/app/login/cubit/login_cubit.dart';
-import 'package:befriended_flutter/app/name/name.dart';
 import 'package:befriended_flutter/app/splash/splash.dart';
 import 'package:befriended_flutter/app/support/cubit/cubit.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';

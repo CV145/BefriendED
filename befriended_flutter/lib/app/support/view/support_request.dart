@@ -2,7 +2,6 @@ import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/availability_schedule/availability_schedule.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
-import 'package:befriended_flutter/app/name/name.dart';
 import 'package:befriended_flutter/app/support/cubit/cubit.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';

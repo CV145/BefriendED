@@ -2,7 +2,7 @@
 import 'package:befriended_flutter/animations/fade_animation.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
-import 'package:befriended_flutter/app/login/login.dart';
+import 'package:befriended_flutter/app/login/login_screen.dart';
 import 'package:befriended_flutter/app/support/support.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/delay_sizedbox.dart';

@@ -160,7 +160,7 @@ class UserProfilePageState extends State<UserProfilePage> {
             ),      ),
           const Padding(
               padding: EdgeInsets.all(15),
-              child: Text(' - Your Topics -'),),
+              child: Text('- Your Topics -'),),
           Padding(
             padding: const EdgeInsets.all(5),
             child: Wrap(
