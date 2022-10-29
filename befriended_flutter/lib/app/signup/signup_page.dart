@@ -1,9 +1,31 @@
 //UI for creating new account
 
+import 'package:befriended_flutter/app/constants/RouteConstants.dart';
+import 'package:befriended_flutter/app/home/view/home.dart';
+import 'package:befriended_flutter/app/widget/snack_bar.dart';
+import 'package:befriended_flutter/app/widget/text_field.dart';
+import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
 import 'package:flutter/material.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  State<SignUpPage> createState() => SignUpPageState();
+}
+
+class SignUpPageState extends State<SignUpPage> {
+  final AccountAuthenticationService authService =
+      AccountAuthenticationService();
+
+  String name = '';
+  String email = '';
+  String password = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +43,54 @@ class SignUpPage extends StatelessWidget {
           children: [
             const Text('Create Account', style: TextStyle(fontSize: 36)),
             const Padding(padding: EdgeInsets.all(30)),
-            const TextField(
-              decoration: InputDecoration(labelText: 'Full Name'),
-              //controller: fullNameController,
+            MyTextField(
+              label: 'Name',
+              //value: state.name,
+              onChanged: (value) {
+                name = value;
+              },
             ),
-            const TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-              // controller: emailController,
+            MyTextField(
+              label: 'Email',
+              value: email,
+              onChanged: (value) {
+                email = value;
+              },
             ),
-            const TextField(
-              decoration: InputDecoration(labelText: 'Password'),
-              //controller: passwordController,
+            MyTextField(
+              label: 'Password',
+              //value: state.name,
+              onChanged: (value) {
+                password = value;
+              },
             ),
             const Padding(padding: EdgeInsets.all(25)),
-            ElevatedButton(onPressed: () {  },
-            child: const Text('SIGN UP'),),
+            ElevatedButton(
+              onPressed: () async {
+                final result =
+                await authService.createNewAccount(email, password);
+
+                print('Auth result: $result');
+
+                if (result) {
+                  //Navigate to home page
+                   Navigator.push<dynamic>(
+                    context,
+                    PageRouteBuilder<void>(
+                      settings:
+                          const RouteSettings(name: RouteConstants.home),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const HomePage(),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    singleLineSnackBar(context, 'Sign-up failed'),
+                  );
+                }
+              },
+              child: const Text('SIGN UP'),
+            ),
           ],
         ),
       ),

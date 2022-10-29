@@ -116,7 +116,7 @@ class SignInPageState extends State<SignInPage>{
                             //value: state.userEmail, //Store email in state
                             onChanged: (value) {
                               //If email is verified, update state
-                              context.read<AppCubit>().emailChanged(value);
+                              email = value;
                             },
                           ),
                           const Divider(),
@@ -124,7 +124,7 @@ class SignInPageState extends State<SignInPage>{
                             label: 'Password',
                             //value: state.name,
                             onChanged: (value) {
-                              context.read<AppCubit>().nameChanged(value);
+                              password = value;
                             },
                           ),
                         ],);
@@ -149,7 +149,7 @@ class SignInPageState extends State<SignInPage>{
                   padding: const EdgeInsets.only(top: 25),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push<dynamic>(context, _createRoute());
+                      Navigator.push<dynamic>(context, _createSignUpRoute());
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
@@ -173,7 +173,7 @@ class SignInPageState extends State<SignInPage>{
     );
   }
 
-  Route _createRoute() {
+  Route _createSignUpRoute() {
     return PageRouteBuilder<void>(
       settings: const RouteSettings(name: RouteConstants.signUp),
       pageBuilder: (context, animation, secondaryAnimation) =>
