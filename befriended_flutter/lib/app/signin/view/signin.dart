@@ -154,7 +154,7 @@ class SignInPageState extends State<SignInPage>{
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
                       child: Text(
-                        "Don't have an account? Sign up!",
+                        "-> Don't have an account? Sign up here! <-",
                         style: Theme.of(context).textTheme.displaySmall,
                         textAlign: TextAlign.center,
                       ),
