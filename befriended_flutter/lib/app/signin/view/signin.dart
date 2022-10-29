@@ -2,7 +2,6 @@ import 'package:befriended_flutter/animations/fade_up_animation.dart';
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
-import 'package:befriended_flutter/app/login/login.dart';
 import 'package:befriended_flutter/app/signup/signup_page.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
@@ -18,16 +17,16 @@ class SignInPage extends StatefulWidget {
   State<SignInPage> createState() => SignInPageState();
 }
 
-class SignInPageState extends State<SignInPage>{
-
+class SignInPageState extends State<SignInPage> {
   AccountAuthenticationService authService = AccountAuthenticationService();
 
   String email = '';
   String password = '';
+  bool _isHidden = true;
 
   //Verify the given email and password
-  Future<void> verifyLogin(BuildContext context, String email, String password)
-  async {
+  Future<void> verifyLogin(
+      BuildContext context, String email, String password,) async {
     final name = context.read<AppCubit>().state.name;
 
     final isAuthorized = authService.signIn(email, password);
@@ -113,25 +112,34 @@ class SignInPageState extends State<SignInPage>{
                         children: [
                           MyTextField(
                             label: 'Email',
-                            //value: state.userEmail, //Store email in state
                             onChanged: (value) {
-                              //If email is verified, update state
                               email = value;
                             },
                           ),
                           const Divider(),
-                          MyTextField(
-                            label: 'Password',
-                            //value: state.name,
+                          TextField(
+                            obscureText: _isHidden,
                             onChanged: (value) {
                               password = value;
                             },
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              suffix: InkWell(
+                                onTap: _togglePasswordView,
+                                child: Icon(
+                                  _isHidden
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                            ),
                           ),
-                        ],);
+                        ],
+                      );
                     },
-                      ),
                   ),
                 ),
+              ),
               const Spacer(flex: 7),
               Container(
                 constraints: const BoxConstraints(minWidth: 50, maxWidth: 300),
@@ -154,7 +162,7 @@ class SignInPageState extends State<SignInPage>{
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
                       child: Text(
-                        "-> Don't have an account? Sign up here! <-",
+                        "-> Don't have an account? Sign up here. <-",
                         style: Theme.of(context).textTheme.displaySmall,
                         textAlign: TextAlign.center,
                       ),
@@ -193,5 +201,11 @@ class SignInPageState extends State<SignInPage>{
         );
       },
     );
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
   }
 }

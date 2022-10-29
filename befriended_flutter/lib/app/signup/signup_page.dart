@@ -1,11 +1,13 @@
 //UI for creating new account
 
+import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/view/home.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';
 import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -18,9 +20,9 @@ class SignUpPageState extends State<SignUpPage> {
   final AccountAuthenticationService authService =
       AccountAuthenticationService();
 
-  String name = '';
   String email = '';
   String password = '';
+  bool _isHidden = true;
 
   @override
   void initState() {
@@ -45,9 +47,9 @@ class SignUpPageState extends State<SignUpPage> {
             const Padding(padding: EdgeInsets.all(30)),
             MyTextField(
               label: 'Name',
-              //value: state.name,
+              value: context.read<AppCubit>().state.name,
               onChanged: (value) {
-                name = value;
+                context.read<AppCubit>().nameChanged(value);
               },
             ),
             MyTextField(
@@ -57,37 +59,29 @@ class SignUpPageState extends State<SignUpPage> {
                 email = value;
               },
             ),
-            MyTextField(
-              label: 'Password',
-              //value: state.name,
+            TextField(
+              obscureText: _isHidden,
               onChanged: (value) {
                 password = value;
               },
+              decoration: InputDecoration(
+                hintText: 'Password',
+                suffix: InkWell(
+                  onTap: _togglePasswordView,
+                  child: Icon(
+                    _isHidden
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                ),
+              ),
             ),
             const Padding(padding: EdgeInsets.all(25)),
             ElevatedButton(
               onPressed: () async {
                 final result =
                 await authService.createNewAccount(email, password);
-
-                print('Auth result: $result');
-
-                if (result) {
-                  //Navigate to home page
-                   Navigator.push<dynamic>(
-                    context,
-                    PageRouteBuilder<void>(
-                      settings:
-                          const RouteSettings(name: RouteConstants.home),
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const HomePage(),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    singleLineSnackBar(context, 'Sign-up failed'),
-                  );
-                }
+                createAccount(result: result, context: context);
               },
               child: const Text('SIGN UP'),
             ),
@@ -95,5 +89,30 @@ class SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
+  }
+
+  void createAccount({required String result, required BuildContext context}) {
+     if (result == 'Success') {
+      //Navigate to home page
+       Navigator.push<dynamic>(
+        context,
+        PageRouteBuilder<void>(
+          settings:
+              const RouteSettings(name: RouteConstants.home),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const HomePage(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        singleLineSnackBar(context, result),
+      );
+    }
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
   }
 }
