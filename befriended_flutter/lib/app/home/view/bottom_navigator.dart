@@ -1,17 +1,11 @@
-import 'dart:developer';
 
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
-import 'package:befriended_flutter/app/chat/view/chat.dart';
-import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
-import 'package:befriended_flutter/app/home/view/common_menu.dart';
-import 'package:befriended_flutter/app/hometab/view/hometab.dart';
-import 'package:befriended_flutter/app/login/login.dart';
 import 'package:befriended_flutter/app/user_profile/user_profile_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:befriended_flutter/firebase/firebase_provider.dart';
 
 
 class MyBottomNavigator extends StatefulWidget {
@@ -31,6 +25,9 @@ class MyBottomNavigator extends StatefulWidget {
 }
 
 class _MyBottomNavigatorState extends State<MyBottomNavigator> {
+
+  FirebaseProvider provider = FirebaseProvider();
+
   @override
   void initState() {
     super.initState();
@@ -89,21 +86,20 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
-                    //Commented out logging in for debug purposes
-                    //if (state.isLoggedIn) {
                       CupertinoScaffold.showCupertinoModalBottomSheet<String>(
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) {
-                          return UserProfilePage();
+                          //Need a way to pass in User object
+                          return UserProfilePage(user:
+                          context.read<AppCubit>().getUser(
+                              firestoreID:
+                              provider.firebaseAuth.currentUser?.uid ?? '',),);
                         },
                         shadow: const BoxShadow(
                           color: Colors.transparent,
                         ),
                       );
-                   /* } else {
-                      Navigator.push<dynamic>(context, _createRoute());
-                    }*/
                   },
                 );
               },
@@ -124,26 +120,4 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
       ),
     );
   }
-
- /* Route _createRoute() {
-    return PageRouteBuilder<void>(
-      settings: const RouteSettings(name: RouteConstants.login),
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const LoginScreen(isBackAllowed: true),
-      transitionDuration: const Duration(seconds: 1),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  } */
 }

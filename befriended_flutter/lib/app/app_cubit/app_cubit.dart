@@ -1,6 +1,9 @@
+import 'package:befriended_flutter/app/user_profile/chip_model.dart';
+import 'package:befriended_flutter/app/user_profile/user_model.dart';
+import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:befriended_flutter/local_storage/local_storage.dart';
-import 'package:befriended_flutter/models/user_chat.dart';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 part 'app_state.dart';
@@ -9,86 +12,74 @@ class AppCubit extends Cubit<AppState> {
   AppCubit({required this.localStorage}) : super(const AppState());
 
   final LocalStorage localStorage;
-
-  void nameChanged(String name) => emit(state.copyWith(name: name.trim()));
+  FirebaseProvider provider = FirebaseProvider();
 
   //Emit or "update" to new state = to copy of current state with
   //the new email, trimmed for whitespace
   void emailChanged(String givenEmail)
   => emit(state.copyWith(userEmail: givenEmail.trim()));
 
-  void saveName() {
-    localStorage.setName(state.name);
+
+  void setUser({required String firestoreID, required String name,
+    required String email,})
+  {
+    final userData = <String, dynamic>{
+      'uid': firestoreID,
+      'name': name,
+      'chosenTopics': <String>[],
+      'email': email,
+    };
+
+    //Initialize cloud firestore database reference
+    final db = provider.firebaseFirestore;
+    db.collection('registered_users')
+        .doc(firestoreID)
+    .set(userData);
+
   }
 
-  void getName() {
-    emit(state.copyWith(nameStatus: NameStatus.loading));
-    emit(
-      state.copyWith(
-        name: localStorage.getName() ?? '',
-        nameStatus: NameStatus.success,
-      ),
+  User getUser({required String firestoreID})
+  {
+    Map<String, dynamic> retrievedData;
+    var userName = '';
+    var chosenTopics = <String>[];
+
+    //Initialize cloud firestore database reference
+    final db = provider.firebaseFirestore;
+    final DocumentReference docRef =
+    db.collection('registered_users').doc(firestoreID);
+
+    //Get user data
+    docRef.get().then(
+          (DocumentSnapshot doc)
+      {
+        retrievedData = doc.data() as Map<String, dynamic>;
+
+        //Populate fields
+        userName = retrievedData['name'] as String;
+        chosenTopics = retrievedData['chosenTopics'] as List<String>;
+      },
     );
-  }
 
-  void phoneNumberChanged(String phoneNumber) =>
-      emit(state.copyWith(phoneNumber: phoneNumber));
+    final chips = <ChipModel>[];
 
-  void savePhoneNumber() {
-    localStorage.setPhoneNumber(state.phoneNumber, state.countryCode);
-  }
+    var i = 0;
+    for(final topic in chosenTopics)
+    {
+      final newChip = ChipModel(id: '$i', name: topic);
+      chips.add(newChip);
+      i++;
+    }
 
-  void countryCodeChanged(String countryCode) =>
-      emit(state.copyWith(countryCode: countryCode));
-
-  void getPhoneNumber() {
-    emit(state.copyWith(phoneNumberStatus: PhoneNumberStatus.loading));
-    emit(
-      state.copyWith(
-        phoneNumber: localStorage.getPhoneNumber() ?? '',
-        countryCode: localStorage.getCountryCode() ?? '',
-        phoneNumberStatus: PhoneNumberStatus.success,
-      ),
+    //Create new user object and return it
+    final user = User(
+      givenName: userName,
+      firestoreUid: firestoreID,
+      topics: chips,
     );
+    return user;
   }
 
-  void updateLocalUser(UserChat user) {
-    localStorage
-      ..setName(user.name)
-      ..setPhoneNumber(user.phoneNumber, user.countryCode);
-    emit(
-      state.copyWith(
-        phoneNumberStatus: PhoneNumberStatus.loading,
-        nameStatus: NameStatus.loading,
-      ),
-    );
-    emit(
-      state.copyWith(
-        name: user.name,
-        phoneNumber: user.phoneNumber,
-        countryCode: user.countryCode,
-        phoneNumberStatus: PhoneNumberStatus.success,
-        nameStatus: NameStatus.success,
-        isLoggedIn: true,
-      ),
-    );
-  }
-
-  void clearLocalUser() {
-    localStorage
-      ..setName('')
-      ..setPhoneNumber('', '');
-    emit(
-      state.copyWith(
-        name: '',
-        phoneNumber: '',
-        countryCode: '',
-        phoneNumberStatus: PhoneNumberStatus.initial,
-        nameStatus: NameStatus.initial,
-        isLoggedIn: false,
-      ),
-    );
-  }
 
   void checkLogIn({required bool preValidation}) {
     emit(
@@ -98,16 +89,4 @@ class AppCubit extends Cubit<AppState> {
       ),
     );
   }
-
-  // void getCountryList(String data) {
-  //   final countryList = parseJson(data);
-  //   if (countryList.isNotEmpty) {
-  //     emit(
-  //       AppState(
-  //         countryList: countryList,
-  //         selectedCountryData: countryList[0],
-  //       ),
-  //     );
-  //   }
-  // }
 }

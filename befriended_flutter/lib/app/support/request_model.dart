@@ -6,7 +6,7 @@ class Request
     Request(User requester)
     {
       name = requester.name;
-      topics = requester.selectedTopics;
+      topics = requester.getSelectedTopics();
     }
 
     //The requester and the topics they want to discuss

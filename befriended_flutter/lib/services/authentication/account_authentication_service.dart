@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AccountAuthenticationService {
   FirebaseProvider provider = FirebaseProvider();
 
-  Future<String> createNewAccount(String givenEmail, String givenPassword)
+  //Create new account and return new user ID or error
+  Future<String?> createNewAccount(String givenEmail, String givenPassword)
   async {
     var error = "There's been an error";
     try {
@@ -13,38 +14,43 @@ class AccountAuthenticationService {
           await provider.firebaseAuth.createUserWithEmailAndPassword(
           email: givenEmail,
           password: givenPassword,);
-      return 'Success';
+
+      //Create new entry in database for the user
+      return credential.user?.uid;
     }
     on FirebaseAuthException catch(e) {
       error = e.code;
 
       if (e.code == 'weak-password') {
-        error = 'The password provided is too weak';
+        error = 'error: The password provided is too weak';
       }
       else if (e.code == 'email-already-in-use') {
-        error = 'An account already exists for that email';
+        error = 'error: An account already exists for that email';
       }
     }
       return error;
     }
 
-    Future<bool> signIn(String givenEmail, String givenPassword)
+    Future<String?> signIn(String givenEmail, String givenPassword)
     async {
+
+     var error = 'error signing in';
+
       try {
         final credential =
             await provider.firebaseAuth.signInWithEmailAndPassword(
             email: givenEmail,
             password: givenPassword,);
-        return true;
+        return credential.user?.uid;
       }
       on FirebaseAuthException catch(e)
       {
         if (e.code == 'user-not-found') {
-          print('No user found for that email');
+          error = 'error: No user found for that email';
         } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user');
+          error = 'error: Wrong password provided for that user';
         }
       }
-      return false;
+      return error;
     }
   }

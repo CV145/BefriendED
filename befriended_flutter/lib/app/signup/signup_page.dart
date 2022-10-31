@@ -22,6 +22,7 @@ class SignUpPageState extends State<SignUpPage> {
 
   String email = '';
   String password = '';
+  String name = '';
   bool _isHidden = true;
 
   @override
@@ -49,7 +50,7 @@ class SignUpPageState extends State<SignUpPage> {
               label: 'Name',
               value: context.read<AppCubit>().state.name,
               onChanged: (value) {
-                context.read<AppCubit>().nameChanged(value);
+                name = value;
               },
             ),
             MyTextField(
@@ -91,21 +92,31 @@ class SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void createAccount({required String result, required BuildContext context}) {
-     if (result == 'Success') {
+  void createAccount({required String? result, required BuildContext context}) {
+    if (result != null) {
+      if (result.contains('error')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          singleLineSnackBar(context, result),
+        );
+        return;
+      }
+
+      //Create a new user and store it in the database
+      context.read<AppCubit>().setUser(
+        firestoreID: result,
+        name: name,
+        email: email,
+      );
+
       //Navigate to home page
-       Navigator.push<dynamic>(
+      Navigator.push<dynamic>(
         context,
         PageRouteBuilder<void>(
           settings:
-              const RouteSettings(name: RouteConstants.home),
+          const RouteSettings(name: RouteConstants.home),
           pageBuilder: (context, animation, secondaryAnimation) =>
-              const HomePage(),
+          const HomePage(),
         ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        singleLineSnackBar(context, result),
       );
     }
   }

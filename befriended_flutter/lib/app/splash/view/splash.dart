@@ -32,7 +32,7 @@ class _SplashState extends State<SplashPage> {
   void navigateNextPage(String name) {
     Navigator.pushAndRemoveUntil(
       context,
-      PageRouteBuilder<Null>(
+      PageRouteBuilder<void>(
         settings: RouteSettings(
             name:
                 name.isNotEmpty ? RouteConstants.home : RouteConstants.launch),

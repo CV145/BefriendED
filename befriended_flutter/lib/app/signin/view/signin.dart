@@ -10,6 +10,7 @@ import 'package:befriended_flutter/services/authentication/account_authenticatio
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
 
@@ -25,15 +26,17 @@ class SignInPageState extends State<SignInPage> {
   bool _isHidden = true;
 
   //Verify the given email and password
-  Future<void> verifyLogin(
-      BuildContext context, String email, String password,) async {
-    final name = context.read<AppCubit>().state.name;
+  void verifyLogin({required String? result, required BuildContext context})
+  {
+    if (result != null) {
+      if (result.contains('error')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          singleLineSnackBar(context, result),
+        );
+        return;
+      }
 
-    final isAuthorized = authService.signIn(email, password);
-
-    if (await isAuthorized) {
-      context.read<AppCubit>().saveName();
-      await Navigator.pushAndRemoveUntil(
+      Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder<void>(
           settings: const RouteSettings(name: RouteConstants.home),
@@ -55,10 +58,6 @@ class SignInPageState extends State<SignInPage> {
           },
         ),
         (Route<dynamic> route) => false,
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        singleLineSnackBar(context, 'Sign-in failed'),
       );
     }
   }
@@ -147,7 +146,11 @@ class SignInPageState extends State<SignInPage> {
                   delay: 900,
                   child: BouncingButton(
                     label: 'Continue',
-                    onPress: () => verifyLogin(context, email, password),
+                    onPress: () async {
+                      final result =
+                      await authService.signIn(email, password);
+                      verifyLogin(result: result, context: context);
+                    },
                   ),
                 ),
               ),

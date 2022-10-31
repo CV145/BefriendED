@@ -1,7 +1,7 @@
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
 
-
+/*
 //Temporary local storage of users
 class UserPool
 {
@@ -84,4 +84,4 @@ class UserPool
       ],
     ),
   ];
-}
+} */

@@ -1,6 +1,5 @@
 import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
-import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignOut extends StatefulWidget {
   const SignOut({
     Key? key,
-    // required this.selectedPage,
-    // required this.onTapped,
   }) : super(key: key);
-
-  // final HomePageStatus selectedPage;
-  // final Function(HomePageStatus, int) onTapped;
 
   @override
   State<SignOut> createState() => _SignOutState();
@@ -29,11 +23,10 @@ class _SignOutState extends State<SignOut> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // height: MediaQuery.of(context).size.height * 0.70,
       padding: const EdgeInsetsDirectional.fromSTEB(25, 50, 20, 70),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
         ),
@@ -68,10 +61,10 @@ class _SignOutState extends State<SignOut> {
                 if (context.read<AppCubit>().state.isLoggedIn) {
                   FirebaseProvider().signOut();
                 }
-                context.read<AppCubit>().clearLocalUser();
+                //context.read<AppCubit>().clearLocalUser();
                 Navigator.pushAndRemoveUntil(
                   context,
-                  PageRouteBuilder<Null>(
+                  PageRouteBuilder<void>(
                     settings: const RouteSettings(name: RouteConstants.launch),
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         const LaunchPage(),
@@ -82,7 +75,7 @@ class _SignOutState extends State<SignOut> {
                       const end = Offset.zero;
                       const curve = Curves.ease;
 
-                      var tween = Tween(begin: begin, end: end)
+                      final tween = Tween(begin: begin, end: end)
                           .chain(CurveTween(curve: curve));
 
                       return SlideTransition(
@@ -111,11 +104,11 @@ class _SignOutState extends State<SignOut> {
       child: Row(
         children: [
           Container(
-            margin: EdgeInsets.only(right: 15),
-            padding: EdgeInsets.all(8),
+            margin: const EdgeInsets.only(right: 15),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.all(Radius.circular(40)),
+              borderRadius: const BorderRadius.all(Radius.circular(40)),
             ),
             child: Icon(
               iconData,

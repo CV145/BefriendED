@@ -159,9 +159,9 @@ class _LoginScreenState extends State<LoginScreen>
                                 label: 'Phone Number',
                                 value: state.phoneNumber,
                                 onChanged: (value) {
-                                  context
+                                  /*context
                                       .read<AppCubit>()
-                                      .phoneNumberChanged(value);
+                                      .phoneNumberChanged(value);*/
                                 },
                                 borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(10),

@@ -67,9 +67,9 @@ class _CountryPickerState extends State<CountryPicker> {
         if (state.countryList?.isNotEmpty ?? false) {
           final countryCode = context.read<AppCubit>().state.countryCode;
           if (countryCode.isEmpty) {
-            context
+           /* context
                 .read<AppCubit>()
-                .countryCodeChanged(state.countryList![0].dialCode);
+                .countryCodeChanged(state.countryList![0].dialCode);*/
           }
         }
       },
@@ -92,12 +92,12 @@ class _CountryPickerState extends State<CountryPicker> {
                         duration: Duration(milliseconds: 500),
                       ).then((selectedCountry) {
                         if (selectedCountry != null) {
-                          context
+                         /* context
                               .read<CountryPickerCubit>()
                               .selectedCountryDataChanged(selectedCountry);
                           context
                               .read<AppCubit>()
-                              .countryCodeChanged(selectedCountry.dialCode);
+                              .countryCodeChanged(selectedCountry.dialCode);*/
                         }
                       });
                       // showModalBottomSheet<CountryModel>(

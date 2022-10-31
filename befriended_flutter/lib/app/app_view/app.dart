@@ -9,6 +9,7 @@ import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/availability_schedule/availability_schedule.dart';
 import 'package:befriended_flutter/app/availability_schedule/cubit/availability_schedule_cubit.dart';
 import 'package:befriended_flutter/app/buddy_request/cubit/cubit.dart';
+import 'package:befriended_flutter/app/launch/launch.dart';
 import 'package:befriended_flutter/app/login/cubit/login_cubit.dart';
 import 'package:befriended_flutter/app/splash/splash.dart';
 import 'package:befriended_flutter/app/support/cubit/cubit.dart';
@@ -48,8 +49,8 @@ class AppProvider extends StatelessWidget {
         BlocProvider<AppCubit>(
           create: (context) =>
               AppCubit(localStorage: context.read<LocalStorage>())
-                ..getName()
-                ..getPhoneNumber()
+               // ..getName()
+               // ..getPhoneNumber()
                 ..checkLogIn(preValidation: FirebaseProvider().isLoggedIn()),
         ),
         BlocProvider<LoginCubit>(
@@ -74,19 +75,6 @@ class AppProvider extends StatelessWidget {
 class AppView extends StatelessWidget {
   const AppView({Key? key}) : super(key: key);
 
-//   @override
-//   State<App> createState() => _AppState();
-// }
-
-// class _AppState extends State<App> {
-  // bool _isLaunched = false;
-
-  // void _whenLaunched() {
-  //   setState(() {
-  //     _isLaunched = true;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
@@ -99,10 +87,9 @@ class AppView extends StatelessWidget {
           GlobalMaterialLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        // home: const LaunchPage(),
         initialRoute: '/loading',
         routes: {
-          '/loading': (context) => const SplashPage(),
+          '/loading': (context) => const LaunchPage(),
           // When navigating to the "/" route, build the FirstScreen widget.
           // '/launch': (context) => const LaunchPage(),
           // // When navigating to the "/second" route, build the SecondScreen widget.

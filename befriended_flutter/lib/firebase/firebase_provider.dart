@@ -135,17 +135,6 @@ class FirebaseProvider with ChangeNotifier {
     }
   }
 
-  // Future<UserChat> getUser(User user) async {
-  //   final QuerySnapshot result = await _firebaseFirestore
-  //       .collection(FirestoreConstants.pathUserCollection)
-  //       .where(FirestoreConstants.id, isEqualTo: user.uid)
-  //       .get();
-  //   final List<DocumentSnapshot> documents = result.docs;
-  //   final documentSnapshot = documents[0];
-  //   final userChat = UserChat.fromDocument(documentSnapshot);
-  //   return userChat;
-  // }
-
   Future<UserChat> addUser(User user, BuildContext context) async {
     final appState = context.read<AppCubit>().state;
     final QuerySnapshot result = await firebaseFirestore

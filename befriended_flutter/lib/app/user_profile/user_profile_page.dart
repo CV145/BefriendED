@@ -12,9 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class UserProfilePage extends StatefulWidget {
   //All widgets and elements have a unique key
   //Old widgets are replaced with new ones and keys are used to do this
-  UserProfilePage({Key? key}) : super(key: key);
-
-  final User user = User(givenName: 'User');
+  const UserProfilePage({Key? key, required this.user}) : super(key: key);
+  final User user;
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -47,9 +46,7 @@ class UserProfilePageState extends State<UserProfilePage> {
           (DocumentSnapshot doc)
       {
         quoteData = doc.data() as Map;
-        //print(quoteData!['quote']);
         quote = quoteData!['quote'] as String;
-        //print(quote);
       },
       //onError: () => print('error'),
     );
@@ -62,21 +59,26 @@ class UserProfilePageState extends State<UserProfilePage> {
               child: Text(topic),
               onPressed: ()
               {
-                final numSelected = widget.user.selectedTopics.length;
+                final selectedTopics = widget.user.getSelectedTopics();
+
+                final numSelected = selectedTopics.length;
 
                 if (numSelected < 3 &&
-                    widget.user.selectedTopics.
+                    selectedTopics.
                     singleWhere((model) => model.name == topic,
                     orElse: () => ChipModel(id: '99', name: 'null'),).name
-                        == 'null')
-                {
+                        == 'null') {
                   setState(() {
                     //Update UI
-                    widget.user.selectedTopics.
+                    selectedTopics.
                     add(ChipModel(
                       id: (numSelected+1).toString(),
                       name: topic,),);
+
+                    widget.user.updateSelectedTopics(selectedTopics);
                   });
+
+                  //
                 }
 
               },
@@ -127,8 +129,12 @@ class UserProfilePageState extends State<UserProfilePage> {
   void deleteChip(String givenID)
   {
     setState(() {
-      widget.user.selectedTopics.
-      removeWhere((element) => element.id == givenID);
+      final userTopics = widget.user.getSelectedTopics();
+
+      userTopics.removeWhere((element)
+      => element.id == givenID,);
+
+      widget.user.updateSelectedTopics(userTopics);
     });
   }
 
@@ -165,7 +171,7 @@ class UserProfilePageState extends State<UserProfilePage> {
             padding: const EdgeInsets.all(5),
             child: Wrap(
               children:
-              widget.user.selectedTopics.map((chip) =>
+              widget.user.getSelectedTopics().map((chip) =>
               Chip(
                 //Using info from ChipModel
                 label: Text(chip.name),

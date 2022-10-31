@@ -51,7 +51,7 @@ class _OTPScreenState extends State<OTPScreen> {
     }
     FirebaseProvider().verifyOTP(smsOTP, context, (UserChat user) {
       log('-------+++++ saved user +++++-----------');
-      context.read<AppCubit>().updateLocalUser(user);
+      //context.read<AppCubit>().updateLocalUser(user);
       Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder<Null>(

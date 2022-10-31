@@ -1,44 +1,36 @@
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
-import 'package:befriended_flutter/app/login/login.dart';
+
 import 'package:befriended_flutter/app/support/chat_message.dart';
 import 'package:befriended_flutter/app/support/cubit/cubit.dart';
+import 'package:befriended_flutter/app/support/friend_model.dart';
 import 'package:befriended_flutter/app/support/request_model.dart';
-import 'package:befriended_flutter/app/support/view/support_request.dart';
-import 'package:befriended_flutter/app/user_profile/chip_model.dart';
-import 'package:befriended_flutter/app/user_profile/user_model.dart';
-import 'package:befriended_flutter/app/user_profile/user_pool.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
-import 'package:befriended_flutter/app/widget/delay_sizedbox.dart';
-import 'package:befriended_flutter/app/widget/scroll_column_constraint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import '../friend_model.dart';
 
 
 
-class SupportPage extends StatelessWidget {
-     SupportPage({
+class SupportPage extends StatefulWidget {
+  const SupportPage({
     Key? key,
   }) : super(key: key);
 
-  static late UserPool userPool = UserPool();
+  @override
+  SupportPageState createState() => SupportPageState();
+}
 
+class SupportPageState extends State<SupportPage> {
+
+  @override
   void initState()
   {
-    userPool = UserPool();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SupportCubit, SupportState>(
       builder: (context, supportState) {
-       // if (supportState.requestData?.isApproved ?? false) {
           return buildSupportPage(context);
-        //}
-        return buildJoinUs(context, supportState);
       },
     );
   }
@@ -93,121 +85,24 @@ class SupportPage extends StatelessWidget {
     );
   }
 
-  Widget buildJoinUs(BuildContext context, SupportState supportState) {
-    return Container(
-      padding: const EdgeInsets.all(50),
-      child: ScrollColumnConstraint(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  'Join us!',
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                Text(
-                  'Become a buddy friend and support in our mission',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                DealySizedBox(
-                  width: 200,
-                  height: 200,
-                  child: SvgPicture.asset(
-                    'assets/images/support.svg',
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.scaleDown,
-                  ),
-                ),
-              ],
-            ),
-            BlocBuilder<AppCubit, AppState>(
-              builder: (context, state) {
-                if (state.isLoggedIn) {
-                  return Column(
-                    children: <Widget>[
-                      BouncingButton(
-                        label: supportState.requestData == null
-                            ? 'Join'
-                            : 'Update Request',
-                        onPress: () {
-                          CupertinoScaffold.showCupertinoModalBottomSheet<
-                              String>(
-                            context: context,
-                            expand: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) {
-                              return SupportRequest();
-                            },
-                            shadow: const BoxShadow(
-                              color: Colors.transparent,
-                            ),
-                            // duration: Duration(milliseconds: 500),
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                }
-                return Column(
-                  children: <Widget>[
-                    BouncingButton(
-                      label: 'Login',
-                      onPress: () {
-                        Navigator.push<dynamic>(context, _createRoute());
-                      },
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 20, left: 20, right: 20),
-                      child: Text(
-                        'Identity verification is needed to become a buddy friend',
-                        style: Theme.of(context).textTheme.displaySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-
    List<Request> requestsList = [
-    Request(userPool.pool[9]),
+    /*Request(userPool.pool[9]),
     Request(userPool.pool[8]),
-    Request(userPool.pool[7])
+    Request(userPool.pool[7]) */
   ];
 
     List<Friend> friendsList = [
-    Friend(user: userPool.pool[3]),
+   /* Friend(user: userPool.pool[3]),
     Friend(user: userPool.pool[4]),
     Friend(user: userPool.pool[5]),
     Friend(user: userPool.pool[6]),
-    Friend(user: userPool.pool[7]),
+    Friend(user: userPool.pool[7]),*/
   ];
 
   List<ChatMessage> chatList = [
-    ChatMessage(userPool.pool[8], 'Have a nice day'),
-    ChatMessage(userPool.pool[9],
-        'Hello Celine, how are you ?'),
+    //ChatMessage(userPool.pool[8], 'Have a nice day'),
+    //ChatMessage(userPool.pool[9],
+    //    'Hello Celine, how are you ?'),
   ];
 
   //The following returns ListViews using the given lists
@@ -394,27 +289,6 @@ class SupportPage extends StatelessWidget {
         },
         itemCount: givenList.length,
       ),
-    );
-  }
-
-  Route _createRoute() {
-    return PageRouteBuilder<Null>(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const LoginScreen(isBackAllowed: true),
-      transitionDuration: const Duration(seconds: 1),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
     );
   }
 }

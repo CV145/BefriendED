@@ -5,7 +5,7 @@ enum NameStatus { initial, loading, success, failure }
 enum PhoneNumberStatus { initial, loading, success, failure }
 
 class AppState extends Equatable {
-  const AppState({
+    const AppState({
     this.name = '',
     this.nameStatus = NameStatus.initial,
     this.phoneNumber = '',
@@ -31,6 +31,7 @@ class AppState extends Equatable {
     PhoneNumberStatus? phoneNumberStatus,
     bool? isLoggedIn,
     String? userEmail,
+    User? localUser,
   }) {
     return AppState(
       name: name ?? this.name,
