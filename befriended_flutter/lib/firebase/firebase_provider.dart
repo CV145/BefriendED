@@ -34,7 +34,7 @@ class FirebaseProvider with ChangeNotifier {
     return user?.uid;
   }
 
-  //Build and return a user using data from firebase with the given ID
+  //Build and store a user model using data from firebase with the given ID
   void updateGlobalUser(String? firestoreID)
   {
     if (firestoreID == null)
@@ -45,7 +45,7 @@ class FirebaseProvider with ChangeNotifier {
 
     Map<String, dynamic>? retrievedData;
     var userName = '';
-    var chosenTopics = <String>[];
+    final chosenTopics = <String>[];
 
     //Initialize cloud firestore database reference
     final DocumentReference docRef =
@@ -59,7 +59,15 @@ class FirebaseProvider with ChangeNotifier {
 
         //Populate fields
         userName = retrievedData!['name'] as String;
-        //chosenTopics = retrievedData!['chosenTopics'] as List<String>;
+
+        //List<dynamic> being retrieved instead of List<String>
+        final dynamic retrievedTopics = retrievedData!['chosenTopics'];
+
+        for(final item in retrievedTopics)
+        {
+          final topic = item as String;
+          chosenTopics.add(topic);
+        }
 
         //Create new user object
         final newUser = UserModel(
