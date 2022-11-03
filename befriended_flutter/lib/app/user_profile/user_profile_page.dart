@@ -1,19 +1,19 @@
 import 'dart:core';
-
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
 import 'package:befriended_flutter/app/user_profile/tag_pool.dart' as pool;
+import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserProfilePage extends StatefulWidget {
   //All widgets and elements have a unique key
   //Old widgets are replaced with new ones and keys are used to do this
-  const UserProfilePage({Key? key, required this.user}) : super(key: key);
-  final User user;
+  UserProfilePage({Key? key}) : super(key: key);
+
+  //User has been passed in through constructor
+  final UserModel user = UserGlobalState.currentUser;
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -28,28 +28,10 @@ class UserProfilePageState extends State<UserProfilePage> {
   FirebaseProvider provider = FirebaseProvider();
   late final DocumentReference docRef;
 
-  // Key: "quote" , Value: contents of quote
-  late Map? quoteData;
-  String quote = 'Be positive!';
-
   @override
   void initState() {
     super.initState();
     tagPool = pool.Tags(appUser: widget.user);
-
-    //Initialize cloud firestore database reference
-    final db = provider.firebaseFirestore;
-    docRef = db.collection('affirmation_quotes').doc('quote1');
-
-    //Get the quotes stored in the document
-    docRef.get().then(
-          (DocumentSnapshot doc)
-      {
-        quoteData = doc.data() as Map;
-        quote = quoteData!['quote'] as String;
-      },
-      //onError: () => print('error'),
-    );
 
     //Create a action chip out of each topic
     //Selecting that chip will add it to the user profile
@@ -63,7 +45,7 @@ class UserProfilePageState extends State<UserProfilePage> {
 
                 final numSelected = selectedTopics.length;
 
-                if (numSelected < 3 &&
+                if (numSelected< 3 &&
                     selectedTopics.
                     singleWhere((model) => model.name == topic,
                     orElse: () => ChipModel(id: '99', name: 'null'),).name
@@ -77,20 +59,14 @@ class UserProfilePageState extends State<UserProfilePage> {
 
                     widget.user.updateSelectedTopics(selectedTopics);
                   });
-
-                  //
                 }
-
               },
             ),).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppState>(
-      builder: (context, state) {
-        widget.user.name = state.name;
-        return SafeArea(
+    return SafeArea(
           child: Scaffold(
             body: Center(
               child: Column(
@@ -105,8 +81,6 @@ class UserProfilePageState extends State<UserProfilePage> {
                       Icon(Icons.arrow_downward),
                       Icon(Icons.arrow_downward),],
                   ),
-                  Text(quote, textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 13),),
                   getUserCardWidget(context),
                   const SizedBox(
                     height: 20,
@@ -122,16 +96,14 @@ class UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
         );
-      },
-    );
   }
 
   void deleteChip(String givenID)
   {
     setState(() {
-      final userTopics = widget.user.getSelectedTopics();
+      final userTopics = widget.user.getSelectedTopics()
 
-      userTopics.removeWhere((element)
+      ..removeWhere((element)
       => element.id == givenID,);
 
       widget.user.updateSelectedTopics(userTopics);
@@ -171,6 +143,7 @@ class UserProfilePageState extends State<UserProfilePage> {
             padding: const EdgeInsets.all(5),
             child: Wrap(
               children:
+              //Map the user's topics into Chip widgets
               widget.user.getSelectedTopics().map((chip) =>
               Chip(
                 //Using info from ChipModel

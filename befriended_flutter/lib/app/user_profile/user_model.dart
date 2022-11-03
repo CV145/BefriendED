@@ -7,24 +7,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 User model object, represents a profile, uploaded to Firebase
 The uid is needed to reference the user's document in the database
  */
-class User {
-  User({required String givenName, required String firestoreUid,
-    List<ChipModel>? topics,}) {
-    name = givenName;
-    _selectedTopics = topics ?? [];
+class UserModel {
+  UserModel({required String firestoreUid, required String givenName,
+    required List<String> givenTopics,}) {
     uid = firestoreUid;
-    final db = provider.firebaseFirestore;
+    final db = provider.db;
     userDocRef = db.collection('registered_users').doc(uid);
+    name = givenName;
+
+    var i = 0;
+    for (final topic in givenTopics)
+      {
+        final newChip = ChipModel(id: '$i', name: topic);
+        selectedTopics.add(newChip);
+        i++;
+      }
   }
 
-  String name = 'User';
+  late final String name;
   late final String uid;
   //Collection -> Document -> Data
   FirebaseProvider provider = FirebaseProvider();
   late final DocumentReference userDocRef;
 
   //Regular chips with delete property
-  List<ChipModel> _selectedTopics = [];
+  List<ChipModel> selectedTopics = [];
 
   //Bad O(n) structure, key-value pair might be better
   List<Friend> friendsList = [];
@@ -35,7 +42,7 @@ class User {
    */
   void updateSelectedTopics(List<ChipModel> newTopics)
   {
-    _selectedTopics = newTopics;
+    selectedTopics = newTopics;
     final topicStrings = <String>[];
 
     for (final topic in newTopics)
@@ -50,6 +57,6 @@ class User {
 
   List<ChipModel> getSelectedTopics()
   {
-    return _selectedTopics;
+    return selectedTopics;
   }
 }

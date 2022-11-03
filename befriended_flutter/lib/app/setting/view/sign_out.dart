@@ -1,9 +1,8 @@
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
+
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignOut extends StatefulWidget {
   const SignOut({
@@ -48,7 +47,7 @@ class _SignOutState extends State<SignOut> {
               'You can sign in again anytime!',
               style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.4)),
+                    Theme.of(context).colorScheme.onPrimary.withOpacity(0.4),),
               textAlign: TextAlign.left,
             ),
             const SizedBox(
@@ -58,10 +57,7 @@ class _SignOutState extends State<SignOut> {
               text: 'Logout',
               iconData: Icons.logout_rounded,
               onPress: () {
-                if (context.read<AppCubit>().state.isLoggedIn) {
-                  FirebaseProvider().signOut();
-                }
-                //context.read<AppCubit>().clearLocalUser();
+                FirebaseProvider().signOut();
                 Navigator.pushAndRemoveUntil(
                   context,
                   PageRouteBuilder<void>(

@@ -1,4 +1,3 @@
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/launch/launch.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+/*
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -114,3 +114,4 @@ class _SplashState extends State<SplashPage> {
     );
   }
 }
+*/

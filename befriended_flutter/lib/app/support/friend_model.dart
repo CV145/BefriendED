@@ -6,6 +6,6 @@ class Friend
   {
     name = user.name;
   }
-  late User user;
+  late UserModel user;
   late String name;
 }

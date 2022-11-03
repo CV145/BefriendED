@@ -32,7 +32,7 @@ class AffirmationsState extends State<AffirmationsPage> {
     //initialize the service
     _notificationsService = LocalNotificationService();
     _notificationsService.initialize();
-    final db = provider.firebaseFirestore;
+    final db = provider.db;
     docRef = db.collection('affirmation_quotes').doc('quote1');
 
     docRef.get().then(

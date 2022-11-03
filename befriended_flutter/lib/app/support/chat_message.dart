@@ -1,7 +1,7 @@
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
 
 class ChatMessage {
-   ChatMessage(User sender, this.message)
+   ChatMessage(UserModel sender, this.message)
   {
     senderName = sender.name;
   }

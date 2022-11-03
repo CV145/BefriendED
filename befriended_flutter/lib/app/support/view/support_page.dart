@@ -1,11 +1,9 @@
 
 import 'package:befriended_flutter/app/support/chat_message.dart';
-import 'package:befriended_flutter/app/support/cubit/cubit.dart';
 import 'package:befriended_flutter/app/support/friend_model.dart';
 import 'package:befriended_flutter/app/support/request_model.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 
@@ -28,11 +26,7 @@ class SupportPageState extends State<SupportPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SupportCubit, SupportState>(
-      builder: (context, supportState) {
-          return buildSupportPage(context);
-      },
-    );
+     return buildSupportPage(context);
   }
 
   Widget buildSupportPage(BuildContext context) {

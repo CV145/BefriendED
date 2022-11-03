@@ -1,14 +1,12 @@
 import 'package:befriended_flutter/animations/fade_up_animation.dart';
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/signup/signup_page.dart';
+import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
-import 'package:befriended_flutter/app/widget/text_field.dart';
 import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class SignInPage extends StatefulWidget {
@@ -26,7 +24,8 @@ class SignInPageState extends State<SignInPage> {
   bool _isHidden = true;
 
   //Verify the given email and password
-  void verifyLogin({required String? result, required BuildContext context})
+  void verifyLoginAndNavigate({required String? result,
+    required BuildContext context,})
   {
     if (result != null) {
       if (result.contains('error')) {
@@ -35,6 +34,9 @@ class SignInPageState extends State<SignInPage> {
         );
         return;
       }
+
+      print(result);
+      print('User built with above ID ${UserGlobalState.currentUser.name}');
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -105,12 +107,13 @@ class SignInPageState extends State<SignInPage> {
                 constraints: const BoxConstraints(minWidth: 50, maxWidth: 300),
                 child: FadeUpAnimation(
                   delay: 800,
-                  child: BlocBuilder<AppCubit, AppState>(
-                    builder: (context, state) {
-                      return Column(
+                  child: Column(
                         children: [
-                          MyTextField(
-                            label: 'Email',
+                          TextField(
+                            decoration: const InputDecoration(
+                              hintText: 'Email',
+                              suffix: Icon(Icons.email),
+                            ),
                             onChanged: (value) {
                               email = value;
                             },
@@ -134,11 +137,9 @@ class SignInPageState extends State<SignInPage> {
                             ),
                           ),
                         ],
-                      );
-                    },
+                      ),
                   ),
                 ),
-              ),
               const Spacer(flex: 7),
               Container(
                 constraints: const BoxConstraints(minWidth: 50, maxWidth: 300),
@@ -149,7 +150,7 @@ class SignInPageState extends State<SignInPage> {
                     onPress: () async {
                       final result =
                       await authService.signIn(email, password);
-                      verifyLogin(result: result, context: context);
+                      verifyLoginAndNavigate(result: result, context: context);
                     },
                   ),
                 ),
@@ -160,7 +161,7 @@ class SignInPageState extends State<SignInPage> {
                   padding: const EdgeInsets.only(top: 25),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push<dynamic>(context, _createSignUpRoute());
+                      Navigator.push<dynamic>(context, _navigateToSignUpPage());
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, bottom: 5),
@@ -184,7 +185,7 @@ class SignInPageState extends State<SignInPage> {
     );
   }
 
-  Route _createSignUpRoute() {
+  Route _navigateToSignUpPage() {
     return PageRouteBuilder<void>(
       settings: const RouteSettings(name: RouteConstants.signUp),
       pageBuilder: (context, animation, secondaryAnimation) =>

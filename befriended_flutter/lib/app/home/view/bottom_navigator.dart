@@ -1,11 +1,9 @@
 
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/user_profile/user_profile_page.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 
 class MyBottomNavigator extends StatefulWidget {
@@ -78,9 +76,7 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                 ),
               ],
             ),
-            child: BlocBuilder<AppCubit, AppState>(
-              builder: (context, state) {
-                return IconButton(
+            child:  IconButton(
                   icon: Icon(
                     Icons.account_circle_outlined,
                     color: Theme.of(context).colorScheme.primary,
@@ -91,20 +87,15 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                         backgroundColor: Colors.transparent,
                         builder: (context) {
                           //Need a way to pass in User object
-                          return UserProfilePage(user:
-                          context.read<AppCubit>().getUser(
-                              firestoreID:
-                              provider.firebaseAuth.currentUser?.uid ?? '',),);
+                          return UserProfilePage();
                         },
                         shadow: const BoxShadow(
                           color: Colors.transparent,
                         ),
                       );
                   },
-                );
-              },
+                ),
             ),
-          ),
           IconButton(
             icon: Icon(
               HomePageStatus.setting == widget.selectedPage

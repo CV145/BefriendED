@@ -11,12 +11,12 @@ pre-defined so users can just choose like 3-5 of them from this pool
  */
 
 class Tags {
-  Tags({required User appUser}) {
+  Tags({required UserModel appUser}) {
     currentUser = appUser;
   }
 
   //Reference to the current User of the app
-  late User currentUser;
+  late UserModel currentUser;
 
   //https://breathelifehealingcenters.com/12-types-eating-disorders-explained/
   final List<String> eatingDisorderTopics = [

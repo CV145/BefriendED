@@ -1,16 +1,8 @@
 import 'package:befriended_flutter/app/affirmations/view/affirmations_page.dart';
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
-import 'package:befriended_flutter/app/availability_schedule/cubit/availability_schedule_cubit.dart';
-import 'package:befriended_flutter/app/availability_schedule/view/availability_schedule.dart';
-import 'package:befriended_flutter/app/login/login.dart';
 import 'package:befriended_flutter/app/setting/view/sign_out.dart';
+import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
-import 'package:befriended_flutter/app/widget/delay_sizedbox.dart';
-import 'package:befriended_flutter/app/widget/scroll_column_constraint.dart';
-import 'package:befriended_flutter/app/widget/snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -26,11 +18,9 @@ class SettingsState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppState>(
-      builder: (context, state) {
-        return Stack(
+    return  Stack(
           children: <Widget>[
-            _getSettingsPage(context, state),
+            _getSettingsPage(context),
             Visibility(
               visible: _affirmationsVisibility,
               child: AffirmationsPage(closeAffirmationsOnTap:
@@ -38,8 +28,6 @@ class SettingsState extends State<SettingsPage> {
             ),
           ],
         );
-      },
-    );
   }
 
   void _closeAffirmationsOnTap()
@@ -50,7 +38,7 @@ class SettingsState extends State<SettingsPage> {
     });
   }
 
-  Widget _getSettingsPage(BuildContext context, AppState state) {
+  Widget _getSettingsPage(BuildContext context) {
     return SizedBox(
       child: SingleChildScrollView(
         child: Column(
@@ -62,13 +50,12 @@ class SettingsState extends State<SettingsPage> {
                 height: 80,
                 alignment: Alignment.center,
                 margin: const EdgeInsets.only(top: 50),
-                // padding: EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.secondary,
                   borderRadius: const BorderRadius.all(Radius.circular(50)),
                 ),
                 child: Text(
-                  state.name.isNotEmpty ? state.name[0] : '',
+                  UserGlobalState.currentUser.name[0],
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -80,7 +67,7 @@ class SettingsState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                state.name,
+                UserGlobalState.currentUser.name,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -261,7 +248,7 @@ class SettingsState extends State<SettingsPage> {
                       child: Container(
                         height: 100,
                         padding: const EdgeInsetsDirectional.fromSTEB(
-                            10, 12, 10, 12),
+                            10, 12, 10, 12,),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
@@ -316,24 +303,4 @@ class SettingsState extends State<SettingsPage> {
     );
   }
 
-  Route _createRoute() {
-    return PageRouteBuilder<void>(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const LoginScreen(isBackAllowed: true),
-      transitionDuration: const Duration(seconds: 1),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0, 1);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        final tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
 }

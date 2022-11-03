@@ -1,14 +1,11 @@
-//UI for creating new account
-
-import 'package:befriended_flutter/app/app_cubit/app_cubit.dart';
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/home/view/home.dart';
 import 'package:befriended_flutter/app/widget/snack_bar.dart';
 import 'package:befriended_flutter/app/widget/text_field.dart';
 import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+//UI for creating new account
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -48,7 +45,7 @@ class SignUpPageState extends State<SignUpPage> {
             const Padding(padding: EdgeInsets.all(30)),
             MyTextField(
               label: 'Name',
-              value: context.read<AppCubit>().state.name,
+              value: name,
               onChanged: (value) {
                 name = value;
               },
@@ -81,8 +78,9 @@ class SignUpPageState extends State<SignUpPage> {
             ElevatedButton(
               onPressed: () async {
                 final result =
-                await authService.createNewAccount(email, password);
-                createAccount(result: result, context: context);
+                await authService.createNewAccount(name, email, password);
+                navigateToHomePage(authenticationResult: result,
+                    context: context,);
               },
               child: const Text('SIGN UP'),
             ),
@@ -92,21 +90,15 @@ class SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void createAccount({required String? result, required BuildContext context}) {
-    if (result != null) {
-      if (result.contains('error')) {
+  void navigateToHomePage({required String? authenticationResult,
+    required BuildContext context,}) {
+    if (authenticationResult != null) {
+      if (authenticationResult.contains('error')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          singleLineSnackBar(context, result),
+          singleLineSnackBar(context, authenticationResult),
         );
         return;
       }
-
-      //Create a new user and store it in the database
-      context.read<AppCubit>().setUser(
-        firestoreID: result,
-        name: name,
-        email: email,
-      );
 
       //Navigate to home page
       Navigator.push<dynamic>(

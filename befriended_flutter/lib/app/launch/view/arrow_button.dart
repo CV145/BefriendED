@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:befriended_flutter/app/constants/RouteConstants.dart';
 import 'package:befriended_flutter/app/signin/view/signin.dart';
 import 'package:flutter/material.dart';
