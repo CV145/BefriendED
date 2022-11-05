@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>356654918297-ce66ho7itnufcsv2sk3hmn6dkglc1g7i.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.356654918297-ce66ho7itnufcsv2sk3hmn6dkglc1g7i</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>356654918297-3psg7kujlt5qjvg0s0r68s5j81om21qs.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBya_KluV9yU7eytLbZjgG-VB-grLQWT8I</string>
+	<key>GCM_SENDER_ID</key>
+	<string>356654918297</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.befriended.org.befriended-flutter</string>
+	<key>PROJECT_ID</key>
+	<string>befriended-97276</string>
+	<key>STORAGE_BUCKET</key>
+	<string>befriended-97276.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:356654918297:ios:a713cd5fef0503913ba608</string>
+	<key>DATABASE_URL</key>
+	<string>https://befriended-97276-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

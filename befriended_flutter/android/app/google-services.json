@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "356654918297",
+    "firebase_url": "https://befriended-97276-default-rtdb.firebaseio.com",
     "project_id": "befriended-97276",
     "storage_bucket": "befriended-97276.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "356654918297-3psg7kujlt5qjvg0s0r68s5j81om21qs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.befriended.org.befriended_flutter",
+            "certificate_hash": "9430a995cf5e8079b47cfaf54aaa5d53857576ed"
+          }
+        },
         {
           "client_id": "356654918297-lcrhitljb4b9718l4kbpm9radu7k92gl.apps.googleusercontent.com",
           "client_type": 1,
@@ -45,6 +54,13 @@
             {
               "client_id": "356654918297-ragcieengrpqhbbe4u2dcs4rubv369g2.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "356654918297-ce66ho7itnufcsv2sk3hmn6dkglc1g7i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.befriended.org.befriended-flutter"
+              }
             }
           ]
         }

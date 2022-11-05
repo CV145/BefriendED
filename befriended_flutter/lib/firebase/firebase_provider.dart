@@ -22,9 +22,9 @@ it with the current server state.
  */
 class FirebaseProvider
 {
-  //Reference to database
+  //Reference to database root path
   DatabaseReference rootRef =
-  FirebaseDatabase.instance.ref('https://befriended-97276-default-rtdb.firebaseio.com/');
+  FirebaseDatabase.instance.ref();
 
   /*
   The DatabaseReference listens for DatabaseEvents at the given path. These
