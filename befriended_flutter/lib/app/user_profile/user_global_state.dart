@@ -7,6 +7,6 @@ import 'package:befriended_flutter/app/user_profile/user_model.dart';
 class UserGlobalState
 {
   //Will default to null values
-  static UserModel currentUser = UserModel(firestoreUid: 'null',
+  static UserModel loggedInUser = UserModel(firestoreUid: 'null',
       givenName: 'error: no user', givenTopics: [],);
 }

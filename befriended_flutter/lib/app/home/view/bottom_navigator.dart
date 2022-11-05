@@ -1,7 +1,7 @@
 
 import 'package:befriended_flutter/app/home/home.dart';
 import 'package:befriended_flutter/app/user_profile/user_profile_page.dart';
-import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -24,7 +24,7 @@ class MyBottomNavigator extends StatefulWidget {
 
 class _MyBottomNavigatorState extends State<MyBottomNavigator> {
 
-  FirebaseProvider provider = FirebaseProvider();
+  FirestoreProvider provider = FirestoreProvider();
 
   @override
   void initState() {

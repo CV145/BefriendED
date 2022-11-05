@@ -1,6 +1,6 @@
 import 'package:befriended_flutter/app/support/friend_model.dart';
 import 'package:befriended_flutter/app/user_profile/chip_model.dart';
-import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /*
@@ -27,7 +27,7 @@ class UserModel {
   late final String name;
   late final String uid;
   //Collection -> Document -> Data
-  FirebaseProvider provider = FirebaseProvider();
+  FirestoreProvider provider = FirestoreProvider();
   late final DocumentReference userDocRef;
 
   //Regular chips with delete property

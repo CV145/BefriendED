@@ -1,5 +1,6 @@
 
-import 'package:befriended_flutter/app/support/chat_message.dart';
+import 'package:befriended_flutter/app/support/chat/chat_message.dart';
+import 'package:befriended_flutter/app/support/chat/chat_room_page.dart';
 import 'package:befriended_flutter/app/support/friend_model.dart';
 import 'package:befriended_flutter/app/support/request_model.dart';
 import 'package:befriended_flutter/app/widget/bouncing_button.dart';
@@ -18,6 +19,8 @@ class SupportPage extends StatefulWidget {
 
 class SupportPageState extends State<SupportPage> {
 
+  bool _chatRoomVisibility = false;
+
   @override
   void initState()
   {
@@ -26,10 +29,27 @@ class SupportPageState extends State<SupportPage> {
 
   @override
   Widget build(BuildContext context) {
-     return buildSupportPage(context);
+    return  Stack(
+      children: <Widget>[
+        _buildSupportPage(context),
+        Visibility(
+          visible: _chatRoomVisibility,
+          child: ChatRoomPage(closeOnTap: _closeChatRoomOnTap, otherID:
+                'hugNvxeBcIQdBD1ir2psZiJSEpD2',),
+        ),
+      ],
+    );
   }
 
-  Widget buildSupportPage(BuildContext context) {
+  void _closeChatRoomOnTap()
+  {
+    _chatRoomVisibility = false;
+    setState(() {
+      // Update UI
+    });
+  }
+
+  Widget _buildSupportPage(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -101,6 +121,15 @@ class SupportPageState extends State<SupportPage> {
 
   //The following returns ListViews using the given lists
   Widget _chatList(List<ChatMessage> givenList) {
+    return BouncingButton(
+        onPress: ()
+    {
+      _chatRoomVisibility = true;
+      setState(() {
+
+      });
+    },);
+    /*
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
       child: ListView.separated(
@@ -109,7 +138,12 @@ class SupportPageState extends State<SupportPage> {
         },
         itemBuilder: (context, index) {
           return BouncingButton(
-            onPress: () {},
+            onPress: () {
+              _chatRoomVisibility = true;
+              setState(() {
+
+              });
+            },
             child: Container(
               padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
               decoration: BoxDecoration(
@@ -161,7 +195,7 @@ class SupportPageState extends State<SupportPage> {
         itemCount: givenList.length,
       ),
     );
-  }
+  */}
 
   Widget _requestsList(List<Request> givenList)
   {

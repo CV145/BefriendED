@@ -1,10 +1,10 @@
 
 import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
-import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AccountAuthenticationService {
-  FirebaseProvider provider = FirebaseProvider();
+  FirestoreProvider provider = FirestoreProvider();
 
   //Create new account and return new user ID or error
   Future<String?> createNewAccount(String givenName, String givenEmail,
@@ -62,7 +62,7 @@ class AccountAuthenticationService {
         final userID = credential.user?.uid;
         print('Sign in successful');
         provider.updateGlobalUser(userID);
-        print('Newly built user: ${UserGlobalState.currentUser.name}');
+        print('Newly built user: ${UserGlobalState.loggedInUser.name}');
         return userID;
       }
       on FirebaseAuthException catch(e)

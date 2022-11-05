@@ -36,7 +36,7 @@ class SignInPageState extends State<SignInPage> {
       }
 
       print(result);
-      print('User built with above ID ${UserGlobalState.currentUser.name}');
+      print('User built with above ID ${UserGlobalState.loggedInUser.name}');
 
       Navigator.pushAndRemoveUntil(
         context,

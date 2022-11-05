@@ -23,7 +23,7 @@ class SettingsState extends State<SettingsPage> {
             _getSettingsPage(context),
             Visibility(
               visible: _affirmationsVisibility,
-              child: AffirmationsPage(closeAffirmationsOnTap:
+              child: AffirmationsPage(closeOnTap:
               _closeAffirmationsOnTap,),
             ),
           ],
@@ -55,7 +55,7 @@ class SettingsState extends State<SettingsPage> {
                   borderRadius: const BorderRadius.all(Radius.circular(50)),
                 ),
                 child: Text(
-                  UserGlobalState.currentUser.name[0],
+                  UserGlobalState.loggedInUser.name[0],
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -67,7 +67,7 @@ class SettingsState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                UserGlobalState.currentUser.name,
+                UserGlobalState.loggedInUser.name,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),

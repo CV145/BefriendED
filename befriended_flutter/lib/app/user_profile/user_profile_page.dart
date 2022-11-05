@@ -3,7 +3,7 @@ import 'package:befriended_flutter/app/user_profile/chip_model.dart';
 import 'package:befriended_flutter/app/user_profile/tag_pool.dart' as pool;
 import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
 import 'package:befriended_flutter/app/user_profile/user_model.dart';
-import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key? key}) : super(key: key);
 
   //User has been passed in through constructor
-  final UserModel user = UserGlobalState.currentUser;
+  final UserModel user = UserGlobalState.loggedInUser;
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -25,7 +25,7 @@ class UserProfilePageState extends State<UserProfilePage> {
   late List<ElevatedButton> topicsList = [];
 
   //Collection -> Document -> Data
-  FirebaseProvider provider = FirebaseProvider();
+  FirestoreProvider provider = FirestoreProvider();
   late final DocumentReference docRef;
 
   @override

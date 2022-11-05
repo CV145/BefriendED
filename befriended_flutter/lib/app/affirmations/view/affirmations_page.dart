@@ -1,15 +1,15 @@
 import 'package:befriended_flutter/app/affirmations/NotificationCard.dart';
-import 'package:befriended_flutter/firebase/firebase_provider.dart';
+import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:befriended_flutter/services/local_notification_service.dart';
 import 'package:befriended_flutter/services/preferences_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationsPage extends StatefulWidget {
-   const AffirmationsPage({Key? key, required this.closeAffirmationsOnTap})
+   const AffirmationsPage({Key? key, required this.closeOnTap})
       : super(key: key);
 
-  final Function() closeAffirmationsOnTap;
+  final Function() closeOnTap;
 
   @override
   AffirmationsState createState() => AffirmationsState();
@@ -21,7 +21,7 @@ class AffirmationsState extends State<AffirmationsPage> {
   final _preferencesService = PreferencesService();
 
   //Collection -> Document -> Data
-  FirebaseProvider provider = FirebaseProvider();
+  FirestoreProvider provider = FirestoreProvider();
   late final DocumentReference docRef;
 
   // Key: "quote" , Value: contents of quote
@@ -68,7 +68,7 @@ class AffirmationsState extends State<AffirmationsPage> {
           ),
           onPressed: () {
             //Close this widget
-            widget.closeAffirmationsOnTap();
+            widget.closeOnTap();
             //Update UI
             setState(() {});
           },
