@@ -33,13 +33,17 @@ class FirebaseProvider
    */
 
   Object? getJsonObjFrom(String path) {
+    print('Getting json data from $path');
     final ref = FirebaseDatabase.instance.ref(path);
-    late DataSnapshot data;
+
+    DataSnapshot? data;
     ref.onValue.listen((DatabaseEvent event) {
       data = event.snapshot;
     });
 
-    return data.value;
+    print('Got this data snapshot: $data');
+
+    return data?.value;
   }
 
   //NOTE: will replace any existing data at the path

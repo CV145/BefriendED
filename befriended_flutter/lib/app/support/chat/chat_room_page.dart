@@ -42,17 +42,18 @@ class ChatRoomPageState extends State<ChatRoomPage> {
   //Controller for an editable text field
   final TextEditingController _postEditingController = TextEditingController();
 
-  late String otherUserName;
+  String otherUserName = '';
 
   @override
   void initState() {
     super.initState();
+
+    print('Initializing chat room page');
+
     client = ChatMessageClient(widget.otherID);
 
-    //then() gets things from the future
-    client.getUserNameFrom(widget.otherID).then((retrievedName) {
-      otherUserName = retrievedName;
-    });
+    print('Chat client was setup');
+    print('Speaking to: $otherUserName');
   }
 
   @override

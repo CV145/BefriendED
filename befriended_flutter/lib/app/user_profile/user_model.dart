@@ -33,9 +33,10 @@ class UserModel {
   //Regular chips with delete property
   List<ChipModel> selectedTopics = [];
 
-  //Bad O(n) structure, key-value pair might be better
-  List<Friend> friendsList = [];
+  //Store names of friends and people chatting with here
+  List<String> friendsList = [];
 
+  List<String> chattingWith = [];
 
   /*
   Updates the selected topics and passes them to the database

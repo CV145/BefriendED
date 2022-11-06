@@ -28,6 +28,7 @@ class ChatMessageClient
   ChatMessageClient(this.otherID)
   {
     final senderID = UserGlobalState.loggedInUser.uid;
+    print('Sender ID: $senderID');
 
     final possiblePaths =
     <String>[
@@ -38,6 +39,7 @@ class ChatMessageClient
     for (final possiblePath in possiblePaths)
     {
       chatData =  firebase.getJsonObjFrom(possiblePath) as Map<String, Object>?;
+      print(chatData);
 
       //Does the chat exist at the possible path?
       if (chatData != null)
@@ -49,6 +51,7 @@ class ChatMessageClient
       else
       {
         print('Warning: no chat history exists between $senderID and $otherID');
+        return;
       }
     }
   }
