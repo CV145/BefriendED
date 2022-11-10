@@ -1,7 +1,8 @@
 
-import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
 import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../app/models/user_global_state.dart';
 
 class AccountAuthenticationService {
   FirestoreProvider provider = FirestoreProvider();
@@ -21,6 +22,8 @@ class AccountAuthenticationService {
       //Create new entry in database for the user
       final userID = credential.user?.uid;
       provider.updateGlobalUser(userID);
+
+      //Subscribe to FCM topic = user ID
 
       if (userID != null)
       {

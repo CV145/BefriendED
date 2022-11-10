@@ -102,6 +102,14 @@
       loadMainDartJs();
     }
   </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        //navigator.serviceWorker.register("/flutter_service_worker.js");
+        navigator.serviceWorker.register("/firebase-messaging-sw.js");
+      });
+    }
+    </script>
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";

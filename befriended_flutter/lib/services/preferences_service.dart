@@ -1,11 +1,9 @@
-import 'package:befriended_flutter/app/affirmations/NotificationCard.dart';
+import 'package:befriended_flutter/app/models/NotificationCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:string_validator/string_validator.dart';
 
-/*
-SharedPreferences are used to save data between sessions
- */
+/// Methods for saving/loading any data between sessions
 class PreferencesService {
   /*
   Saving data for all notification cards and the info stored in them

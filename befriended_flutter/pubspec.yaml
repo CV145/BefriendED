@@ -1,5 +1,5 @@
 name: befriended_flutter
-description: Application to help with Eating Disorder
+description: A community for people with eating disorders
 version: 1.0.0+1
 publish_to: none
 
@@ -46,6 +46,10 @@ dependencies:
   weekday_selector: ^1.1.0
   string_validator: ^0.3.0
   flutter_tags: ^1.0.0-nullsafety.1
+  web_socket_channel: ^2.2.0
+  socket_io_client: ^2.0.0
+  flutter_socket_io: ^0.6.0
+  flutter_background_service: ^2.4.5
 
 dev_dependencies:
   bloc_test: ^9.0.3

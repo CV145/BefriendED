@@ -1,7 +1,8 @@
-import 'package:befriended_flutter/app/user_profile/user_global_state.dart';
-import 'package:befriended_flutter/app/user_profile/user_model.dart';
+import 'package:befriended_flutter/app/models/user_global_state.dart';
+import 'package:befriended_flutter/app/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -36,8 +37,8 @@ class FirestoreProvider with ChangeNotifier {
   }
 
   //Build and store a user model using data from firebase with the given ID
-  void updateGlobalUser(String? firestoreID)
-  {
+  Future<void> updateGlobalUser(String? firestoreID)
+  async {
     if (firestoreID == null)
       {
         print('Error building user, firestore ID was null');
@@ -53,9 +54,9 @@ class FirestoreProvider with ChangeNotifier {
     db.collection('registered_users').doc(firestoreID);
 
     //Get user data, then() is called after get() completes (in the future)
-    docRef.get().then(
+    await docRef.get().then(
           (DocumentSnapshot doc)
-      {
+      async {
         retrievedData = doc.data() as Map<String, dynamic>?;
 
         //Populate fields
@@ -78,8 +79,16 @@ class FirestoreProvider with ChangeNotifier {
         );
 
         UserGlobalState.loggedInUser = newUser;
+        //Subscribe to FCM topic = user ID
+        await FirebaseMessaging.instance
+            .subscribeToTopic(UserGlobalState.loggedInUser.uid);
+        print('Global user updated');
+        print('Firebase Messaging subscribed to topic '
+            '${UserGlobalState.loggedInUser.uid}');
       },
     );
+
+
   }
 
   String? getRandomQuote() {
