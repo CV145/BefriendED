@@ -1,9 +1,8 @@
 
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/views/launch.dart';
 import 'package:befriended_flutter/constants/RouteConstants.dart';
-import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:flutter/material.dart';
-
-import 'launch.dart';
 
 class SignOut extends StatefulWidget {
   const SignOut({
@@ -58,7 +57,7 @@ class _SignOutState extends State<SignOut> {
               text: 'Logout',
               iconData: Icons.logout_rounded,
               onPress: () {
-                FirestoreProvider().signOut();
+                LocalDatabase.signOut();
                 Navigator.pushAndRemoveUntil(
                   context,
                   PageRouteBuilder<void>(

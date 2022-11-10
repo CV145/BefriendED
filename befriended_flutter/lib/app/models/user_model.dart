@@ -1,8 +1,8 @@
 
-import 'package:befriended_flutter/firebase/firestore_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'chip_model.dart';
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/models/chat_invite.dart';
+import 'package:befriended_flutter/app/models/chip_model.dart';
+import 'package:befriended_flutter/app/models/friend_model.dart';
 
 /*
 User model object, represents a profile, uploaded to Firebase
@@ -10,11 +10,11 @@ The uid is needed to reference the user's document in the database
  */
 class UserModel {
   UserModel({required String firestoreUid, required String givenName,
+    required String givenEmail,
     required List<String> givenTopics,}) {
     uid = firestoreUid;
-    final db = provider.db;
-    userDocRef = db.collection('registered_users').doc(uid);
     name = givenName;
+    email = givenEmail;
 
     var i = 0;
     for (final topic in givenTopics)
@@ -26,23 +26,18 @@ class UserModel {
   }
 
   late final String name;
+  late final String email;
   late final String uid;
-  //Collection -> Document -> Data
-  FirestoreProvider provider = FirestoreProvider();
-  late final DocumentReference userDocRef;
 
   //Regular chips with delete property
   List<ChipModel> selectedTopics = [];
 
-  //Store names of friends and people chatting with here
-  List<String> friendsList = [];
+  //Store names of friends and invites here
+  List<Friend> friendsList = [];
+  List<ChatInvite> receivedInvites = [];
 
-  List<String> chattingWith = [];
-
-  /*
-  Updates the selected topics and passes them to the database
-   */
-  void updateSelectedTopics(List<ChipModel> newTopics)
+  ///Updates the selected topics and stores them in the database
+  void storeSelectedTopics(List<ChipModel> newTopics)
   {
     selectedTopics = newTopics;
     final topicStrings = <String>[];
@@ -52,13 +47,7 @@ class UserModel {
       topicStrings.add(topic.name);
     }
 
-    //Update user doc's 'chosenTopics' data
-    userDocRef.update({'chosenTopics':topicStrings});
-  }
-
-
-  List<ChipModel> getSelectedTopics()
-  {
-    return selectedTopics;
+    //Update user doc
+    LocalDatabase.updateUserDocument(newTopics: topicStrings);
   }
 }

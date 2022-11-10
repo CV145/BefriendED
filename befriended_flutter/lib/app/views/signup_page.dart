@@ -1,11 +1,10 @@
 
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/views/home.dart';
 import 'package:befriended_flutter/app/views/widget/snack_bar.dart';
 import 'package:befriended_flutter/app/views/widget/text_field.dart';
-import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
+import 'package:befriended_flutter/constants/RouteConstants.dart';
 import 'package:flutter/material.dart';
-
-import '../../constants/RouteConstants.dart';
-import 'home.dart';
 
 //UI for creating new account
 class SignUpPage extends StatefulWidget {
@@ -16,8 +15,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class SignUpPageState extends State<SignUpPage> {
-  final AccountAuthenticationService authService =
-      AccountAuthenticationService();
 
   String email = '';
   String password = '';
@@ -80,7 +77,7 @@ class SignUpPageState extends State<SignUpPage> {
             ElevatedButton(
               onPressed: () async {
                 final result =
-                await authService.createNewAccount(name, email, password);
+                await LocalDatabase.createNewAccount(name, email, password);
                 navigateToHomePage(authenticationResult: result,
                     context: context,);
               },

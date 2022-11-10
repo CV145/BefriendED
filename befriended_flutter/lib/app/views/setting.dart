@@ -1,10 +1,9 @@
+import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/views/affirmations_page.dart';
 import 'package:befriended_flutter/app/views/sign_out.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import '../models/user_global_state.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key})
@@ -56,7 +55,7 @@ class SettingsState extends State<SettingsPage> {
                   borderRadius: const BorderRadius.all(Radius.circular(50)),
                 ),
                 child: Text(
-                  UserGlobalState.loggedInUser.name[0],
+                  LocalDatabase.getLoggedInUser().name[0],
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -68,7 +67,7 @@ class SettingsState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                UserGlobalState.loggedInUser.name,
+                LocalDatabase.getLoggedInUser().name,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),

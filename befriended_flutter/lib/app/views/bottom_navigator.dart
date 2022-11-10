@@ -1,10 +1,8 @@
 
+import 'package:befriended_flutter/app/views/home.dart';
 import 'package:befriended_flutter/app/views/user_profile_page.dart';
-import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-import 'home.dart';
 
 
 class MyBottomNavigator extends StatefulWidget {
@@ -24,8 +22,6 @@ class MyBottomNavigator extends StatefulWidget {
 }
 
 class _MyBottomNavigatorState extends State<MyBottomNavigator> {
-
-  FirestoreProvider provider = FirestoreProvider();
 
   @override
   void initState() {
@@ -87,7 +83,6 @@ class _MyBottomNavigatorState extends State<MyBottomNavigator> {
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) {
-                          //Need a way to pass in User object
                           return UserProfilePage();
                         },
                         shadow: const BoxShadow(

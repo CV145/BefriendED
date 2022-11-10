@@ -1,13 +1,11 @@
 import 'package:befriended_flutter/animations/fade_up_animation.dart';
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/views/home.dart';
 import 'package:befriended_flutter/app/views/signup_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/views/widget/snack_bar.dart';
-import 'package:befriended_flutter/services/authentication/account_authentication_service.dart';
+import 'package:befriended_flutter/constants/RouteConstants.dart';
 import 'package:flutter/material.dart';
-
-import '../../constants/RouteConstants.dart';
-import '../models/user_global_state.dart';
-import 'home.dart';
 
 
 class SignInPage extends StatefulWidget {
@@ -18,7 +16,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class SignInPageState extends State<SignInPage> {
-  AccountAuthenticationService authService = AccountAuthenticationService();
 
   String email = '';
   String password = '';
@@ -37,7 +34,7 @@ class SignInPageState extends State<SignInPage> {
       }
 
       print(result);
-      print('User built with above ID ${UserGlobalState.loggedInUser.name}');
+      print('User built with above ID ${LocalDatabase.getLoggedInUser().name}');
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -150,7 +147,7 @@ class SignInPageState extends State<SignInPage> {
                     label: 'Continue',
                     onPress: () async {
                       final result =
-                      await authService.signIn(email, password);
+                      await LocalDatabase.signIn(email, password);
                       verifyLoginAndNavigate(result: result, context: context);
                     },
                   ),

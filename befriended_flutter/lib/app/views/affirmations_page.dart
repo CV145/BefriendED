@@ -1,8 +1,6 @@
 import 'package:befriended_flutter/app/models/NotificationCard.dart';
-import 'package:befriended_flutter/firebase/firestore_provider.dart';
 import 'package:befriended_flutter/services/android_local_notification_service.dart';
 import 'package:befriended_flutter/services/preferences_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AffirmationsPage extends StatefulWidget {
@@ -20,28 +18,11 @@ class AffirmationsState extends State<AffirmationsPage> {
   late final AndroidLocalNotificationService _notificationsService;
   final _preferencesService = PreferencesService();
 
-  //Collection -> Document -> Data
-  FirestoreProvider provider = FirestoreProvider();
-  late final DocumentReference docRef;
-
-  // Key: "quote" , Value: contents of quote
-  late final dynamic quoteData;
-
   @override
   void initState() {
     //initialize the service
     _notificationsService = AndroidLocalNotificationService();
     _notificationsService.initialize();
-    final db = provider.db;
-    docRef = db.collection('affirmation_quotes').doc('quote1');
-
-    docRef.get().then(
-      (DocumentSnapshot doc)
-      {
-        quoteData = doc.data() as Map<String, dynamic>;
-        print(quoteData);
-      },
-    );
 
     _rebuildCards();
     super.initState();

@@ -1,12 +1,10 @@
 import 'dart:core';
-import 'package:befriended_flutter/app/models/tag_pool.dart' as pool;
-import 'package:befriended_flutter/app/models/user_global_state.dart';
-import 'package:befriended_flutter/app/models/user_model.dart';
-import 'package:befriended_flutter/firebase/firestore_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
-import '../models/chip_model.dart';
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/models/chip_model.dart';
+import 'package:befriended_flutter/app/models/tag_pool.dart' as pool;
+import 'package:befriended_flutter/app/models/user_model.dart';
+import 'package:flutter/material.dart';
 
 class UserProfilePage extends StatefulWidget {
   //All widgets and elements have a unique key
@@ -14,7 +12,7 @@ class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key? key}) : super(key: key);
 
   //User has been passed in through constructor
-  final UserModel user = UserGlobalState.loggedInUser;
+  final UserModel user = LocalDatabase.getLoggedInUser();
 
   @override
   UserProfilePageState createState() => UserProfilePageState();
@@ -24,10 +22,6 @@ class UserProfilePageState extends State<UserProfilePage> {
   late pool.Tags tagPool;
   //Build a list of Chip Items by instantiating
   late List<ElevatedButton> topicsList = [];
-
-  //Collection -> Document -> Data
-  FirestoreProvider provider = FirestoreProvider();
-  late final DocumentReference docRef;
 
   @override
   void initState() {
@@ -42,7 +36,7 @@ class UserProfilePageState extends State<UserProfilePage> {
               child: Text(topic),
               onPressed: ()
               {
-                final selectedTopics = widget.user.getSelectedTopics();
+                final selectedTopics = widget.user.selectedTopics;
 
                 final numSelected = selectedTopics.length;
 
@@ -58,7 +52,7 @@ class UserProfilePageState extends State<UserProfilePage> {
                       id: (numSelected+1).toString(),
                       name: topic,),);
 
-                    widget.user.updateSelectedTopics(selectedTopics);
+                    widget.user.storeSelectedTopics(selectedTopics);
                   });
                 }
               },
@@ -102,12 +96,11 @@ class UserProfilePageState extends State<UserProfilePage> {
   void deleteChip(String givenID)
   {
     setState(() {
-      final userTopics = widget.user.getSelectedTopics()
-
+      final userTopics = widget.user.selectedTopics
       ..removeWhere((element)
       => element.id == givenID,);
 
-      widget.user.updateSelectedTopics(userTopics);
+      widget.user.storeSelectedTopics(userTopics);
     });
   }
 
@@ -145,7 +138,7 @@ class UserProfilePageState extends State<UserProfilePage> {
             child: Wrap(
               children:
               //Map the user's topics into Chip widgets
-              widget.user.getSelectedTopics().map((chip) =>
+              widget.user.selectedTopics.map((chip) =>
               Chip(
                 //Using info from ChipModel
                 label: Text(chip.name),
