@@ -1,10 +1,9 @@
 
+import 'package:befriended_flutter/app/models/friend_model.dart';
+import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/views/chat_room_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
-
-import '../models/friend_model.dart';
-import '../models/request_model.dart';
 
 
 
@@ -241,7 +240,7 @@ class SupportPageState extends State<SupportPage> {
                         const SizedBox(height: 4),
                         Wrap(children: givenList[index].topics.
                         map((topic)
-                        => Chip(label: Text(topic.name)),).toList(),),
+                        => Chip(label: Text(topic)),).toList(),),
                       ],
                     ),
                   ),

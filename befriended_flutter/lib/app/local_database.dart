@@ -249,12 +249,26 @@ class LocalDatabase
     return retrievedQuote;
   }
 
-  ///Call this to get new requests from the server.
+  ///Call this to get new requests from the database.
   static void refreshRequests() {
-
+    final DocumentReference docRef
+    = _firestore.collection('requests').doc('allRequests');
+    docRef.get().then((DocumentSnapshot doc) {
+      final requests = doc.data() as List<Map>?;
+      if (requests != null) {
+        for (final request in requests) {
+          final id = request['uid'] as String;
+          final name = request['userName'] as String;
+          final topics = request['topics'] as List<String>;
+          final newRequest = Request(requesterID: id, givenTopics: topics,
+          requesterName: name,);
+          _retrievedRequests.add(newRequest);
+        }
+      }
+    });
   }
 
-  ///Get a page of requests.
+  ///Get a subset of requests.
   static List<Request> getRequestsPage(int pageNumber, int perPage) {
     return _retrievedRequests;
   }

@@ -1,17 +1,17 @@
 
-import 'package:befriended_flutter/app/models/chip_model.dart';
-import 'package:befriended_flutter/app/models/user_model.dart';
 
 class Request
 {
-    Request(UserModel requester)
+    Request({required String requesterID, required String requesterName,
+      required List<String> givenTopics})
     {
-      name = requester.name;
-      topics = requester.selectedTopics;
+      userID = requesterID;
+      name = requesterName;
+      topics = givenTopics;
     }
 
     //The requester and the topics they want to discuss
-    late final UserModel requester;
     late String name;
-    late List<ChipModel> topics;
+    late String userID;
+    late List<String> topics;
 }
