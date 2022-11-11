@@ -16,8 +16,11 @@ class LocalDatabase
   static final _firebaseAuth = FirebaseAuth.instance;
   static final _firestore = FirebaseFirestore.instance;
 
+  ///We can assume requests will be sorted.
   static late List<Request> _retrievedRequests;
-  static int _requestsIteratorIndex = 0;
+
+  static late List<ChatInvite> _retrievedChatInvites;
+
   static UserModel _loggedInUser = UserModel(firestoreUid: 'null',
     givenName: 'error: no user', givenTopics: [], givenEmail: 'error',);
 
@@ -268,14 +271,30 @@ class LocalDatabase
     });
   }
 
-  ///Get a subset of requests.
+  ///Get a list of requests whose length = perPage, starting at the given
+  ///pageNumber. This is basically dividing the sorted requests list stored
+  ///in this class.
   static List<Request> getRequestsPage(int pageNumber, int perPage) {
-    return _retrievedRequests;
+    //New page starts in intervals of perPage
+    final startIndex = pageNumber * perPage;
+
+    final requestsPage = <Request>[];
+
+    for(var i = 0; i < perPage; i++) {
+      try {
+        requestsPage.add(_retrievedRequests[startIndex + i]);
+      }
+      catch (argumentOutOfRangeException) {
+        break;
+      }
+    }
+
+    return requestsPage;
   }
 
   ///Get the total number of request pages.
   static int getNumberOfRequestPages(int perPage) {
-    return 0;
+    return _retrievedRequests.length ~/ perPage + 1;
   }
 
   ///This method is meant to be called periodically while the app is running.
@@ -283,13 +302,41 @@ class LocalDatabase
   ///to this user of any new invites. This method should also be called on
   ///app login-in.
   static void refreshChatInvites() {
+    final DocumentReference document
+    = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
 
+    document.get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map?;
+      final invites = data!['chatInvites'] as List<Map>;
+
+      String chatID;
+      String from;
+      String to;
+      bool isActive;
+
+      for(final invite in invites) {
+        chatID = invite['chatID'] as String;
+        from = invite['from'] as String;
+        to = invite['to'] as String;
+        isActive = invite['isActive'] as bool;
+        final newChatInvite = ChatInvite(chatID: chatID, from: from,
+        to: to, isActive: isActive,);
+        _retrievedChatInvites.add(newChatInvite);
+      }
+    });
+
+  }
+
+  static List<ChatInvite> getChatInvites() {
+    return _retrievedChatInvites;
   }
 
   ///Send an invite to chat to the given firebase user ID. This invite will be
   ///sent to the server, which will update the database from there and send
   ///a notification to the target user.
   static void sendInvite(String firebaseUserID, ChatInvite invite) {
-
+    //HTTP POST to web server
+    //Web server will update firestore path for given ID
+    //Web server will send a notification to that user with FCM
   }
 }
