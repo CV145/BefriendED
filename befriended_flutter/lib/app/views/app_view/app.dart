@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:befriended_flutter/app/views/launch.dart';
 import 'package:befriended_flutter/l10n/l10n.dart';
 import 'package:befriended_flutter/local_storage/local_storage.dart';
 import 'package:befriended_flutter/theme/theme.dart';
@@ -12,8 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:overlay_support/overlay_support.dart';
-
-import '../launch.dart';
 
 // when logged in call many items to register
 class App extends StatelessWidget {

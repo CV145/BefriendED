@@ -11,6 +11,7 @@ import 'package:befriended_flutter/local_storage/local_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -21,9 +22,22 @@ Future<void> main() async {
   );
 
   print('Finished initialization of Firebase app');
+
   /*
-  Just for testing purposes, above code can be removed later
-   */
+  //Test HTTP request
+  final response =
+  await http.get(
+    Uri.parse('https://befriendedbackend20221111105003.azurewebsites.net'),);
+
+  print('Response body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    //Server returned a 200 OK response
+    print('Response body: ${response.body}');
+  }
+  else {
+    throw Exception('HTTP request failed');
+  } */
 
   final localStorage = LocalStorage(
     plugin: await SharedPreferences.getInstance(),
@@ -31,6 +45,7 @@ Future<void> main() async {
 
   await bootstrap(localStorage);
 
+  /*
   //Setting up FCM
   final messaging = FirebaseMessaging.instance;
   final fcmToken = await messaging.getToken(vapidKey:
@@ -41,7 +56,9 @@ Future<void> main() async {
 
   print('User granted permission: ${settings.authorizationStatus}');
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler); */
+
+
 }
 
 /*

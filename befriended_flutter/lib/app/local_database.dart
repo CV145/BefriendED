@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+//ctrl+f for quick searches
 ///To make things simpler, this class will be responsible for storing
 ///anything retrieved from the database using read-only getters. The only way
 ///to set this data is by calling the update methods that speak to the
@@ -53,8 +54,7 @@ class LocalDatabase
           //Populate fields
           userName = retrievedData!['name'] as String;
           email = retrievedData!['email'] as String;
-
-          //List<dynamic> being retrieved instead of List<String>
+          
           final dynamic retrievedTopics = retrievedData!['chosenTopics'];
 
           for(final item in retrievedTopics)
@@ -75,11 +75,11 @@ class LocalDatabase
 
 
           //Subscribe to FCM topic = user ID
-          await FirebaseMessaging.instance
+          /*await FirebaseMessaging.instance
               .subscribeToTopic(getLoggedInUser().uid);
           print('Global user updated');
           print('Firebase Messaging subscribed to topic '
-              '${getLoggedInUser().uid}');
+              '${getLoggedInUser().uid}'); */
         },);
   }
 

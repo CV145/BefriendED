@@ -2,7 +2,6 @@
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/views/home.dart';
 import 'package:befriended_flutter/app/views/widget/snack_bar.dart';
-import 'package:befriended_flutter/app/views/widget/text_field.dart';
 import 'package:befriended_flutter/constants/RouteConstants.dart';
 import 'package:flutter/material.dart';
 
@@ -42,19 +41,21 @@ class SignUpPageState extends State<SignUpPage> {
           children: [
             const Text('Create Account', style: TextStyle(fontSize: 36)),
             const Padding(padding: EdgeInsets.all(30)),
-            MyTextField(
-              label: 'Name',
-              value: name,
+            TextField(
               onChanged: (value) {
                 name = value;
               },
+              decoration: const InputDecoration(
+                hintText: 'Name',
+              ),
             ),
-            MyTextField(
-              label: 'Email',
-              value: email,
+            TextField(
               onChanged: (value) {
                 email = value;
               },
+              decoration: const InputDecoration(
+                hintText: 'Email',
+              ),
             ),
             TextField(
               obscureText: _isHidden,
