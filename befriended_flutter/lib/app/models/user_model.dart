@@ -37,7 +37,7 @@ class UserModel {
   List<ChatInvite> receivedInvites = [];
 
   ///Updates the selected topics and stores them in the database
-  void storeSelectedTopics(List<ChipModel> newTopics)
+  List<String> storeSelectedTopics(List<ChipModel> newTopics)
   {
     selectedTopics = newTopics;
     final topicStrings = <String>[];
@@ -49,5 +49,7 @@ class UserModel {
 
     //Update user doc
     LocalDatabase.updateUserDocument(newTopics: topicStrings);
+
+    return topicStrings;
   }
 }

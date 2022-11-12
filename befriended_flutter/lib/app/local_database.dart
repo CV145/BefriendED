@@ -254,7 +254,7 @@ class LocalDatabase
 
   ///Call this to get new requests from the database.
   static void refreshRequests() {
-    final DocumentReference docRef
+    /*final DocumentReference docRef
     = _firestore.collection('requests').doc('allRequests');
     docRef.get().then((DocumentSnapshot doc) {
       final requests = doc.data() as List<Map>?;
@@ -268,7 +268,9 @@ class LocalDatabase
           _retrievedRequests.add(newRequest);
         }
       }
-    });
+    });*/
+
+    //Need some kind of query
   }
 
   ///Get a list of requests whose length = perPage, starting at the given
@@ -290,6 +292,19 @@ class LocalDatabase
     }
 
     return requestsPage;
+  }
+
+  ///Update the user's personal request in the database
+  static void updatePersonalRequest(Request updatedRequest) {
+    final requestData = <String, dynamic>{
+      'uid': updatedRequest.userID,
+      'username': updatedRequest.name,
+      'topics': updatedRequest.topics,
+    };
+
+    _firestore.collection('requests')
+        .doc(updatedRequest.userID)
+        .set(requestData);
   }
 
   ///Get the total number of request pages.

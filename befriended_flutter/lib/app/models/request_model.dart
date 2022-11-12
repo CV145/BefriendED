@@ -3,7 +3,7 @@
 class Request
 {
     Request({required String requesterID, required String requesterName,
-      required List<String> givenTopics})
+      required List<String> givenTopics,})
     {
       userID = requesterID;
       name = requesterName;

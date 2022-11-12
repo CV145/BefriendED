@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/models/chip_model.dart';
+import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/models/tag_pool.dart' as pool;
 import 'package:befriended_flutter/app/models/user_model.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,15 @@ class UserProfilePageState extends State<UserProfilePage> {
                       id: (numSelected+1).toString(),
                       name: topic,),);
 
+                    final topicStrings =
                     widget.user.storeSelectedTopics(selectedTopics);
+
+                    final newRequest = Request(
+                        requesterID: widget.user.uid,
+                        requesterName: widget.user.name,
+                        givenTopics: topicStrings,);
+
+                    LocalDatabase.updatePersonalRequest(newRequest);
                   });
                 }
               },
