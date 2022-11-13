@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:befriended_flutter/app/signalr_client.dart';
 import 'package:befriended_flutter/bootstrap.dart';
 import 'package:befriended_flutter/firebase_options.dart';
 import 'package:befriended_flutter/local_storage/local_storage.dart';
@@ -23,6 +24,9 @@ Future<void> main() async {
 
   print('Finished initialization of Firebase app');
 
+  await SignalRClient.createConnection();
+  await SignalRClient.invokeSimpleFunction();
+
   /*
   //Test HTTP request
   final response =
@@ -37,7 +41,8 @@ Future<void> main() async {
   }
   else {
     throw Exception('HTTP request failed');
-  } */
+  }
+   */
 
   final localStorage = LocalStorage(
     plugin: await SharedPreferences.getInstance(),
