@@ -1,7 +1,7 @@
 
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/views/launch.dart';
-import 'package:befriended_flutter/constants/RouteConstants.dart';
+import 'package:befriended_flutter/constants/route_constants.dart';
 import 'package:flutter/material.dart';
 
 class SignOut extends StatefulWidget {

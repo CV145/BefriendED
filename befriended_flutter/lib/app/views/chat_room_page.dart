@@ -14,11 +14,7 @@ The bottom drawer has a text field to write in, a button for looking into the
 device's images, and a send button
  */
 class ChatRoomPage extends StatefulWidget {
-  const ChatRoomPage({Key? key, required this.closeOnTap,
-    required this.otherID,}) : super(key: key);
-
-  final Function() closeOnTap;
-  final String otherID;
+  const ChatRoomPage({Key? key}) : super(key: key);
 
   @override
   ChatRoomPageState createState() => ChatRoomPageState();
@@ -57,7 +53,7 @@ class ChatRoomPageState extends State<ChatRoomPage> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () { Navigator.pop(context);},
         ),
       ),
       //drawer: AppDrawer(),

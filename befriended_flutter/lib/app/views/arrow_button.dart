@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:befriended_flutter/app/views/signin.dart';
-import 'package:befriended_flutter/constants/RouteConstants.dart';
+import 'package:befriended_flutter/constants/route_constants.dart';
 import 'package:flutter/material.dart';
 
 class ArrowButton extends StatefulWidget {

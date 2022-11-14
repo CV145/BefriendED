@@ -4,7 +4,7 @@ import 'package:befriended_flutter/app/views/home.dart';
 import 'package:befriended_flutter/app/views/signup_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:befriended_flutter/app/views/widget/snack_bar.dart';
-import 'package:befriended_flutter/constants/RouteConstants.dart';
+import 'package:befriended_flutter/constants/route_constants.dart';
 import 'package:flutter/material.dart';
 
 
