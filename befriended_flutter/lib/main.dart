@@ -24,9 +24,6 @@ Future<void> main() async {
 
   print('Finished initialization of Firebase app');
 
-  /*await SignalRClient.createConnection();
-  await SignalRClient.invokeSimpleFunction(); */
-
   /*
   //Test HTTP request
   final response =

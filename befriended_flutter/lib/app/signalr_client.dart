@@ -50,13 +50,17 @@ class SignalRClient {
     });
   }
 
+  static void receiveMessage() {
+
+  }
+
   ///Invoke the sample function on the server.
-  static Future<void> invokeSimpleFunction() async {
+  static Future<String?> invokeSimpleFunction() async {
     final result = await
     _hubConnection.invoke(
         'MethodOneSimpleParameterSimpleReturnValue',
         args: <Object>['ParameterValue'],);
-    print("Result: '$result");
+    return result as String?;
   }
 }
 

@@ -4,8 +4,6 @@ import 'package:befriended_flutter/app/views/chat_room_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
 
-import '../../constants/route_constants.dart';
-
 class SupportPage extends StatefulWidget {
   const SupportPage({
     Key? key,
@@ -102,9 +100,9 @@ class SupportPageState extends State<SupportPage> {
 
   void navigateToChatRoomPage({
     required BuildContext context,
-  }) {
+  })  {
     //Navigate to chat room page
-    Navigator.push<dynamic>(
+     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
         builder: (context) => const ChatRoomPage(),
