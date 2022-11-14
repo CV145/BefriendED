@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 /*
 The chat room is where chat messaging takes place.
@@ -21,6 +22,9 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class ChatRoomPageState extends State<ChatRoomPage> {
+  List<types.Message> _messages = [];
+  final types.User _user =
+  const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
 
   //Controller for a scrollable widget
   final ScrollController _controller = ScrollController();
@@ -56,25 +60,10 @@ class ChatRoomPageState extends State<ChatRoomPage> {
           onPressed: () { Navigator.pop(context);},
         ),
       ),
-      //drawer: AppDrawer(),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            child: Row(
-                //Bottom bar
-                ),
-          ),
-        ],
+      body: Chat(
+        messages: _messages,
+        onSendPressed: (PartialText ) {  },
+        user: _user,
       ),
     );
   }
