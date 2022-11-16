@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:befriended_flutter/app/models/chat_invite.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 //ctrl+f for quick searches
 ///To make things simpler, this class will be responsible for storing
@@ -18,7 +19,7 @@ class LocalDatabase
   static final _firestore = FirebaseFirestore.instance;
 
   ///We can assume requests will be sorted.
-  static late List<Request> _retrievedRequests;
+  static late List<Request> _retrievedRequests = [];
 
   static late List<ChatInvite> _retrievedChatInvites;
 
@@ -252,33 +253,67 @@ class LocalDatabase
     return retrievedQuote;
   }
 
-  ///Call this to get new requests from the database.
-  static void refreshRequests() {
-    /*final DocumentReference docRef
-    = _firestore.collection('requests').doc('allRequests');
-    docRef.get().then((DocumentSnapshot doc) {
-      final requests = doc.data() as List<Map>?;
-      if (requests != null) {
-        for (final request in requests) {
-          final id = request['uid'] as String;
-          final name = request['userName'] as String;
-          final topics = request['topics'] as List<String>;
-          final newRequest = Request(requesterID: id, givenTopics: topics,
-          requesterName: name,);
-          _retrievedRequests.add(newRequest);
-        }
-      }
-    });*/
+  ///Call this to get new requests from the database.(Note: just gets all the
+  ///requests for now). Will return the first page of the requests using the
+  ///given perPage parameter.
+  static Future<List<Request>> refreshRequests(int perPage) async {
+    _retrievedRequests = [];
+    print('Inside refreshRequests()');
 
-    //Need some kind of query
+    //Iterate through each doc in 'requests' collection
+    final CollectionReference ref =
+        _firestore.collection('requests');
+
+    //Get docs from collection ref
+    final querySnapshot = await ref.get();
+
+    print('query snapshot: $querySnapshot');
+    print('docs: ${querySnapshot.docs}');
+
+    for(final doc in querySnapshot.docs) {
+      print('doc ID: ${doc.id}');
+      if (doc.id == 'allRequests' || doc.id == 'null') {
+        continue;
+      }
+
+      final data = doc.data() as Map<String, dynamic>?;
+
+      final id = data!['uid'] as String;
+      print(id);
+      final name = data!['username'] as String;
+      print(name);
+
+      //Why is the program cancelling here?
+      const List<String>? topics = null;
+      //data!['topics'] as List<String>?;
+      print('topics: $topics');
+
+      final newRequest = Request(requesterID: id, requesterName: name,
+          givenTopics: topics ?? ['null'],);
+
+      _retrievedRequests.add(newRequest);
+      print('new request was added to list');
+    }
+
+    print('Before loop');
+    //Need some kind of query to sort the requests
+    for (final request in _retrievedRequests) {
+      print(request.name);
+    }
+    print('After loop');
+
+    return getRequestsPage(0, perPage);
   }
 
   ///Get a list of requests whose length = perPage, starting at the given
   ///pageNumber. This is basically dividing the sorted requests list stored
-  ///in this class.
+  ///in this class. Note: first page = 0
   static List<Request> getRequestsPage(int pageNumber, int perPage) {
+    print('inside getRequestsPage()');
+
     //New page starts in intervals of perPage
     final startIndex = pageNumber * perPage;
+    print('start index: $startIndex');
 
     final requestsPage = <Request>[];
 

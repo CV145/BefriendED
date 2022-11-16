@@ -28,8 +28,8 @@ class AffirmationsState extends State<AffirmationsPage> {
     super.initState();
   }
 
+  ///Rebuild the list of cards using saved data
   Future<void> _rebuildCards() async {
-    //rebuild the list of cards using saved data
     final loadedCards = _preferencesService.loadAffirmationsData();
     //then - callbacks to be called when Future completes
     await loadedCards.then((value) => cards = value);
@@ -214,13 +214,6 @@ class AffirmationsState extends State<AffirmationsPage> {
 
                     ],
                   ),
-                  /*&subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-
-
-                    ],
-                  ),*/
                 ),
               );
             }).toList(),

@@ -1,3 +1,4 @@
+import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/models/friend_model.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/views/chat_room_page.dart';
@@ -14,9 +15,19 @@ class SupportPage extends StatefulWidget {
 }
 
 class SupportPageState extends State<SupportPage> {
+  List<Request> pageOfRequests = [];
+  List<Friend> friendsList = [];
+
   @override
   void initState() {
+    rebuildRequests();
     super.initState();
+  }
+
+  Future<void> rebuildRequests() async {
+    final loadedRequests = LocalDatabase.refreshRequests(10);
+    await loadedRequests.then((value) => pageOfRequests = value);
+    setState(() {});
   }
 
   @override
@@ -63,7 +74,7 @@ class SupportPageState extends State<SupportPage> {
           Expanded(
             child: TabBarView(
               children: [
-                _requestsList(requestsList),
+                _requestsList(pageOfRequests),
                 _chatInviteList(),
                 _friendsList(friendsList),
               ],
@@ -73,20 +84,6 @@ class SupportPageState extends State<SupportPage> {
       ),
     );
   }
-
-  List<Request> requestsList = [
-    /*Request(userPool.pool[9]),
-    Request(userPool.pool[8]),
-    Request(userPool.pool[7]) */
-  ];
-
-  List<Friend> friendsList = [
-    /* Friend(user: userPool.pool[3]),
-    Friend(user: userPool.pool[4]),
-    Friend(user: userPool.pool[5]),
-    Friend(user: userPool.pool[6]),
-    Friend(user: userPool.pool[7]),*/
-  ];
 
   //The following returns ListViews using the given lists
   Widget _chatInviteList() {
@@ -111,7 +108,7 @@ class SupportPageState extends State<SupportPage> {
   }
 }
 
-Widget _requestsList(List<Request> givenList) {
+Widget _requestsList(List<Request> givenPage) {
   return Padding(
     padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
     child: ListView.separated(
@@ -119,60 +116,32 @@ Widget _requestsList(List<Request> givenList) {
         return const Divider();
       },
       itemBuilder: (context, index) {
-        return BouncingButton(
-          onPress: () {},
-          child: Container(
-            padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [],
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.zero,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                    ),
-                    child: Text(
-                      givenList[index].name[0],
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+        return ElevatedButton(
+          child: Card(
+            child: Text(givenPage[index].name),
+          ),
+          onPressed: () => showDialog<String>(
+            /*On press we want to ask the user to verify if they want to send
+          an invite to the requester*/
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Would you like to help this person?'),
+              content: const Text("We'll send them an invite to start a live chat."),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        givenList[index].name,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        children: givenList[index]
-                            .topics
-                            .map(
-                              (topic) => Chip(label: Text(topic)),
-                            )
-                            .toList(),
-                      ),
-                    ],
-                  ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'OK'),
+                  child: const Text('OK'),
                 ),
               ],
             ),
           ),
         );
       },
-      itemCount: givenList.length,
+      itemCount: givenPage.length,
     ),
   );
 }
