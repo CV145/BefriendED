@@ -30,6 +30,7 @@ class SignInPageState extends State<SignInPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           singleLineSnackBar(context, result),
         );
+        print(result);
         return;
       }
 

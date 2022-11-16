@@ -258,7 +258,6 @@ class LocalDatabase
   ///given perPage parameter.
   static Future<List<Request>> refreshRequests(int perPage) async {
     _retrievedRequests = [];
-    print('Inside refreshRequests()');
 
     //Iterate through each doc in 'requests' collection
     final CollectionReference ref =
@@ -267,53 +266,49 @@ class LocalDatabase
     //Get docs from collection ref
     final querySnapshot = await ref.get();
 
-    print('query snapshot: $querySnapshot');
-    print('docs: ${querySnapshot.docs}');
-
     for(final doc in querySnapshot.docs) {
-      print('doc ID: ${doc.id}');
-      if (doc.id == 'allRequests' || doc.id == 'null') {
+      if (doc.id == 'allRequests' || doc.id == 'null'
+          || doc.id == _loggedInUser.uid) {
         continue;
       }
 
+      print('working with this doc: ${doc.id}');
+
       final data = doc.data() as Map<String, dynamic>?;
-
       final id = data!['uid'] as String;
-      print(id);
       final name = data!['username'] as String;
-      print(name);
 
-      //Why is the program cancelling here?
-      const List<String>? topics = null;
-      //data!['topics'] as List<String>?;
-      print('topics: $topics');
+      //Data must be broken down from structure to literal
+      final topics = data['topics'] as List<dynamic>;
+
+      print('Data for $name: ${data['topics']}');
+
+      final topicStrings = <String>[];
+      for (final topic in topics) {
+        topicStrings.add(topic as String);
+      }
+
+      print('topic strings list: $topicStrings');
 
       final newRequest = Request(requesterID: id, requesterName: name,
-          givenTopics: topics ?? ['null'],);
+          givenTopics: topicStrings,);
 
+      print('right before adding new request');
       _retrievedRequests.add(newRequest);
-      print('new request was added to list');
+      print('added new request to list');
     }
 
-    print('Before loop');
-    //Need some kind of query to sort the requests
-    for (final request in _retrievedRequests) {
-      print(request.name);
-    }
-    print('After loop');
-
-    return getRequestsPage(0, perPage);
+  print('all retrieved requests: $_retrievedRequests');
+  //Need some kind of query to sort the requests
+  return getRequestsPage(0, perPage);
   }
 
   ///Get a list of requests whose length = perPage, starting at the given
   ///pageNumber. This is basically dividing the sorted requests list stored
   ///in this class. Note: first page = 0
   static List<Request> getRequestsPage(int pageNumber, int perPage) {
-    print('inside getRequestsPage()');
-
     //New page starts in intervals of perPage
     final startIndex = pageNumber * perPage;
-    print('start index: $startIndex');
 
     final requestsPage = <Request>[];
 

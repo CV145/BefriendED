@@ -15,8 +15,8 @@ class SupportPage extends StatefulWidget {
 }
 
 class SupportPageState extends State<SupportPage> {
-  List<Request> pageOfRequests = [];
-  List<Friend> friendsList = [];
+  List<Request> requests = [];
+  List<Friend> friends = [];
 
   @override
   void initState() {
@@ -25,17 +25,19 @@ class SupportPageState extends State<SupportPage> {
   }
 
   Future<void> rebuildRequests() async {
+    print('before $requests');
     final loadedRequests = LocalDatabase.refreshRequests(10);
-    await loadedRequests.then((value) => pageOfRequests = value);
+    await loadedRequests.then((value) => requests = value);
     setState(() {});
+    print('after $requests');
   }
 
   @override
   Widget build(BuildContext context) {
-    return _buildSupportPage(context);
+    return buildSupportPage(context);
   }
 
-  Widget _buildSupportPage(BuildContext context) {
+  Widget buildSupportPage(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -74,9 +76,9 @@ class SupportPageState extends State<SupportPage> {
           Expanded(
             child: TabBarView(
               children: [
-                _requestsList(pageOfRequests),
+                requestsList(),
                 _chatInviteList(),
-                _friendsList(friendsList),
+                _friendsList(friends),
               ],
             ),
           ),
@@ -90,116 +92,129 @@ class SupportPageState extends State<SupportPage> {
     return BouncingButton(
       label: 'Enter Chat Room',
       onPress: () {
-        setState(() {navigateToChatRoomPage(context: context);});
+        setState(() {
+          navigateToChatRoomPage(context: context);
+        });
       },
     );
   }
 
   void navigateToChatRoomPage({
     required BuildContext context,
-  })  {
+  }) {
     //Navigate to chat room page
-     Navigator.push<dynamic>(
+    Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
         builder: (context) => const ChatRoomPage(),
       ),
     );
   }
-}
 
-Widget _requestsList(List<Request> givenPage) {
-  return Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
-    child: ListView.separated(
-      separatorBuilder: (context, index) {
-        return const Divider();
-      },
-      itemBuilder: (context, index) {
-        return ElevatedButton(
-          child: Card(
-            child: Text(givenPage[index].name),
-          ),
-          onPressed: () => showDialog<String>(
-            /*On press we want to ask the user to verify if they want to send
-          an invite to the requester*/
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text('Would you like to help this person?'),
-              content: const Text("We'll send them an invite to start a live chat."),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      itemCount: givenPage.length,
-    ),
-  );
-}
-
-Widget _friendsList(List<Friend> givenList) {
-  return Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
-    child: ListView.separated(
-      separatorBuilder: (context, index) {
-        return const Divider();
-      },
-      itemBuilder: (context, index) {
-        return BouncingButton(
-          onPress: () {},
-          child: Container(
-            padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [],
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.zero,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+  Widget requestsList() {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: requests.map((requestEntry) {
+              return ElevatedButton(
+                onPressed: () {
+                  showDialog<String>(
+                    /*On press we want to ask the user to verify if
+                             they want to send an invite to the requester*/
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Would you like to help this person?'),
+                      content: const Text(
+                          "We'll send them an invite to start a live chat.",),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      givenList[index].name[0],
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  );
+                },
+                child: Card(
+                  child: Row(
                     children: [
-                      Text(
-                        givenList[index].name,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 4),
+                      Text(requestEntry.name),
+                      Row(
+                        children: requestEntry.topicChips,
+                      )
                     ],
                   ),
                 ),
-              ],
-            ),
+              );
+            }).toList(),
           ),
-        );
-      },
-      itemCount: givenList.length,
-    ),
-  );
+        ),
+      ),
+    );
+  }
+
+  Widget _friendsList(List<Friend> givenList) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
+      child: ListView.separated(
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemBuilder: (context, index) {
+          return BouncingButton(
+            onPress: () {},
+            child: Container(
+              padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [],
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(50)),
+                      ),
+                      child: Text(
+                        givenList[index].name[0],
+                        style: Theme.of(context).textTheme.titleMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          givenList[index].name,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: givenList.length,
+      ),
+    );
+  }
 }

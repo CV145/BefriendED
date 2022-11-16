@@ -23,7 +23,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -64,17 +67,5 @@ class DefaultFirebaseOptions {
     projectId: 'befriended-97276',
     databaseURL: 'https://befriended-97276-default-rtdb.firebaseio.com',
     storageBucket: 'befriended-97276.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBya_KluV9yU7eytLbZjgG-VB-grLQWT8I',
-    appId: '1:356654918297:ios:a713cd5fef0503913ba608',
-    messagingSenderId: '356654918297',
-    projectId: 'befriended-97276',
-    databaseURL: 'https://befriended-97276-default-rtdb.firebaseio.com',
-    storageBucket: 'befriended-97276.appspot.com',
-    androidClientId: '356654918297-3psg7kujlt5qjvg0s0r68s5j81om21qs.apps.googleusercontent.com',
-    iosClientId: '356654918297-ce66ho7itnufcsv2sk3hmn6dkglc1g7i.apps.googleusercontent.com',
-    iosBundleId: 'com.befriended.org.befriended-flutter',
   );
 }
