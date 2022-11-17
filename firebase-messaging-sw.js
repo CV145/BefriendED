@@ -1,6 +1,6 @@
 //Importing app and messaging SDKs
 importScripts("https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/7.15.5/firebase-messaging.js");
+//importScripts("https://www.gstatic.com/firebasejs/7.15.5/firebase-messaging.js");
 
 //Using singleton breaks instantiating messaging()
 // App firebase = FirebaseWeb.instance.app;
@@ -22,7 +22,8 @@ firebase.initializeApp({
   measurementId: 'G-measurement-id',
 });
 
-const messaging = firebase.messaging();
+/*
+//const messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(function (payload) {
     const promiseChain = clients
         .matchAll({
@@ -42,5 +43,5 @@ messaging.setBackgroundMessageHandler(function (payload) {
 });
 self.addEventListener('notificationclick', function (event) {
     console.log('notification received: ', event)
-});
+}); */
 
