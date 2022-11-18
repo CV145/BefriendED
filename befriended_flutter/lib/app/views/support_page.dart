@@ -1,6 +1,8 @@
 import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/models/chat_invite.dart';
 import 'package:befriended_flutter/app/models/friend_model.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
+import 'package:befriended_flutter/app/signalr_client.dart';
 import 'package:befriended_flutter/app/views/chat_room_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
@@ -15,26 +17,45 @@ class SupportPage extends StatefulWidget {
 }
 
 class SupportPageState extends State<SupportPage> {
-  List<Request> requests = [];
+  List<Request?> requests = [];
+  List<ChatInvite> invites = [];
   List<Friend> friends = [];
 
   @override
   void initState() {
     rebuildRequests();
+    invites = LocalDatabase.getLoggedInUser().receivedInvites;
+    friends = LocalDatabase.getLoggedInUser().friendsList;
     super.initState();
   }
 
+  Future<void> sendInvite(String receiverID) async {
+    await SignalRClient.createConnection();
+    final result = SignalRClient.sendChatInviteTo(receiverID);
+    print(result);
+  }
+
   Future<void> rebuildRequests() async {
-    print('before $requests');
     final loadedRequests = LocalDatabase.refreshRequests(10);
     await loadedRequests.then((value) => requests = value);
     setState(() {});
-    print('after $requests');
   }
 
   @override
   Widget build(BuildContext context) {
     return buildSupportPage(context);
+  }
+
+  void navigateToChatRoomPage({
+    required BuildContext context,
+  }) {
+    //Navigate to chat room page
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute<dynamic>(
+        builder: (context) => const ChatRoomPage(),
+      ),
+    );
   }
 
   Widget buildSupportPage(BuildContext context) {
@@ -65,7 +86,7 @@ class SupportPageState extends State<SupportPage> {
                   child: Text('Requests'),
                 ),
                 Tab(
-                  child: Text('Chat Invites'),
+                  child: Text('Invites'),
                 ),
                 Tab(
                   child: Text('Friends'),
@@ -76,9 +97,9 @@ class SupportPageState extends State<SupportPage> {
           Expanded(
             child: TabBarView(
               children: [
-                requestsList(),
-                _chatInviteList(),
-                _friendsList(friends),
+                buildRequestsTab(),
+                buildInvitesTab(),
+                buildFriendsTab(friends),
               ],
             ),
           ),
@@ -88,78 +109,81 @@ class SupportPageState extends State<SupportPage> {
   }
 
   //The following returns ListViews using the given lists
-  Widget _chatInviteList() {
-    return BouncingButton(
-      label: 'Enter Chat Room',
-      onPress: () {
-        setState(() {
-          navigateToChatRoomPage(context: context);
-        });
-      },
-    );
-  }
-
-  void navigateToChatRoomPage({
-    required BuildContext context,
-  }) {
-    //Navigate to chat room page
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute<dynamic>(
-        builder: (context) => const ChatRoomPage(),
-      ),
-    );
-  }
-
-  Widget requestsList() {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: requests.map((requestEntry) {
-              return ElevatedButton(
-                onPressed: () {
-                  showDialog<String>(
-                    /*On press we want to ask the user to verify if
-                             they want to send an invite to the requester*/
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Would you like to help this person?'),
-                      content: const Text(
-                          "We'll send them an invite to start a live chat.",),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'Cancel'),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'OK'),
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                child: Card(
-                  child: Row(
-                    children: [
-                      Text(requestEntry.name),
-                      Row(
-                        children: requestEntry.topicChips,
-                      )
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+  Widget buildInvitesTab() {
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          children: invites.map((inviteEntry) {
+            return ElevatedButton(
+                onPressed: (){},
+                child: Text(inviteEntry.from),);
+          }).toList(),
         ),
       ),
     );
   }
 
-  Widget _friendsList(List<Friend> givenList) {
+  Widget buildRequestsTab() {
+    return Container(
+      padding: const EdgeInsets.all(25),
+      child: Column(
+        children: requests.map((requestEntry) {
+          if (requestEntry == null) {
+            return const SizedBox();
+          }
+          return ElevatedButton(
+            onPressed: () {
+              showDialog<String>(
+                /*On press we want to ask the user to verify if
+                 they want to send an invite to the requester */
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Would you like to help this person?'),
+                  content: const Text(
+                    "We'll send them an invite to start a live chat.",
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      //Send a chat invite to Requester
+                      onPressed: () => {
+                          sendInvite(requestEntry.userID)
+                      },
+                      child: const Text('Yes'),
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: Card(
+              color: Colors.white38,
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(
+                    //color: Colors.blueAccent,
+                    ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(requestEntry?.name ?? ''),
+                  Row(
+                    children: requestEntry.topicChips,)
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+    // ),
+    //);
+  }
+
+  Widget buildFriendsTab(List<Friend> givenList) {
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
       child: ListView.separated(

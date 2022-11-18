@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 
@@ -7,7 +6,6 @@ class Request
     Request({required String requesterID, required String requesterName,
       required List<String> givenTopics,})
     {
-      print('inside request constructor');
       userID = requesterID;
       name = requesterName;
       topics = givenTopics;
@@ -16,7 +14,11 @@ class Request
       topicChips = [];
 
       for (final topic in topics) {
-        final newChip = Chip(label: Text(topic));
+        final newChip = Chip(
+            label: Text(topic),
+            backgroundColor: Colors.white70,
+            labelPadding: const EdgeInsets.all(10),
+        );
         topicChips.add(newChip);
       }
     }

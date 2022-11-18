@@ -24,11 +24,30 @@ Future<void> main() async {
 
   print('Finished initialization of Firebase app');
 
-  /*
+  //Custom error on release instead of just a grey page
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    bool inDebug = false;
+    assert(() { inDebug = true; return true; }());
+    // In debug mode, use the normal error widget which shows
+    // the error message:
+    if (inDebug)
+      return ErrorWidget(details.exception);
+    // In release builds, show a yellow-on-blue message instead:
+    return Container(
+      alignment: Alignment.center,
+      child: Text(
+        'Error! ${details.exception}',
+        style: TextStyle(color: Colors.yellow),
+        textDirection: TextDirection.ltr,
+      ),
+    );
+  };
+
+
   //Test HTTP request
   final response =
   await http.get(
-    Uri.parse('https://befriendedbackend20221111105003.azurewebsites.net'),);
+    Uri.parse('https://befriendedsignalrchatserver.azurewebsites.net/hi'),);
 
   print('Response body: ${response.body}');
 
@@ -39,7 +58,9 @@ Future<void> main() async {
   else {
     throw Exception('HTTP request failed');
   }
-   */
+
+
+  
 
   final localStorage = LocalStorage(
     plugin: await SharedPreferences.getInstance(),

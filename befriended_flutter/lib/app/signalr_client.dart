@@ -1,26 +1,8 @@
-import 'package:signalr_netcore/abort_controller.dart';
-import 'package:signalr_netcore/binary_message_format.dart';
-import 'package:signalr_netcore/default_reconnect_policy.dart';
-import 'package:signalr_netcore/errors.dart';
-import 'package:signalr_netcore/handshake_protocol.dart';
-import 'package:signalr_netcore/http_connection.dart';
-import 'package:signalr_netcore/http_connection_options.dart';
+import 'package:befriended_flutter/app/local_database.dart';
 import 'package:signalr_netcore/hub_connection.dart';
 import 'package:signalr_netcore/hub_connection_builder.dart';
-import 'package:signalr_netcore/iconnection.dart';
-import 'package:signalr_netcore/ihub_protocol.dart';
-import 'package:signalr_netcore/iretry_policy.dart';
-import 'package:signalr_netcore/itransport.dart';
-import 'package:signalr_netcore/json_hub_protocol.dart';
-import 'package:signalr_netcore/long_polling_transport.dart';
 import 'package:signalr_netcore/msgpack_hub_protocol.dart';
-import 'package:signalr_netcore/server_sent_events_transport.dart';
 import 'package:signalr_netcore/signalr_client.dart';
-import 'package:signalr_netcore/signalr_http_client.dart';
-import 'package:signalr_netcore/text_message_format.dart';
-import 'package:signalr_netcore/utils.dart';
-import 'package:signalr_netcore/web_socket_transport.dart';
-import 'package:signalr_netcore/web_supporting_http_client.dart';
 
 
 ///Client class that communicates to a SignalR server for chatting
@@ -29,7 +11,8 @@ class SignalRClient {
   /// the client code must use an absolute URL instead of a relative URL.
   /// For cross domain requests, change .withUrl("/chathub") to
   /// .withUrl("https://{App domain name}/chathub").
-  static const serverUrl = 'https://localhost:7176/chatHub';
+  static const serverUrl =
+      'https://befriendedsignalrchatserver.azurewebsites.net/chatHub';
 
   ///The connection to the Hub on the SignalR Server
   static late final HubConnection _hubConnection;
@@ -42,15 +25,25 @@ class SignalRClient {
     .withHubProtocol(MessagePackHubProtocol())
     .withAutomaticReconnect()
     .build();
-
-
     _hubConnection.onclose( ({Exception? error}) => print('Connection Closed'));
     await _hubConnection.start()?.then((void f){
       print('Connection to local host established');
     });
   }
 
-  static void receiveMessage() {
+  ///Send a chat invite to the specified user.
+  static Future<String?> sendChatInviteTo(String receiverFirebaseID) async {
+    final result = await _hubConnection.invoke('SendInviteTo',
+      args: <Object>[
+        LocalDatabase.getLoggedInUser().uid,
+        receiverFirebaseID
+      ],
+    );
+    return result as String?;
+  }
+
+  ///This method is called by the server. Receive a message from a user.
+  static void receiveMessage(String user, String message) {
 
   }
 

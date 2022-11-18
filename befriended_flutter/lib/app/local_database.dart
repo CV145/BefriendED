@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:befriended_flutter/app/models/chat_invite.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/models/user_model.dart';
@@ -9,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 //ctrl+f for quick searches
 ///To make things simpler, this class will be responsible for storing
 ///anything retrieved from the database using read-only getters. The only way
-///to set this data is by calling the update methods that speak to the
+///to set this data is by calling the public methods that speak to the
 ///database.
 class LocalDatabase
 {
@@ -18,10 +17,8 @@ class LocalDatabase
   static final _firebaseAuth = FirebaseAuth.instance;
   static final _firestore = FirebaseFirestore.instance;
 
-  ///We can assume requests will be sorted.
+  ///We can assume requests are sorted.
   static late List<Request> _retrievedRequests = [];
-
-  static late List<ChatInvite> _retrievedChatInvites;
 
   static UserModel _loggedInUser = UserModel(firestoreUid: 'null',
     givenName: 'error: no user', givenTopics: [], givenEmail: 'error',);
@@ -31,39 +28,26 @@ class LocalDatabase
   ///retrieved with getLoggedInUser(). The UserModel is filled with info
   ///obtained from the Cloud Firestore document matching the given ID.
   static Future<void> _buildLocalUser(String? firestoreID) async {
-    if (firestoreID == null)
-    {
+    if (firestoreID == null) {
       print('Error building user, firestore ID was null');
       throw NullThrownError();
     }
-
     Map<String, dynamic>? retrievedData;
-    var userName = '';
-    var email = '';
+    var userName = ''; var email = '';
     final chosenTopics = <String>[];
-
-    //Initialize cloud firestore database reference
     final DocumentReference docRef =
     _firestore.collection('registered_users').doc(firestoreID);
-
     //Get user data, then() is called after get() completes (in the future)
     await docRef.get().then(
-            (DocumentSnapshot doc)
-        async {
+            (DocumentSnapshot doc) async {
           retrievedData = doc.data() as Map<String, dynamic>?;
-
-          //Populate fields
           userName = retrievedData!['name'] as String;
           email = retrievedData!['email'] as String;
-          
           final dynamic retrievedTopics = retrievedData!['chosenTopics'];
-
-          for(final item in retrievedTopics)
-          {
+          for(final item in retrievedTopics) {
             final topic = item as String;
             chosenTopics.add(topic);
           }
-
           //Create new user object
           final newUser = UserModel(
             firestoreUid: firestoreID,
@@ -71,17 +55,9 @@ class LocalDatabase
             givenTopics: chosenTopics,
             givenEmail: email,
           );
-
           _loggedInUser = newUser;
-
-
-          //Subscribe to FCM topic = user ID
-          /*await FirebaseMessaging.instance
-              .subscribeToTopic(getLoggedInUser().uid);
-          print('Global user updated');
-          print('Firebase Messaging subscribed to topic '
-              '${getLoggedInUser().uid}'); */
         },);
+    refreshChatInvites();
   }
 
 
@@ -95,9 +71,8 @@ class LocalDatabase
       'email': email,
       'chosenTopics': <String> [],
       'friendsList': <String> [],
+      'chatInvites': <Map>[],
     };
-
-
     //Create or overwrite the document equal to uid
     _firestore.collection('registered_users')
         .doc(firestoreID)
@@ -114,8 +89,7 @@ class LocalDatabase
 
   ///Create a new account and return the new user ID or an error.
   static Future<String?> createNewAccount(String givenName, String givenEmail,
-      String givenPassword,)
-  async {
+      String givenPassword,) async {
     var error = "There's been an error";
     try {
       //Create new account was successful
@@ -123,28 +97,21 @@ class LocalDatabase
       await _firebaseAuth.createUserWithEmailAndPassword(
         email: givenEmail,
         password: givenPassword,);
-
       //Create new entry in database for the user
       final userID = credential.user?.uid;
-      if (userID != null)
-      {
+      if (userID != null) {
         _createNewUserDocument(firestoreID: userID, name: givenName, email:
         givenEmail,);
         await _buildLocalUser(userID);
       }
-      else
-      {
+      else {
         return 'Error: UID for new user was null';
       }
-
-      //Subscribe to FCM topic = user ID
-
       return userID;
     }
     on FirebaseAuthException catch(e) {
       //Error creating new account
       error = e.code;
-
       if (e.code == 'weak-password') {
         error = 'error: The password provided is too weak';
       }
@@ -158,9 +125,7 @@ class LocalDatabase
   ///Sign in and update local user
   static Future<String?> signIn(String givenEmail, String givenPassword)
   async {
-
     var error = 'error signing in';
-
     try {
       //Login successful - update global user instance
       final credential =
@@ -202,18 +167,14 @@ class LocalDatabase
   ///currently signed in user. Any optional data not passed in will not be
   ///updated in the database.
   static void updateUserDocument({String? newName, String? newEmail,
-    List<String>? newTopics,})
-  {
+    List<String>? newTopics,}) {
     final user = getLoggedInUser();
-
     final userData = <String, dynamic>{
       'uid': user.uid,
       'name': newName ?? user.name,
       'email': newEmail ?? user.email,
       'chosenTopics': newTopics ?? user.selectedTopics,
     };
-
-
     //Create or overwrite the document equal to uid
     _firestore.collection('registered_users')
         .doc(user.uid)
@@ -223,24 +184,19 @@ class LocalDatabase
   ///Get the username of the given ID sometime in the future.
   static Future<String> getUserNameFrom(String uid)
   {
-    //Initialize cloud firestore database reference
     final DocumentReference document
     = _firestore.collection('registered_users').doc(uid);
-
     //Note: get() returns a future DocumentSnapshot which is passed into then()
     return document.get().then((DocumentSnapshot doc)
     => (doc.data() as Map?)!['name'] as String,);
   }
 
   static String? getRandomAffirmation() {
-    //Initialize cloud firestore database reference
     final DocumentReference docRef
     = _firestore.collection('affirmation_quotes').doc('quote1');
-
     // Key: "quote" , Value: contents of quote
     late Map? quoteData;
     String? retrievedQuote;
-
     //Get the quotes stored in the document
     docRef.get().then(
           (DocumentSnapshot doc)
@@ -249,7 +205,6 @@ class LocalDatabase
         retrievedQuote = quoteData!['quote'] as String;
       },
     );
-
     return retrievedQuote;
   }
 
@@ -258,47 +213,29 @@ class LocalDatabase
   ///given perPage parameter.
   static Future<List<Request>> refreshRequests(int perPage) async {
     _retrievedRequests = [];
-
-    //Iterate through each doc in 'requests' collection
     final CollectionReference ref =
         _firestore.collection('requests');
-
     //Get docs from collection ref
     final querySnapshot = await ref.get();
-
+    //Iterate through each doc in 'requests' collection
     for(final doc in querySnapshot.docs) {
       if (doc.id == 'allRequests' || doc.id == 'null'
           || doc.id == _loggedInUser.uid) {
         continue;
       }
-
-      print('working with this doc: ${doc.id}');
-
       final data = doc.data() as Map<String, dynamic>?;
       final id = data!['uid'] as String;
       final name = data!['username'] as String;
-
-      //Data must be broken down from structure to literal
+      //Data must be broken down from dynamic structure to literal
       final topics = data['topics'] as List<dynamic>;
-
-      print('Data for $name: ${data['topics']}');
-
       final topicStrings = <String>[];
       for (final topic in topics) {
         topicStrings.add(topic as String);
       }
-
-      print('topic strings list: $topicStrings');
-
       final newRequest = Request(requesterID: id, requesterName: name,
           givenTopics: topicStrings,);
-
-      print('right before adding new request');
       _retrievedRequests.add(newRequest);
-      print('added new request to list');
     }
-
-  print('all retrieved requests: $_retrievedRequests');
   //Need some kind of query to sort the requests
   return getRequestsPage(0, perPage);
   }
@@ -309,9 +246,7 @@ class LocalDatabase
   static List<Request> getRequestsPage(int pageNumber, int perPage) {
     //New page starts in intervals of perPage
     final startIndex = pageNumber * perPage;
-
     final requestsPage = <Request>[];
-
     for(var i = 0; i < perPage; i++) {
       try {
         requestsPage.add(_retrievedRequests[startIndex + i]);
@@ -320,7 +255,6 @@ class LocalDatabase
         break;
       }
     }
-
     return requestsPage;
   }
 
@@ -331,7 +265,6 @@ class LocalDatabase
       'username': updatedRequest.name,
       'topics': updatedRequest.topics,
     };
-
     _firestore.collection('requests')
         .doc(updatedRequest.userID)
         .set(requestData);
@@ -345,43 +278,26 @@ class LocalDatabase
   ///This method is meant to be called periodically while the app is running.
   ///If the app isn't running, Firebase Cloud Messaging will send a notification
   ///to this user of any new invites. This method should also be called on
-  ///app login-in.
+  ///app login-in. Will refresh the chat invites stored in the user object.
   static void refreshChatInvites() {
     final DocumentReference document
     = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
-
     document.get().then((DocumentSnapshot doc) {
       final data = doc.data() as Map?;
-      final invites = data!['chatInvites'] as List<Map>;
-
-      String chatID;
+      final invites = data!['chatInvites'] as List<dynamic>;
       String from;
       String to;
-      bool isActive;
-
+      bool isExpired;
       for(final invite in invites) {
-        chatID = invite['chatID'] as String;
-        from = invite['from'] as String;
-        to = invite['to'] as String;
-        isActive = invite['isActive'] as bool;
-        final newChatInvite = ChatInvite(chatID: chatID, from: from,
-        to: to, isActive: isActive,);
-        _retrievedChatInvites.add(newChatInvite);
+        final inviteMap = invite as Map<String, dynamic>;
+        //Later: match user names to their IDs and pass them in here
+        from = inviteMap['from'] as String;
+        to = inviteMap['to'] as String;
+        isExpired = inviteMap['isExpired'] as bool;
+        final newChatInvite = ChatInvite(from: from,
+        to: to, isExpired: isExpired,);
+        _loggedInUser.receivedInvites.add(newChatInvite);
       }
     });
-
-  }
-
-  static List<ChatInvite> getChatInvites() {
-    return _retrievedChatInvites;
-  }
-
-  ///Send an invite to chat to the given firebase user ID. This invite will be
-  ///sent to the server, which will update the database from there and send
-  ///a notification to the target user.
-  static void sendInvite(String firebaseUserID, ChatInvite invite) {
-    //HTTP POST to web server
-    //Web server will update firestore path for given ID
-    //Web server will send a notification to that user with FCM
   }
 }
