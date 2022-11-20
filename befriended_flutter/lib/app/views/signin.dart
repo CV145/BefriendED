@@ -33,10 +33,8 @@ class SignInPageState extends State<SignInPage> {
         print(result);
         return;
       }
-
       print(result);
       print('User built with above ID ${LocalDatabase.getLoggedInUser().name}');
-
       Navigator.pushAndRemoveUntil(
         context,
         PageRouteBuilder<void>(
@@ -48,10 +46,8 @@ class SignInPageState extends State<SignInPage> {
             const begin = Offset(0, 1);
             const end = Offset.zero;
             const curve = Curves.ease;
-
             final tween =
                 Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
             return SlideTransition(
               position: animation.drive(tween),
               child: child,
@@ -117,7 +113,8 @@ class SignInPageState extends State<SignInPage> {
                               email = value;
                             },
                           ),
-                          const Divider(),
+                          const Padding(padding: EdgeInsets.only(bottom: 15,
+                              top: 15,),),
                           TextField(
                             obscureText: _isHidden,
                             onChanged: (value) {
@@ -135,6 +132,7 @@ class SignInPageState extends State<SignInPage> {
                               ),
                             ),
                           ),
+                          const Padding(padding: EdgeInsets.only(bottom: 55)),
                         ],
                       ),
                   ),

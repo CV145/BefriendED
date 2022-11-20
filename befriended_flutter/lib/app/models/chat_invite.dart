@@ -6,10 +6,15 @@
 /// removed entirely. We need an invite model so it can be represented in the UI
 class ChatInvite
 {
-  ChatInvite({required this.from, required this.to,
-  required this.isExpired,});
+  ChatInvite({required this.fromName, required this.toName,
+  required this.isDenied, required this.scheduledTime,})
+  {
+    print('from: $fromName');
+    print('to: $toName');
+  }
 
-  String from;
-  String to;
-  bool isExpired;
+  String fromName;
+  String toName;
+  bool isDenied;
+  String scheduledTime;
 }

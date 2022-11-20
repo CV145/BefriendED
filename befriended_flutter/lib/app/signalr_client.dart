@@ -32,11 +32,15 @@ class SignalRClient {
   }
 
   ///Send a chat invite to the specified user.
-  static Future<String?> sendChatInviteTo(String receiverFirebaseID) async {
+  static Future<String?> sendChatInviteTo(String receiverFirebaseID,
+      String receiverName, String scheduledTime,) async {
     final result = await _hubConnection.invoke('SendInviteTo',
       args: <Object>[
         LocalDatabase.getLoggedInUser().uid,
-        receiverFirebaseID
+        LocalDatabase.getLoggedInUser().name,
+        receiverFirebaseID,
+        receiverName,
+        scheduledTime
       ],
     );
     return result as String?;

@@ -60,6 +60,7 @@ Future<void> main() async {
   }
 
 
+  await SignalRClient.createConnection();
   
 
   final localStorage = LocalStorage(

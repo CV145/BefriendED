@@ -15,7 +15,6 @@ class UserModel {
     uid = firestoreUid;
     name = givenName;
     email = givenEmail;
-
     var i = 0;
     for (final topic in givenTopics)
       {
@@ -28,28 +27,23 @@ class UserModel {
   late final String name;
   late final String email;
   late final String uid;
-
-  //Regular chips with delete property
   List<ChipModel> selectedTopics = [];
-
-  //Store names of friends and invites here
   List<Friend> friendsList = [];
   List<ChatInvite> receivedInvites = [];
+  List<ChatInvite> outgoingInvites = [];
+  List<DateTime> scheduledChats = [];
 
   ///Updates the selected topics and stores them in the database
   List<String> storeSelectedTopics(List<ChipModel> newTopics)
   {
     selectedTopics = newTopics;
     final topicStrings = <String>[];
-
     for (final topic in newTopics)
     {
       topicStrings.add(topic.name);
     }
-
     //Update user doc
     LocalDatabase.updateUserDocument(newTopics: topicStrings);
-
     return topicStrings;
   }
 }

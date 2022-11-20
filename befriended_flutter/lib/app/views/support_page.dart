@@ -19,19 +19,22 @@ class SupportPage extends StatefulWidget {
 class SupportPageState extends State<SupportPage> {
   List<Request?> requests = [];
   List<ChatInvite> invites = [];
+  List<ChatInvite> outgoingInvites = [];
   List<Friend> friends = [];
 
   @override
   void initState() {
     rebuildRequests();
-    invites = LocalDatabase.getLoggedInUser().receivedInvites;
+    rebuildInvites();
     friends = LocalDatabase.getLoggedInUser().friendsList;
     super.initState();
   }
 
-  Future<void> sendInvite(String receiverID) async {
-    await SignalRClient.createConnection();
-    final result = SignalRClient.sendChatInviteTo(receiverID);
+  Future<void> sendInvite(String receiverID, String receiverName,
+      DateTime scheduledTime,) async {
+    print(scheduledTime);
+    final result = SignalRClient.sendChatInviteTo(receiverID, receiverName,
+        scheduledTime.toString(),);
     print(result);
   }
 
@@ -39,6 +42,13 @@ class SupportPageState extends State<SupportPage> {
     final loadedRequests = LocalDatabase.refreshRequests(10);
     await loadedRequests.then((value) => requests = value);
     setState(() {});
+  }
+
+  Future<void> rebuildInvites() async {
+    await LocalDatabase.refreshChatInvites().then((value) =>
+    invites = LocalDatabase.getLoggedInUser().receivedInvites,);
+    await LocalDatabase.refreshOutgoingInvites().then((value) =>
+    outgoingInvites = LocalDatabase.getLoggedInUser().outgoingInvites,);
   }
 
   @override
@@ -114,11 +124,29 @@ class SupportPageState extends State<SupportPage> {
       child: Container(
         padding: const EdgeInsets.all(15),
         child: Column(
-          children: invites.map((inviteEntry) {
-            return ElevatedButton(
-                onPressed: (){},
-                child: Text(inviteEntry.from),);
-          }).toList(),
+          /*
+           Scheduled chats go here
+           */
+          children: <Widget>[
+            const Text('Outgoing Invites'),
+            Column( //Outgoing invites
+              children: outgoingInvites.map((inviteEntry) {
+                return Card(
+                  child: Text(inviteEntry.toName),
+                );
+            }).toList(),
+            ),
+            const Text('Incoming Invites'),
+            Column( //Incoming invites
+              children: invites.map((inviteEntry) {
+                return ElevatedButton(
+                  onPressed: (){
+                    navigateToChatRoomPage(context: context);
+                  },
+                  child: Text(inviteEntry.fromName),);
+              }).toList(),
+            ),
+        ],
         ),
       ),
     );
@@ -150,8 +178,32 @@ class SupportPageState extends State<SupportPage> {
                     ),
                     TextButton(
                       //Send a chat invite to Requester
-                      onPressed: () => {
-                          sendInvite(requestEntry.userID)
+                      onPressed: ()
+                      async {
+                          final selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2024),
+                          initialEntryMode: DatePickerEntryMode.input,
+                          helpText: 'Schedule a chat time!',
+                          );
+                          final selectedTime = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),);
+                          if (selectedTime != null && selectedDate != null) {
+                            final scheduledTime = DateTime(
+                              selectedDate.year,
+                              selectedDate.month,
+                              selectedDate.day,
+                              selectedTime.hour,
+                              selectedTime.minute,
+                            );
+                            await sendInvite(requestEntry.userID,
+                              requestEntry.name, scheduledTime,);
+                          }
+                          await rebuildInvites();
+                          Navigator.pop(context, 'Yes');
                       },
                       child: const Text('Yes'),
                     ),

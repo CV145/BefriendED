@@ -57,7 +57,8 @@ class LocalDatabase
           );
           _loggedInUser = newUser;
         },);
-    refreshChatInvites();
+    await refreshChatInvites();
+    await refreshOutgoingInvites();
   }
 
 
@@ -279,25 +280,68 @@ class LocalDatabase
   ///If the app isn't running, Firebase Cloud Messaging will send a notification
   ///to this user of any new invites. This method should also be called on
   ///app login-in. Will refresh the chat invites stored in the user object.
-  static void refreshChatInvites() {
+  static Future<void> refreshChatInvites() async {
+    _loggedInUser.receivedInvites = [];
     final DocumentReference document
     = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
-    document.get().then((DocumentSnapshot doc) {
+    await document.get().then((DocumentSnapshot doc) async {
       final data = doc.data() as Map?;
-      final invites = data!['chatInvites'] as List<dynamic>;
-      String from;
-      String to;
-      bool isExpired;
-      for(final invite in invites) {
-        final inviteMap = invite as Map<String, dynamic>;
-        //Later: match user names to their IDs and pass them in here
-        from = inviteMap['from'] as String;
-        to = inviteMap['to'] as String;
-        isExpired = inviteMap['isExpired'] as bool;
-        final newChatInvite = ChatInvite(from: from,
-        to: to, isExpired: isExpired,);
+      //Iterate through each entry in chatInvites map
+      final invites = data!['chatInvites'] as Map<String, dynamic>
+      ..forEach((key, dynamic value) {
+        final inviteMap = value as Map<String, dynamic>;
+        final fromName = inviteMap['from'] as String;
+        final toName = inviteMap['to'] as String;
+        final isDenied = inviteMap['isDenied'] as bool;
+        final scheduledTime = inviteMap['scheduledTime'] as String;
+        final newChatInvite = ChatInvite(fromName: fromName,
+          toName: toName, isDenied: isDenied, scheduledTime: scheduledTime,);
         _loggedInUser.receivedInvites.add(newChatInvite);
+      });
+    });
+  }
+
+  ///Grab and update outgoing invites from the database for the current user.
+  static Future<void> refreshOutgoingInvites() async {
+      /*
+      Outgoing invites are stored as paths in the database that need to be
+      parsed. We need to grab individual invites from these paths and fill in
+      the user's outgoing ChatInvites list.
+       */
+    _loggedInUser.outgoingInvites = [];
+    final invitePaths = <String>[];
+    final DocumentReference document
+    = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
+    await document.get().then((DocumentSnapshot doc) async {
+      final data = doc.data() as Map?;
+      final outgoingInvitePaths = data!['outgoingInvites'] as List<dynamic>;
+      for (final invitePath in outgoingInvitePaths) {
+        final path = invitePath as String;
+        invitePaths.add(path);
       }
     });
+    /*
+    Each path needs to be parsed so we can locate the right chat invite from
+    the other users and store their data here
+    Path outline: registered_users/receiverID/chatInvites/senderID
+     */
+    for(final path in invitePaths) {
+      final tokens = path.split('/');
+      final DocumentReference document =
+      _firestore.collection('registered_users').doc(tokens[1]);
+      await document.get().then((DocumentSnapshot doc) async {
+        final data = doc.data() as Map?;
+        final foreignInvites = data!['chatInvites'] as Map<String, dynamic>;
+        final outgoingInviteMap =
+        foreignInvites[_loggedInUser.uid] as Map<String, dynamic>;
+        final fromName = outgoingInviteMap['from'] as String;
+        final toName = outgoingInviteMap['to'] as String;
+        final isDenied = outgoingInviteMap['isDenied'] as bool;
+        final scheduledTime = outgoingInviteMap['scheduledTime'] as String;
+        final newChatInvite = ChatInvite(fromName: fromName,
+          toName: toName, isDenied: isDenied, scheduledTime: scheduledTime,);
+        _loggedInUser.outgoingInvites.add(newChatInvite);
+      });
+    }
   }
 }
