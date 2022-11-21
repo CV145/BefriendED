@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:befriended_flutter/app/models/chat_invite.dart';
+import 'package:befriended_flutter/app/models/chat_meeting.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -179,7 +180,7 @@ class LocalDatabase
     //Create or overwrite the document equal to uid
     _firestore.collection('registered_users')
         .doc(user.uid)
-        .set(userData);
+        .set(userData, SetOptions(merge: true));
   }
 
   ///Get the username of the given ID sometime in the future.
@@ -282,6 +283,7 @@ class LocalDatabase
   ///app login-in. Will refresh the chat invites stored in the user object.
   static Future<void> refreshChatInvites() async {
     _loggedInUser.receivedInvites = [];
+    final outdatedInviteSenders = <String>[];
     final DocumentReference document
     = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
     await document.get().then((DocumentSnapshot doc) async {
@@ -290,29 +292,48 @@ class LocalDatabase
       final invites = data!['chatInvites'] as Map<String, dynamic>
       ..forEach((key, dynamic value) {
         final inviteMap = value as Map<String, dynamic>;
+        final senderID = inviteMap['senderID'] as String;
         final fromName = inviteMap['from'] as String;
         final toName = inviteMap['to'] as String;
-        final isDenied = inviteMap['isDenied'] as bool;
-        final scheduledTime = inviteMap['scheduledTime'] as String;
-        final newChatInvite = ChatInvite(fromName: fromName,
-          toName: toName, isDenied: isDenied, scheduledTime: scheduledTime,);
-        _loggedInUser.receivedInvites.add(newChatInvite);
+        final isDeclined = inviteMap['isDeclined'] as bool;
+        final year = inviteMap['year'] as int;
+        final month = inviteMap['month'] as int;
+        final day = inviteMap['day'] as int;
+        final hour = inviteMap['hour'] as int;
+        final minute = inviteMap['minute'] as int;
+        final newChatInvite = ChatInvite(senderID: senderID, fromName: fromName,
+          toName: toName, isDeclined: isDeclined, year: year,
+          month: month, day: day, hour: hour, minute: minute,);
+        if (!newChatInvite.isDeclined) {
+          _loggedInUser.receivedInvites.add(newChatInvite);
+        } else {
+          //Mark for deletion
+          outdatedInviteSenders.add(senderID);
+        }
       });
+      //Delete the outdated invites
+      final updatedChatInvites = invites;
+      for(final id in outdatedInviteSenders) {
+        updatedChatInvites[id].clear();
+        updatedChatInvites.remove(id);
+      }
+      final updates = <String, dynamic> {
+        'chatInvites' : updatedChatInvites
+      };
+      await document.update(updates);
     });
   }
 
   ///Grab and update outgoing invites from the database for the current user.
   static Future<void> refreshOutgoingInvites() async {
-      /*
-      Outgoing invites are stored as paths in the database that need to be
+      /* Outgoing invites are stored as paths in the database that need to be
       parsed. We need to grab individual invites from these paths and fill in
-      the user's outgoing ChatInvites list.
-       */
+      the user's outgoing ChatInvites list.*/
     _loggedInUser.outgoingInvites = [];
     final invitePaths = <String>[];
-    final DocumentReference document
+    final DocumentReference userDocument
     = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
-    await document.get().then((DocumentSnapshot doc) async {
+    await userDocument.get().then((DocumentSnapshot doc) async {
       final data = doc.data() as Map?;
       final outgoingInvitePaths = data!['outgoingInvites'] as List<dynamic>;
       for (final invitePath in outgoingInvitePaths) {
@@ -324,24 +345,106 @@ class LocalDatabase
     Each path needs to be parsed so we can locate the right chat invite from
     the other users and store their data here
     Path outline: registered_users/receiverID/chatInvites/senderID
+
+    If the invite doesn't exist or is declined, remove the path
      */
     for(final path in invitePaths) {
       final tokens = path.split('/');
-      final DocumentReference document =
+      final DocumentReference foreignDocument =
       _firestore.collection('registered_users').doc(tokens[1]);
-      await document.get().then((DocumentSnapshot doc) async {
-        final data = doc.data() as Map?;
-        final foreignInvites = data!['chatInvites'] as Map<String, dynamic>;
+      await foreignDocument.get().then((DocumentSnapshot foreignDoc) async {
+        final foreignData = foreignDoc.data() as Map?;
+        final foreignInvites = foreignData!['chatInvites']
+        as Map<String, dynamic>;
         final outgoingInviteMap =
-        foreignInvites[_loggedInUser.uid] as Map<String, dynamic>;
-        final fromName = outgoingInviteMap['from'] as String;
-        final toName = outgoingInviteMap['to'] as String;
-        final isDenied = outgoingInviteMap['isDenied'] as bool;
-        final scheduledTime = outgoingInviteMap['scheduledTime'] as String;
-        final newChatInvite = ChatInvite(fromName: fromName,
-          toName: toName, isDenied: isDenied, scheduledTime: scheduledTime,);
-        _loggedInUser.outgoingInvites.add(newChatInvite);
+        foreignInvites[_loggedInUser.uid] as Map<String, dynamic>?;
+        if (outgoingInviteMap != null) {
+          final senderID = outgoingInviteMap['senderID'] as String;
+          final fromName = outgoingInviteMap['from'] as String;
+          final toName = outgoingInviteMap['to'] as String;
+          final isDeclined = outgoingInviteMap['isDeclined'] as bool;
+          final year = outgoingInviteMap['year'] as int;
+          final month = outgoingInviteMap['month'] as int;
+          final day = outgoingInviteMap['day'] as int;
+          final hour = outgoingInviteMap['hour'] as int;
+          final minute = outgoingInviteMap['minute'] as int;
+          final newChatInvite = ChatInvite(
+            senderID: senderID,
+            fromName: fromName,
+            toName: toName,
+            isDeclined: isDeclined,
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute,);
+          _loggedInUser.outgoingInvites.add(newChatInvite);
+        } else {
+          //Delete this path from user's outgoing invites
+          await userDocument.update({
+            'outgoingInvites': FieldValue.arrayRemove(<String>[path]),
+          });
+        }
       });
     }
+  }
+
+  ///Mark an invite as declined. Declined invites are deleted from the
+  ///database but stored locally and can be deleted by the user whenever they
+  ///want. .... Could rename this to "writeInvite" instead
+  static Future<void> declineInvite(ChatInvite invite) async {
+      final updatedInvite = <String, dynamic> {
+        'senderID' : invite.senderID,
+        'from': invite.fromName,
+        'to': invite.toName,
+        'isDeclined': true,
+        'year': invite.year,
+        'month': invite.month,
+        'day': invite.day,
+        'hour': invite.hour,
+        'minute': invite.minute
+      };
+     final updates = <String, dynamic>{
+        invite.senderID: updatedInvite
+    };
+     final docRef =
+     _firestore.collection('registered_users').doc(getLoggedInUser().uid);
+     await docRef.update({'chatInvites': updates});
+  }
+
+  ///Schedule a new chat and write it to the database for the current user.
+  ///Times are stored in UTC.
+  static void scheduleNewChat(ChatMeeting newMeeting) {
+    //New map to add to array of maps
+    final scheduleData = <String, dynamic>{
+      'chattingWith' : newMeeting.chattingWith,
+      'year' : newMeeting.year,
+      'month' : newMeeting.month,
+      'day' : newMeeting.day,
+      'hour' : newMeeting.hour,
+      'minute' : newMeeting.minute,
+    };
+    //Performs a union operation with the array in the DB and the given one
+    _firestore.collection('registered_users')
+        .doc(_loggedInUser.uid)
+        .update({
+          'scheduledChats': FieldValue.arrayUnion(
+              <Map<String, dynamic>>[scheduleData],),
+    });
+  }
+
+  ///Update the DateTimes for each chat the user has scheduled.
+  static Future<void> refreshScheduledChats() async {
+    _loggedInUser.scheduledChats = [];
+    final DocumentReference document
+    = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
+    await document.get().then((DocumentSnapshot doc) async {
+      final data = doc.data() as Map?;
+      final dates = data!['scheduledChats'] as List<dynamic>;
+      for(final date in dates) {
+        final dateString = date as String;
+        print(dateString);
+      }
+    });
   }
 }

@@ -1,6 +1,4 @@
 import 'package:befriended_flutter/app/local_database.dart';
-import 'package:signalr_netcore/hub_connection.dart';
-import 'package:signalr_netcore/hub_connection_builder.dart';
 import 'package:signalr_netcore/msgpack_hub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
@@ -33,14 +31,19 @@ class SignalRClient {
 
   ///Send a chat invite to the specified user.
   static Future<String?> sendChatInviteTo(String receiverFirebaseID,
-      String receiverName, String scheduledTime,) async {
+      String receiverName, int year, int month, int day, int hour, int minute,)
+  async {
     final result = await _hubConnection.invoke('SendInviteTo',
       args: <Object>[
         LocalDatabase.getLoggedInUser().uid,
         LocalDatabase.getLoggedInUser().name,
         receiverFirebaseID,
         receiverName,
-        scheduledTime
+        year,
+        month,
+        day,
+        hour,
+        minute
       ],
     );
     return result as String?;

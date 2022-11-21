@@ -1,11 +1,13 @@
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/models/chat_invite.dart';
+import 'package:befriended_flutter/app/models/chat_meeting.dart';
 import 'package:befriended_flutter/app/models/friend_model.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/signalr_client.dart';
 import 'package:befriended_flutter/app/views/chat_room_page.dart';
 import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({
@@ -18,37 +20,71 @@ class SupportPage extends StatefulWidget {
 
 class SupportPageState extends State<SupportPage> {
   List<Request?> requests = [];
+  List<ChatMeeting> scheduledChats = [];
   List<ChatInvite> invites = [];
   List<ChatInvite> outgoingInvites = [];
+  List<ChatInvite> declinedInvites = [];
   List<Friend> friends = [];
 
   @override
   void initState() {
-    rebuildRequests();
-    rebuildInvites();
+    refreshRequests();
+    refreshInvites();
     friends = LocalDatabase.getLoggedInUser().friendsList;
     super.initState();
   }
 
-  Future<void> sendInvite(String receiverID, String receiverName,
-      DateTime scheduledTime,) async {
-    print(scheduledTime);
-    final result = SignalRClient.sendChatInviteTo(receiverID, receiverName,
-        scheduledTime.toString(),);
+  Future<void> sendInvite(
+    String receiverID,
+    String receiverName,
+    DateTime scheduledTime,
+  ) async {
+    final result = SignalRClient.sendChatInviteTo(
+      receiverID,
+      receiverName,
+      scheduledTime.year,
+      scheduledTime.month,
+      scheduledTime.day,
+      scheduledTime.hour,
+      scheduledTime.minute,
+    );
     print(result);
   }
 
-  Future<void> rebuildRequests() async {
+  Future<void> refreshRequests() async {
     final loadedRequests = LocalDatabase.refreshRequests(10);
     await loadedRequests.then((value) => requests = value);
     setState(() {});
   }
 
-  Future<void> rebuildInvites() async {
-    await LocalDatabase.refreshChatInvites().then((value) =>
-    invites = LocalDatabase.getLoggedInUser().receivedInvites,);
-    await LocalDatabase.refreshOutgoingInvites().then((value) =>
-    outgoingInvites = LocalDatabase.getLoggedInUser().outgoingInvites,);
+  Future<void> refreshInvites() async {
+    await LocalDatabase.refreshChatInvites().then(
+      (value) {
+        invites = LocalDatabase.getLoggedInUser().receivedInvites;
+        setState(() {});
+      },
+    );
+    await LocalDatabase.refreshOutgoingInvites().then(
+      (value) {
+        outgoingInvites = LocalDatabase.getLoggedInUser().outgoingInvites;
+        for (final invite in outgoingInvites) {
+          if (invite.isDeclined) {
+            declinedInvites.add(invite);
+            outgoingInvites.removeWhere((element) => element == invite);
+          }
+        }
+        setState(() {});
+      }
+    );
+
+  }
+  
+  Future<void> refreshSchedule() async {
+    await LocalDatabase.refreshScheduledChats().then(
+        (value) {
+          scheduledChats = LocalDatabase.getLoggedInUser().scheduledChats;
+        });
+    setState(() {});
   }
 
   @override
@@ -124,29 +160,102 @@ class SupportPageState extends State<SupportPage> {
       child: Container(
         padding: const EdgeInsets.all(15),
         child: Column(
-          /*
-           Scheduled chats go here
-           */
           children: <Widget>[
-            const Text('Outgoing Invites'),
-            Column( //Outgoing invites
-              children: outgoingInvites.map((inviteEntry) {
-                return Card(
-                  child: Text(inviteEntry.toName),
-                );
-            }).toList(),
+            const Text('Chat Schedule'),
+            SfCalendar(
+              view: CalendarView.schedule,
+              firstDayOfWeek: 1,
+              dataSource: ChatMeetingDataSource(scheduledChats),
             ),
-            const Text('Incoming Invites'),
-            Column( //Incoming invites
+            ElevatedButton(
+                onPressed: (){
+                  navigateToChatRoomPage(context: context);
+                },
+                child: const Text('Next scheduled chat...'),),
+            const Text('Incoming'),
+            Column(
+              //Incoming invites
               children: invites.map((inviteEntry) {
-                return ElevatedButton(
-                  onPressed: (){
-                    navigateToChatRoomPage(context: context);
-                  },
-                  child: Text(inviteEntry.fromName),);
+                return Card(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(inviteEntry.fromName),
+                      Text('For: ${inviteEntry.month}/${inviteEntry.day} at ${inviteEntry.hour}:${inviteEntry.minute}'),
+                      IconButton(
+                        onPressed: () {
+                          //schedule chat
+                          final newMeeting = ChatMeeting(inviteEntry.fromName,
+                            inviteEntry.year.toString(),
+                            inviteEntry.month.toString(),
+                            inviteEntry.day.toString(),
+                            inviteEntry.hour.toString(),
+                            inviteEntry.minute.toString(),);
+                          LocalDatabase.scheduleNewChat(
+                            newMeeting,);
+                          //delete this entry
+                          setState(() {
+                            invites.removeWhere((element) {
+                              return element.fromName == element.fromName;
+                            });
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.check,
+                          color: Colors.greenAccent,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          //Database needs to know that the invite's declined
+                          LocalDatabase.declineInvite(inviteEntry);
+                          setState(() {
+                            invites.removeWhere((element) {
+                              return element.fromName == element.fromName;
+                            });
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                    ],
+                  ),
+                );
               }).toList(),
             ),
-        ],
+            const Text('Sent'),
+            Column(
+              //Outgoing invites
+              children: outgoingInvites.map((inviteEntry) {
+                  return Card(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(inviteEntry.toName),
+                        Text('For: ${inviteEntry.month}/${inviteEntry.day} at ${inviteEntry.hour}:${inviteEntry.minute}'),
+                      ],
+                    ),
+                  );
+              }).toList(),
+            ),
+            const Text('Declined'),
+            Column(
+              children: declinedInvites.map((inviteEntry) {
+                return Card(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                      const Text('(declined)'),
+                      Text(inviteEntry.toName),
+                      Text('For: ${inviteEntry.month}/${inviteEntry.day} at ${inviteEntry.hour}:${inviteEntry.minute}'),
+                    ],
+                  ),
+                );
+              }).toList(),
+            )
+          ],
         ),
       ),
     );
@@ -178,32 +287,35 @@ class SupportPageState extends State<SupportPage> {
                     ),
                     TextButton(
                       //Send a chat invite to Requester
-                      onPressed: ()
-                      async {
-                          final selectedDate = await showDatePicker(
+                      onPressed: () async {
+                        final selectedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2024),
                           initialEntryMode: DatePickerEntryMode.input,
                           helpText: 'Schedule a chat time!',
+                        );
+                        final selectedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (selectedTime != null && selectedDate != null) {
+                          final scheduledTime = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
                           );
-                          final selectedTime = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),);
-                          if (selectedTime != null && selectedDate != null) {
-                            final scheduledTime = DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day,
-                              selectedTime.hour,
-                              selectedTime.minute,
-                            );
-                            await sendInvite(requestEntry.userID,
-                              requestEntry.name, scheduledTime,);
-                          }
-                          await rebuildInvites();
-                          Navigator.pop(context, 'Yes');
+                          await sendInvite(
+                            requestEntry.userID,
+                            requestEntry.name,
+                            scheduledTime,
+                          );
+                        }
+                        await refreshInvites();
+                        Navigator.pop(context, 'Yes');
                       },
                       child: const Text('Yes'),
                     ),
@@ -223,7 +335,8 @@ class SupportPageState extends State<SupportPage> {
                 children: [
                   Text(requestEntry?.name ?? ''),
                   Row(
-                    children: requestEntry.topicChips,)
+                    children: requestEntry.topicChips,
+                  )
                 ],
               ),
             ),

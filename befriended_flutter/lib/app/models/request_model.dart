@@ -28,4 +28,5 @@ class Request
     late String userID;
     late List<String> topics;
     late List<Chip> topicChips;
+    late String description;
 }

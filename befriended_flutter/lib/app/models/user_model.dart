@@ -1,6 +1,7 @@
 
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/models/chat_invite.dart';
+import 'package:befriended_flutter/app/models/chat_meeting.dart';
 import 'package:befriended_flutter/app/models/chip_model.dart';
 import 'package:befriended_flutter/app/models/friend_model.dart';
 
@@ -31,7 +32,7 @@ class UserModel {
   List<Friend> friendsList = [];
   List<ChatInvite> receivedInvites = [];
   List<ChatInvite> outgoingInvites = [];
-  List<DateTime> scheduledChats = [];
+  List<ChatMeeting> scheduledChats = [];
 
   ///Updates the selected topics and stores them in the database
   List<String> storeSelectedTopics(List<ChipModel> newTopics)

@@ -79,17 +79,14 @@ class AffirmationsState extends State<AffirmationsPage> {
                             /*delete action for this button
                           remove the element from list whose id matches this
                           card's id*/
-
                             //Cancel the notification set for this time
                             //There is only 1 notification per card
                             cardEntry.cancelNotification(_notificationsService);
-
                             setState(() {
                               //refreshes the UI - making it match the card list
                               cards.removeWhere((element) {
                                 return element.id == cardEntry.id;
                               });
-
                               var i = 1;
                               //Reset the IDs of the cards
                               for (final card in cards) {
@@ -128,7 +125,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                                     ? cardEntry.affirmationTime =
                                 const TimeOfDay(hour: 12, minute: 0)
                                     : cardEntry.affirmationTime = selectedTime;
-
                                 if (cardEntry.isEnabled)
                                 {
                                   //Schedule the notification
@@ -136,10 +132,8 @@ class AffirmationsState extends State<AffirmationsPage> {
                                     _notificationsService,
                                   );
                                 }
-
                                 //Update UI
                                 setState(() {});
-
                                 //Save all our updated card data
                                 await _preferencesService.saveAffirmationsData(cards);
                               },
@@ -151,7 +145,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                                 setState(() {
                                   cardEntry.isEnabled = value;
                                 });
-
                                 if (value == false) {
                                   cardEntry.cancelNotification(
                                     _notificationsService,
@@ -173,21 +166,13 @@ class AffirmationsState extends State<AffirmationsPage> {
                                   // Switch at the given index
                                   cardEntry.chosenDays[index] =
                                   !cardEntry.chosenDays[index];
-
-
-
                                   //Update UI
                                   setState(() {});
-
-
                                   print(
                                       'Day pressed: $index for card #${cardEntry.id}');
                                   print('Chosen days: ${cardEntry.chosenDays}');
-
-
                                   //Save all our updated card data
                                   _preferencesService.saveAffirmationsData(cards);
-
                                   if (cardEntry.isEnabled)
                                   {
                                     //Schedule the notification
@@ -211,7 +196,6 @@ class AffirmationsState extends State<AffirmationsPage> {
                           ),
                         ],
                       ),
-
                     ],
                   ),
                 ),
