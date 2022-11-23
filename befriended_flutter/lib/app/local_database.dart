@@ -324,6 +324,24 @@ class LocalDatabase
     });
   }
 
+  ///Delete the given chat invite from the database in the user's path
+  static Future<void> deleteChatInvite(String senderID) async {
+    final DocumentReference document
+    = _firestore.collection('registered_users').doc(getLoggedInUser().uid);
+    await document.get().then((DocumentSnapshot doc) async {
+      final data = doc.data() as Map?;
+      final invites = data!['chatInvites'] as Map<String, dynamic>;
+      //Clear everything before removing the entry from chatInvites
+      final senderInvite = invites[senderID] as Map<String, dynamic>
+      ..clear();
+      invites.remove(senderID);
+      final updates = <String, dynamic> {
+        'chatInvites' : invites
+      };
+      await document.update(updates);
+    });
+  }
+
   ///Grab and update outgoing invites from the database for the current user.
   static Future<void> refreshOutgoingInvites() async {
       /* Outgoing invites are stored as paths in the database that need to be
@@ -412,27 +430,6 @@ class LocalDatabase
      await docRef.update({'chatInvites': updates});
   }
 
-  ///Schedule a new chat and write it to the database for the current user.
-  ///Times are stored in UTC.
-  static void scheduleNewChat(ChatMeeting newMeeting) {
-    //New map to add to array of maps
-    final scheduleData = <String, dynamic>{
-      'chattingWith' : newMeeting.chattingWith,
-      'year' : newMeeting.year,
-      'month' : newMeeting.month,
-      'day' : newMeeting.day,
-      'hour' : newMeeting.hour,
-      'minute' : newMeeting.minute,
-    };
-    //Performs a union operation with the array in the DB and the given one
-    _firestore.collection('registered_users')
-        .doc(_loggedInUser.uid)
-        .update({
-          'scheduledChats': FieldValue.arrayUnion(
-              <Map<String, dynamic>>[scheduleData],),
-    });
-  }
-
   ///Update the DateTimes for each chat the user has scheduled.
   static Future<void> refreshScheduledChats() async {
     _loggedInUser.scheduledChats = [];
@@ -442,8 +439,17 @@ class LocalDatabase
       final data = doc.data() as Map?;
       final dates = data!['scheduledChats'] as List<dynamic>;
       for(final date in dates) {
-        final dateString = date as String;
-        print(dateString);
+        final dateMap = date as Map<String, dynamic>;
+        final chattingWith = dateMap['chattingWith'] as String;
+        final year = dateMap['year'] as int;
+        final month = dateMap['month'] as int;
+        final day = dateMap['day'] as int;
+        final hour = dateMap['hour'] as int;
+        final minute = dateMap['minute'] as int;
+        final newMeeting = ChatMeeting(chattingWith, year,
+            month, day,
+            hour, minute,);
+        _loggedInUser.scheduledChats.add(newMeeting);
       }
     });
   }

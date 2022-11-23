@@ -30,6 +30,7 @@ class SupportPageState extends State<SupportPage> {
   void initState() {
     refreshRequests();
     refreshInvites();
+    refreshSchedule();
     friends = LocalDatabase.getLoggedInUser().friendsList;
     super.initState();
   }
@@ -49,6 +50,15 @@ class SupportPageState extends State<SupportPage> {
       scheduledTime.minute,
     );
     print(result);
+  }
+
+  Future<void> scheduleChatWith(
+      String inviteSenderID,
+      DateTime scheduledTime,
+      ) async {
+    await SignalRClient.scheduleChatWith(inviteSenderID,
+        scheduledTime.year, scheduledTime.month, scheduledTime.day,
+        scheduledTime.hour, scheduledTime.minute,);
   }
 
   Future<void> refreshRequests() async {
@@ -83,6 +93,15 @@ class SupportPageState extends State<SupportPage> {
     await LocalDatabase.refreshScheduledChats().then(
         (value) {
           scheduledChats = LocalDatabase.getLoggedInUser().scheduledChats;
+          print('Scheduled chats list:');
+          for(final chat in scheduledChats) {
+            print(chat.year);
+            print(chat.month);
+            print(chat.day);
+            print(chat.hour);
+            print(chat.minute);
+            print('');
+          }
         });
     setState(() {});
   }
@@ -154,6 +173,24 @@ class SupportPageState extends State<SupportPage> {
     );
   }
 
+  //Creates data for calendar using ChatMeetings
+  DataSource getCalendarDataSource()
+  {
+    //Make an appointment for each scheduled chat meeting
+    final List appointments = <Appointment>[];
+    for(final meeting in LocalDatabase.getLoggedInUser().scheduledChats)
+    {
+      final chatTime = DateTime(meeting.year, meeting.month, meeting.day,
+      meeting.hour, meeting.minute,);
+      appointments.add(Appointment(
+          startTime: chatTime,
+          endTime: chatTime.add(const Duration(minutes: 30)),
+          notes: 'Chat with ${meeting.chattingWith}',),
+      );
+    }
+    return DataSource(appointments);
+  }
+
   //The following returns ListViews using the given lists
   Widget buildInvitesTab() {
     return SingleChildScrollView(
@@ -165,7 +202,7 @@ class SupportPageState extends State<SupportPage> {
             SfCalendar(
               view: CalendarView.schedule,
               firstDayOfWeek: 1,
-              dataSource: ChatMeetingDataSource(scheduledChats),
+              dataSource: getCalendarDataSource(),
             ),
             ElevatedButton(
                 onPressed: (){
@@ -184,15 +221,12 @@ class SupportPageState extends State<SupportPage> {
                       Text('For: ${inviteEntry.month}/${inviteEntry.day} at ${inviteEntry.hour}:${inviteEntry.minute}'),
                       IconButton(
                         onPressed: () {
-                          //schedule chat
-                          final newMeeting = ChatMeeting(inviteEntry.fromName,
-                            inviteEntry.year.toString(),
-                            inviteEntry.month.toString(),
-                            inviteEntry.day.toString(),
-                            inviteEntry.hour.toString(),
-                            inviteEntry.minute.toString(),);
-                          LocalDatabase.scheduleNewChat(
-                            newMeeting,);
+                          //accept invite and schedule chat
+                          final date = DateTime(inviteEntry.year,
+                              inviteEntry.month, inviteEntry.day,
+                              inviteEntry.hour, inviteEntry.minute,);
+                          scheduleChatWith(inviteEntry.senderID, date);
+                          refreshSchedule();
                           //delete this entry
                           setState(() {
                             invites.removeWhere((element) {
@@ -293,7 +327,7 @@ class SupportPageState extends State<SupportPage> {
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2024),
-                          initialEntryMode: DatePickerEntryMode.input,
+                          initialEntryMode: DatePickerEntryMode.calendarOnly,
                           helpText: 'Schedule a chat time!',
                         );
                         final selectedTime = await showTimePicker(

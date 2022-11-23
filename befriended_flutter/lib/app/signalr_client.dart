@@ -10,7 +10,7 @@ class SignalRClient {
   /// For cross domain requests, change .withUrl("/chathub") to
   /// .withUrl("https://{App domain name}/chathub").
   static const serverUrl =
-      'https://befriendedsignalrchatserver.azurewebsites.net/chatHub';
+      'https://befriendedsignalrchatserver.azurewebsites.net/schedulingHub';
 
   ///The connection to the Hub on the SignalR Server
   static late final HubConnection _hubConnection;
@@ -49,18 +49,22 @@ class SignalRClient {
     return result as String?;
   }
 
-  ///This method is called by the server. Receive a message from a user.
-  static void receiveMessage(String user, String message) {
-
-  }
-
-  ///Invoke the sample function on the server.
-  static Future<String?> invokeSimpleFunction() async {
-    final result = await
-    _hubConnection.invoke(
-        'MethodOneSimpleParameterSimpleReturnValue',
-        args: <Object>['ParameterValue'],);
-    return result as String?;
+  ///Chats are scheduled when a user (receiver) accepts a chat invite from
+  /// somebody (sender)
+  static Future<void> scheduleChatWith(String inviteSenderID, int year,
+      int month, int day, int hour, int minute,)
+  async {
+    await _hubConnection.invoke('ScheduleChat',
+      args: <Object>[
+        inviteSenderID,
+        LocalDatabase.getLoggedInUser().uid,
+        year,
+        month,
+        day,
+        hour,
+        minute
+      ],
+    );
   }
 }
 
