@@ -25,6 +25,8 @@ class LocalDatabase
     givenName: 'error: no user', givenTopics: [], givenEmail: 'error',);
 
 
+  static var _dateTimes = <DateTime>[];
+
   ///Will create and set a UserModel for the logged-in user. This model can be
   ///retrieved with getLoggedInUser(). The UserModel is filled with info
   ///obtained from the Cloud Firestore document matching the given ID.
@@ -438,6 +440,7 @@ class LocalDatabase
     await document.get().then((DocumentSnapshot doc) async {
       final data = doc.data() as Map?;
       final dates = data!['scheduledChats'] as List<dynamic>;
+      final updatedDates = <Map<String, dynamic>>[];
       for(final date in dates) {
         final dateMap = date as Map<String, dynamic>;
         final chattingWith = dateMap['chattingWith'] as String;
@@ -446,11 +449,40 @@ class LocalDatabase
         final day = dateMap['day'] as int;
         final hour = dateMap['hour'] as int;
         final minute = dateMap['minute'] as int;
-        final newMeeting = ChatMeeting(chattingWith, year,
+        final newMeeting = ChatMeeting(chattingWith,
+          await LocalDatabase.getUserNameFrom(chattingWith), year,
             month, day,
             hour, minute,);
-        _loggedInUser.scheduledChats.add(newMeeting);
+        // to-do : if newDateTime is utc, convert to local time
+        final newDateTime = DateTime(year, month, day, hour, minute);
+        if (DateTime.now().isBefore(newDateTime)) {
+          _loggedInUser.scheduledChats.add(newMeeting);
+          _dateTimes.add(newDateTime);
+          //delete expired date time from schedule
+          updatedDates.add(date);
+        }
+      //Sort scheduled chats
+      _dateTimes.sort();
+      print(_dateTimes);
       }
+      //We need to overwrite the old array of chats with a new one that
+      //doesn't have the expired chats
+      final updates = <String, dynamic>{
+        'scheduledChats': updatedDates
+      };
+      //Update the user document with this new field
+      await document.update(updates);
     });
+  }
+
+  ///Gets next scheduled chat (refreshScheduledChats() needs to be called
+  ///first)
+  static String getNextScheduledChatTimeString(){
+    final nextTime = _dateTimes[0];
+    return '${nextTime.month}/${nextTime.day}/${nextTime.year} at ${nextTime.hour}:${nextTime.minute}';
+  }
+
+  static DateTime getNextScheduledChatTime(){
+    return _dateTimes[0];
   }
 }

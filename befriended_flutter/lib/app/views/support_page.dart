@@ -25,6 +25,8 @@ class SupportPageState extends State<SupportPage> {
   List<ChatInvite> outgoingInvites = [];
   List<ChatInvite> declinedInvites = [];
   List<Friend> friends = [];
+  bool chatEnabled = false;
+  late DateTime? nextScheduledTime;
 
   @override
   void initState() {
@@ -102,6 +104,21 @@ class SupportPageState extends State<SupportPage> {
             print(chat.minute);
             print('');
           }
+          //If current time is within the next scheduled chat interval, enable
+          //chat, possibly passing in other user ID too
+          final currentDate = DateTime.now();
+          nextScheduledTime = LocalDatabase.getNextScheduledChatTime();
+          if (nextScheduledTime != null){
+            final nextTime = nextScheduledTime as DateTime;
+            if (currentDate.isAfter(nextTime) &&
+                currentDate.isBefore(nextTime.add(const Duration(minutes: 30)),
+                )
+            ) {
+              chatEnabled = true;
+            }
+          } else {
+            chatEnabled = false;
+          }
         });
     setState(() {});
   }
@@ -113,12 +130,13 @@ class SupportPageState extends State<SupportPage> {
 
   void navigateToChatRoomPage({
     required BuildContext context,
+    required String otherUserID,
   }) {
     //Navigate to chat room page
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (context) => const ChatRoomPage(),
+        builder: (context) => ChatRoomPage(otherUserID: otherUserID,),
       ),
     );
   }
@@ -185,7 +203,8 @@ class SupportPageState extends State<SupportPage> {
       appointments.add(Appointment(
           startTime: chatTime,
           endTime: chatTime.add(const Duration(minutes: 30)),
-          notes: 'Chat with ${meeting.chattingWith}',),
+          subject: 'Chat with ${meeting.chattingWithName}',
+          ),
       );
     }
     return DataSource(appointments);
@@ -204,11 +223,19 @@ class SupportPageState extends State<SupportPage> {
               firstDayOfWeek: 1,
               dataSource: getCalendarDataSource(),
             ),
+            const Divider(),
             ElevatedButton(
                 onPressed: (){
-                  navigateToChatRoomPage(context: context);
+                  if (chatEnabled) {
+                    navigateToChatRoomPage(context: context,
+                        otherUserID: scheduledChats[0].chattingWithID,);
+                  } else {}
                 },
-                child: const Text('Next scheduled chat...'),),
+                child:
+                LocalDatabase.getLoggedInUser().scheduledChats.isNotEmpty?
+                Text( 'Next: ${LocalDatabase.getNextScheduledChatTimeString()}')
+                : const Text('Schedule a chat with someone!'),
+            ),
             const Text('Incoming'),
             Column(
               //Incoming invites

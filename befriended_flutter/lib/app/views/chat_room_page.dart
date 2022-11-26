@@ -8,19 +8,12 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:uuid/uuid.dart';
 
 /*
-The chat room is where chat messaging takes place.
-It's a full page that is meant to be stacked up over the Home page.
-It has a full app bar that shows the name of the user chatting with, their online
-status, a back button, and vertical chat settings button
-
-The body of the page lists out all the messages between both users.
-The page would have to constantly read from a json file stored on the database
-
-The bottom drawer has a text field to write in, a button for looking into the
-device's images, and a send button
+The chat room works with SignalR to bring messages to the user.
  */
 class ChatRoomPage extends StatefulWidget {
-  const ChatRoomPage({Key? key}) : super(key: key);
+  const ChatRoomPage({Key? key, required this.otherUserID}) : super(key: key);
+
+  final String otherUserID;
 
   @override
   ChatRoomPageState createState() => ChatRoomPageState();
