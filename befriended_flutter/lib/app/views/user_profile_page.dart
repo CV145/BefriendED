@@ -28,7 +28,6 @@ class UserProfilePageState extends State<UserProfilePage> {
   void initState() {
     super.initState();
     tagPool = pool.Tags(appUser: widget.user);
-
     //Create a action chip out of each topic
     //Selecting that chip will add it to the user profile
     topicsList =

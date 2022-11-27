@@ -1,11 +1,9 @@
 import 'package:befriended_flutter/app/local_database.dart';
 import 'package:befriended_flutter/app/models/chat_invite.dart';
 import 'package:befriended_flutter/app/models/chat_meeting.dart';
-import 'package:befriended_flutter/app/models/friend_model.dart';
 import 'package:befriended_flutter/app/models/request_model.dart';
 import 'package:befriended_flutter/app/signalr_client.dart';
 import 'package:befriended_flutter/app/views/chat_room_page.dart';
-import 'package:befriended_flutter/app/views/widget/bouncing_button.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -24,7 +22,6 @@ class SupportPageState extends State<SupportPage> {
   List<ChatInvite> invites = [];
   List<ChatInvite> outgoingInvites = [];
   List<ChatInvite> declinedInvites = [];
-  List<Friend> friends = [];
   bool chatEnabled = false;
   late DateTime? nextScheduledTime;
 
@@ -33,7 +30,6 @@ class SupportPageState extends State<SupportPage> {
     refreshRequests();
     refreshInvites();
     refreshSchedule();
-    friends = LocalDatabase.getLoggedInUser().friendsList;
     super.initState();
   }
 
@@ -42,7 +38,7 @@ class SupportPageState extends State<SupportPage> {
     String receiverName,
     DateTime scheduledTime,
   ) async {
-    final result = SignalRClient.sendChatInviteTo(
+    await SignalRClient.sendChatInviteTo(
       receiverID,
       receiverName,
       scheduledTime.year,
@@ -51,7 +47,6 @@ class SupportPageState extends State<SupportPage> {
       scheduledTime.hour,
       scheduledTime.minute,
     );
-    print(result);
   }
 
   Future<void> scheduleChatWith(
@@ -60,7 +55,11 @@ class SupportPageState extends State<SupportPage> {
       ) async {
     await SignalRClient.scheduleChatWith(inviteSenderID,
         scheduledTime.year, scheduledTime.month, scheduledTime.day,
-        scheduledTime.hour, scheduledTime.minute,);
+        scheduledTime.hour, scheduledTime.minute,).then(
+        (value) {
+          setState(refreshSchedule);
+        }
+    );
   }
 
   Future<void> refreshRequests() async {
@@ -72,20 +71,21 @@ class SupportPageState extends State<SupportPage> {
   Future<void> refreshInvites() async {
     await LocalDatabase.refreshChatInvites().then(
       (value) {
-        invites = LocalDatabase.getLoggedInUser().receivedInvites;
-        setState(() {});
+        setState(() {
+          invites = LocalDatabase.getLoggedInUser().receivedInvites;});
       },
     );
     await LocalDatabase.refreshOutgoingInvites().then(
       (value) {
-        outgoingInvites = LocalDatabase.getLoggedInUser().outgoingInvites;
-        for (final invite in outgoingInvites) {
-          if (invite.isDeclined) {
-            declinedInvites.add(invite);
-            outgoingInvites.removeWhere((element) => element == invite);
+        setState(() {
+          outgoingInvites = LocalDatabase.getLoggedInUser().outgoingInvites;
+          for (final invite in outgoingInvites) {
+            if (invite.isDeclined) {
+              declinedInvites.add(invite);
+              outgoingInvites.removeWhere((element) => element == invite);
+            }
           }
-        }
-        setState(() {});
+        });
       }
     );
 
@@ -143,7 +143,7 @@ class SupportPageState extends State<SupportPage> {
 
   Widget buildSupportPage(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Column(
         children: [
           Container(
@@ -171,9 +171,6 @@ class SupportPageState extends State<SupportPage> {
                 Tab(
                   child: Text('Invites'),
                 ),
-                Tab(
-                  child: Text('Friends'),
-                ),
               ],
             ),
           ),
@@ -182,7 +179,6 @@ class SupportPageState extends State<SupportPage> {
               children: [
                 buildRequestsTab(),
                 buildInvitesTab(),
-                buildFriendsTab(friends),
               ],
             ),
           ),
@@ -255,9 +251,9 @@ class SupportPageState extends State<SupportPage> {
                               inviteEntry.month, inviteEntry.day,
                               inviteEntry.hour, inviteEntry.minute,);
                           scheduleChatWith(inviteEntry.senderID, date);
-                          refreshSchedule();
                           //delete this entry
                           setState(() {
+                            refreshSchedule();
                             invites.removeWhere((element) {
                               return element.fromName == element.fromName;
                             });
@@ -409,64 +405,5 @@ class SupportPageState extends State<SupportPage> {
     );
     // ),
     //);
-  }
-
-  Widget buildFriendsTab(List<Friend> givenList) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
-      child: ListView.separated(
-        separatorBuilder: (context, index) {
-          return const Divider();
-        },
-        itemBuilder: (context, index) {
-          return BouncingButton(
-            onPress: () {},
-            child: Container(
-              padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [],
-              ),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.zero,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(50)),
-                      ),
-                      child: Text(
-                        givenList[index].name[0],
-                        style: Theme.of(context).textTheme.titleMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          givenList[index].name,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 4),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        itemCount: givenList.length,
-      ),
-    );
   }
 }

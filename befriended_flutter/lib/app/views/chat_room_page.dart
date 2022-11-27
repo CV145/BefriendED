@@ -55,11 +55,6 @@ class ChatRoomPageState extends State<ChatRoomPage> {
           children: [
             Text(otherUserName),
             //Online status indicator goes here
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.settings_sharp),
-              onPressed: () {},
-            )
           ],
         ),
         leading: IconButton(
@@ -85,23 +80,27 @@ class ChatRoomPageState extends State<ChatRoomPage> {
         .build();
     chatConnection.onclose( ({Exception? error}) => print('Connection Closed'));
     await chatConnection.start()?.then((void f){
-      print('Connection to local host established');
+      print('Connection to chat host established');
       chatConnection.on('receiveMessage', receiveMessage);
+      joinSignalRGroup();
     });
   }
 
   //Join the group contained inside the ChatMeeting object. Will
   //add this connection to the group.
   Future<void> joinSignalRGroup() async {
-      await chatConnection.invoke('AddToGroup', args:
+      final result = await chatConnection.invoke('AddToGroup', args:
       <Object>[widget.meetingInfo.signalRGroupName],);
+      print(result);
   }
 
   //Receive a text message from the other user. Called by server, which is
   //called by client when calling sendMessage()
   void receiveMessage(List<Object?>? paramsList){
+    print('Server invoked receiveMessage()');
     var senderName = paramsList?[0] as String;
     final msgText = paramsList?[1] as String;
+    print('Message received: $msgText from $senderName');
     final newTxtMsg = types.TextMessage(
       author: otherUser,
       id: randomString(),
@@ -112,9 +111,10 @@ class ChatRoomPageState extends State<ChatRoomPage> {
 
   //Send a text message to the server
   Future<void> sendMessage(String messageTxt) async {
-    await chatConnection.invoke('SendMessage', args:
+    final result = await chatConnection.invoke('SendMessage', args:
     <Object>[LocalDatabase.getLoggedInUser().name, messageTxt,
       widget.meetingInfo.signalRGroupName],);
+    print(result);
   }
 
   /*

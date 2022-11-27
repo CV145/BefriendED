@@ -26,12 +26,12 @@ class SignalRClient {
     .build();
     _schedulingConnection.onclose( ({Exception? error}) => print('Connection Closed'));
     await _schedulingConnection.start()?.then((void f){
-      print('Connection to local host established');
+      print('Connection to scheduling host established');
     });
   }
 
   ///Send a chat invite to the specified user.
-  static Future<String?> sendChatInviteTo(String receiverFirebaseID,
+  static Future<void> sendChatInviteTo(String receiverFirebaseID,
       String receiverName, int year, int month, int day, int hour, int minute,)
   async {
     final result = await _schedulingConnection.invoke('SendInviteTo',
@@ -47,7 +47,7 @@ class SignalRClient {
         minute
       ],
     );
-    return result as String?;
+    print(result);
   }
 
   ///Chats are scheduled when a user (receiver) accepts a chat invite from
@@ -55,7 +55,7 @@ class SignalRClient {
   static Future<void> scheduleChatWith(String inviteSenderID, int year,
       int month, int day, int hour, int minute,)
   async {
-    await _schedulingConnection.invoke('ScheduleChat',
+    final result = await _schedulingConnection.invoke('ScheduleChat',
       args: <Object>[
         inviteSenderID,
         LocalDatabase.getLoggedInUser().uid,
@@ -66,6 +66,7 @@ class SignalRClient {
         minute
       ],
     );
+    print(result);
   }
 }
 

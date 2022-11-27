@@ -468,6 +468,7 @@ class LocalDatabase
       }
       //We need to overwrite the old array of chats with a new one that
       //doesn't have the expired chats
+      print('Here are our updated dates: $updatedDates');
       final updates = <String, dynamic>{
         'scheduledChats': updatedDates
       };
