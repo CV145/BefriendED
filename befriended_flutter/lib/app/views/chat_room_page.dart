@@ -1,19 +1,23 @@
 import 'dart:convert';
-
-import 'package:befriended_flutter/app/signalr_client.dart';
+import 'dart:math';
+import 'package:befriended_flutter/app/local_database.dart';
+import 'package:befriended_flutter/app/models/chat_meeting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:signalr_netcore/msgpack_hub_protocol.dart';
+import 'package:signalr_netcore/signalr_client.dart';
 import 'package:uuid/uuid.dart';
 
 /*
 The chat room works with SignalR to bring messages to the user.
  */
 class ChatRoomPage extends StatefulWidget {
-  const ChatRoomPage({Key? key, required this.otherUserID}) : super(key: key);
+  const ChatRoomPage({Key? key, required this.meetingInfo}) : super(key: key);
 
-  final String otherUserID;
+  //Contains SignalR group name
+  final ChatMeeting meetingInfo;
 
   @override
   ChatRoomPageState createState() => ChatRoomPageState();
@@ -22,14 +26,24 @@ class ChatRoomPage extends StatefulWidget {
 class ChatRoomPageState extends State<ChatRoomPage> {
   List<types.Message> _messages = [];
   final types.User _user =
-  const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
+  types.User(id: LocalDatabase.getLoggedInUser().uid);
+  late final types.User otherUser;
 
-  String otherUserName = '';
+  late String otherUserName;
+
+  static const chatUrl =
+      'https://befriendedsignalrchatserver.azurewebsites.net/chatHub';
+
+  ///The connection to the Hub on the SignalR Server
+  static late final HubConnection chatConnection;
 
   @override
   void initState() {
     super.initState();
-    _loadMessages();
+    createChatConnection();
+    otherUserName = widget.meetingInfo.chattingWithName;
+    otherUser = types.User(id: widget.meetingInfo.chattingWithID);
+    //_loadMessages();
   }
 
   @override
@@ -63,6 +77,52 @@ class ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
+   Future<void> createChatConnection() async {
+    chatConnection = HubConnectionBuilder().withUrl(chatUrl)
+    /*Configure the Hub with msgpack protocol*/
+        .withHubProtocol(MessagePackHubProtocol())
+        .withAutomaticReconnect()
+        .build();
+    chatConnection.onclose( ({Exception? error}) => print('Connection Closed'));
+    await chatConnection.start()?.then((void f){
+      print('Connection to local host established');
+      chatConnection.on('receiveMessage', receiveMessage);
+    });
+  }
+
+  //Join the group contained inside the ChatMeeting object. Will
+  //add this connection to the group.
+  Future<void> joinSignalRGroup() async {
+      await chatConnection.invoke('AddToGroup', args:
+      <Object>[widget.meetingInfo.signalRGroupName],);
+  }
+
+  //Receive a text message from the other user. Called by server, which is
+  //called by client when calling sendMessage()
+  void receiveMessage(List<Object?>? paramsList){
+    var senderName = paramsList?[0] as String;
+    final msgText = paramsList?[1] as String;
+    final newTxtMsg = types.TextMessage(
+      author: otherUser,
+      id: randomString(),
+      text: msgText,
+    );
+    _addMessage(newTxtMsg);
+  }
+
+  //Send a text message to the server
+  Future<void> sendMessage(String messageTxt) async {
+    await chatConnection.invoke('SendMessage', args:
+    <Object>[LocalDatabase.getLoggedInUser().name, messageTxt,
+      widget.meetingInfo.signalRGroupName],);
+  }
+
+  /*
+  We need to join a group where the other user is in through SignalR
+  Then we need to receive messages from that group anytime there is an update
+  There need to be methods that are called from the server
+   */
+
   void _addMessage(types.Message message) {
     setState(() {
       _messages.insert(0, message);
@@ -78,10 +138,11 @@ class ChatRoomPageState extends State<ChatRoomPage> {
     );
 
     _addMessage(textMessage);
+    sendMessage(textMessage.text);
   }
 
+  /*
   Future<void> _loadMessages()  async {
-    //await SignalRClient.createConnection();
     final response = await rootBundle.loadString('assets/messages.json');
     final messages = (jsonDecode(response) as List)
         .map((dynamic e) => types.Message.fromJson(e as Map<String, dynamic>))
@@ -99,5 +160,11 @@ class ChatRoomPageState extends State<ChatRoomPage> {
     setState(() {
       _messages = messages;
     });
+  }*/
+
+  String randomString() {
+    final random = Random.secure();
+    final values = List<int>.generate(16, (i) => random.nextInt(255));
+    return base64UrlEncode(values);
   }
 }

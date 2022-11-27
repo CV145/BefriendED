@@ -3,9 +3,10 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 ///A model for a scheduled chat to render in the calendar.
 class ChatMeeting {
   ChatMeeting(this.chattingWithID, this.chattingWithName, this.year, this.month,
-      this.day, this.hour, this.minute,);
+      this.day, this.hour, this.minute, this.signalRGroupName,);
   String chattingWithName;
   String chattingWithID;
+  String signalRGroupName;
   int year;
   int month;
   int day;

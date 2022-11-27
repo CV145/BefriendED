@@ -9,22 +9,23 @@ class SignalRClient {
   /// the client code must use an absolute URL instead of a relative URL.
   /// For cross domain requests, change .withUrl("/chathub") to
   /// .withUrl("https://{App domain name}/chathub").
-  static const serverUrl =
+  static const schedulingUrl =
       'https://befriendedsignalrchatserver.azurewebsites.net/schedulingHub';
 
   ///The connection to the Hub on the SignalR Server
-  static late final HubConnection _hubConnection;
+  static late final HubConnection _schedulingConnection;
+
 
   ///Creates the connection by using the HubConnectionBuilder.
   ///When the connection is closed, print out a message to the console.
-  static Future<void> createConnection() async {
-    _hubConnection = HubConnectionBuilder().withUrl(serverUrl)
+  static Future<void> createSchedulingConnection() async {
+    _schedulingConnection = HubConnectionBuilder().withUrl(schedulingUrl)
     /*Configure the Hub with msgpack protocol*/
     .withHubProtocol(MessagePackHubProtocol())
     .withAutomaticReconnect()
     .build();
-    _hubConnection.onclose( ({Exception? error}) => print('Connection Closed'));
-    await _hubConnection.start()?.then((void f){
+    _schedulingConnection.onclose( ({Exception? error}) => print('Connection Closed'));
+    await _schedulingConnection.start()?.then((void f){
       print('Connection to local host established');
     });
   }
@@ -33,7 +34,7 @@ class SignalRClient {
   static Future<String?> sendChatInviteTo(String receiverFirebaseID,
       String receiverName, int year, int month, int day, int hour, int minute,)
   async {
-    final result = await _hubConnection.invoke('SendInviteTo',
+    final result = await _schedulingConnection.invoke('SendInviteTo',
       args: <Object>[
         LocalDatabase.getLoggedInUser().uid,
         LocalDatabase.getLoggedInUser().name,
@@ -54,7 +55,7 @@ class SignalRClient {
   static Future<void> scheduleChatWith(String inviteSenderID, int year,
       int month, int day, int hour, int minute,)
   async {
-    await _hubConnection.invoke('ScheduleChat',
+    await _schedulingConnection.invoke('ScheduleChat',
       args: <Object>[
         inviteSenderID,
         LocalDatabase.getLoggedInUser().uid,

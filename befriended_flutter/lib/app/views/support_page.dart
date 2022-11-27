@@ -130,13 +130,13 @@ class SupportPageState extends State<SupportPage> {
 
   void navigateToChatRoomPage({
     required BuildContext context,
-    required String otherUserID,
+    required ChatMeeting meetingInfo,
   }) {
     //Navigate to chat room page
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (context) => ChatRoomPage(otherUserID: otherUserID,),
+        builder: (context) => ChatRoomPage(meetingInfo: meetingInfo,),
       ),
     );
   }
@@ -149,7 +149,7 @@ class SupportPageState extends State<SupportPage> {
           Container(
             height: 30,
             padding: const EdgeInsetsDirectional.fromSTEB(2, 2, 2, 2),
-            margin: const EdgeInsetsDirectional.fromSTEB(30, 50, 30, 0),
+            margin: const EdgeInsetsDirectional.fromSTEB(30, 15, 30, 0),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onPrimary,
               borderRadius: const BorderRadius.all(Radius.circular(40)),
@@ -228,13 +228,15 @@ class SupportPageState extends State<SupportPage> {
                 onPressed: (){
                   if (chatEnabled) {
                     navigateToChatRoomPage(context: context,
-                        otherUserID: scheduledChats[0].chattingWithID,);
+                        meetingInfo:
+                        LocalDatabase.getLoggedInUser().scheduledChats[0],);
                   } else {}
                 },
-                child:
-                LocalDatabase.getLoggedInUser().scheduledChats.isNotEmpty?
+                child: chatEnabled?
+                const Text('You have a chat scheduled right now!') :
+                (LocalDatabase.getLoggedInUser().scheduledChats.isNotEmpty?
                 Text( 'Next: ${LocalDatabase.getNextScheduledChatTimeString()}')
-                : const Text('Schedule a chat with someone!'),
+                : const Text('Schedule a chat with someone!')),
             ),
             const Text('Incoming'),
             Column(

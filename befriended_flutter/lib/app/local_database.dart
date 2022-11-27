@@ -444,6 +444,7 @@ class LocalDatabase
       for(final date in dates) {
         final dateMap = date as Map<String, dynamic>;
         final chattingWith = dateMap['chattingWith'] as String;
+        final signalRGroup = dateMap['signalRGroup'] as String;
         final year = dateMap['year'] as int;
         final month = dateMap['month'] as int;
         final day = dateMap['day'] as int;
@@ -452,10 +453,10 @@ class LocalDatabase
         final newMeeting = ChatMeeting(chattingWith,
           await LocalDatabase.getUserNameFrom(chattingWith), year,
             month, day,
-            hour, minute,);
-        // to-do : if newDateTime is utc, convert to local time
+            hour, minute, signalRGroup,);
+        // TODO(cv145): if newDateTime is utc, convert to local time
         final newDateTime = DateTime(year, month, day, hour, minute);
-        if (DateTime.now().isBefore(newDateTime)) {
+        if (DateTime.now().isBefore(newDateTime.add(const Duration(minutes: 30)))) {
           _loggedInUser.scheduledChats.add(newMeeting);
           _dateTimes.add(newDateTime);
           //delete expired date time from schedule
