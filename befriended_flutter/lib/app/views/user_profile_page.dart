@@ -37,9 +37,7 @@ class UserProfilePageState extends State<UserProfilePage> {
               onPressed: ()
               {
                 final selectedTopics = widget.user.selectedTopics;
-
                 final numSelected = selectedTopics.length;
-
                 if (numSelected< 3 &&
                     selectedTopics.
                     singleWhere((model) => model.name == topic,
@@ -51,15 +49,12 @@ class UserProfilePageState extends State<UserProfilePage> {
                     add(ChipModel(
                       id: (numSelected+1).toString(),
                       name: topic,),);
-
                     final topicStrings =
                     widget.user.storeSelectedTopics(selectedTopics);
-
                     final newRequest = Request(
                         requesterID: widget.user.uid,
                         requesterName: widget.user.name,
                         givenTopics: topicStrings,);
-
                     LocalDatabase.updatePersonalRequest(newRequest);
                   });
                 }
@@ -107,7 +102,6 @@ class UserProfilePageState extends State<UserProfilePage> {
       final userTopics = widget.user.selectedTopics
       ..removeWhere((element)
       => element.id == givenID,);
-
       widget.user.storeSelectedTopics(userTopics);
     });
   }

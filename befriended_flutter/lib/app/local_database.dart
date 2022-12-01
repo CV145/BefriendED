@@ -75,7 +75,9 @@ class LocalDatabase
       'email': email,
       'chosenTopics': <String> [],
       'friendsList': <String> [],
-      'chatInvites': <Map>[],
+      'chatInvites': <String, dynamic>{},
+      'outgoingInvites': <dynamic> [],
+      'scheduledChats': <dynamic> [],
     };
     //Create or overwrite the document equal to uid
     _firestore.collection('registered_users')

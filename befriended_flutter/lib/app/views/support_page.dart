@@ -7,6 +7,12 @@ import 'package:befriended_flutter/app/views/chat_room_page.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+/*
+Chat scheduling rules:
+- there can only be 1 chat scheduled with 1 user
+- chat times cannot overlap with each other
+ */
+
 class SupportPage extends StatefulWidget {
   const SupportPage({
     Key? key,
